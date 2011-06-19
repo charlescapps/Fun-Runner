@@ -75,7 +75,7 @@ public class DirectionGetter {
 
 		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
 			while ((aLine = in.readLine()) != null) {
-				System.out.println(aLine);
+			//	System.out.println(aLine);
 				jsonString+=aLine;  
 			}
 		}
@@ -150,5 +150,24 @@ public class DirectionGetter {
 
 		return directions; 
 	} 
+
+	//Method to take a list of legs and get back a simple list of points to draw!
+	public static List<GeoPoint> legsToPoints(List<GoogleLeg> legs) {
+		List<GeoPoint> points = new ArrayList<GeoPoint>(); 
+		GoogleLeg currentLeg = null; 
+
+		for (int i = 0; i < legs.size(); i++) {
+			currentLeg = legs.get(i); 
+
+			for (int j = 0; j < currentLeg.size(); j++) {
+				if (i==0 && j==0) {//If it's the very first leg/step, must add start point
+					points.add(currentLeg.get(j).getStart()); 
+				}
+				points.add(currentLeg.get(j).getEnd()); //Add end point of step
+			} 
+		}	
+		return points; 
+	}
+
 
 }
