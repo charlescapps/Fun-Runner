@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/parentContainer"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+		<Spinner
+			android:id="@+id/runCategorySpinner"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:prompt="@string/spinner_prompt" 
+			/>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			>
+			<Button 
+				android:id="@+id/gpsButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Where am I?"
+				/>
+			<Button 
+				android:id="@+id/nextDestinationButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Next Destination"
+				/>
+		</LinearLayout>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			>
+				<TextView  
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:text="Latitude="
+					/>
+				<TextView  
+					android:id="@+id/latText"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					/>
+		</LinearLayout>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			>
+				<TextView  
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:text="Longitude="
+					/>
+				<TextView  
+					android:id="@+id/lngText"
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					/>
+		</LinearLayout>
+	<RelativeLayout
+		android:id="@+id/relLayout"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		>
+		<view class="com.google.android.maps.MapView"
+			android:id="@+id/myMap"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:enabled="true"
+			android:clickable="true"
+			android:apiKey="0qcLJ4NCw2oBfdBl0B8Z3pRZkLzoFICh-1KsJdQ"
+			/>
+		<LinearLayout android:id="@+id/zoomButtonsLayout"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			>
+			<Button android:id="@+id/buttonZoomOut" style="?android:attr/buttonStyleSmall" android:text="Zoom (-)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+			<Button android:id="@+id/buttonZoomIn" style="?android:attr/buttonStyleSmall" android:text="Zoom (+)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		</LinearLayout>
+	</RelativeLayout>
+</LinearLayout>
+

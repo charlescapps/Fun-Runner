@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/parentContainer"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+		<TextView  
+			android:textSize="25sp"
+			android:textStyle="bold"
+			android:shadowColor="#ffaaaa"
+			android:shadowRadius="5.0"
+			android:shadowDx="2.5"
+			android:shadowDy="2.5"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:layout_gravity="center_horizontal"
+			android:text="The Fun Run Planner!"
+			/>
+		<Button 
+			android:id="@+id/newRunButton"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="30px"
+			android:layout_marginLeft="40px"
+			android:layout_marginRight="40px"
+			android:textSize="20sp"
+			android:textStyle="bold|italic"
+			android:text="Start a new run"
+			/>
+		<Button 
+			android:id="@+id/viewStatsButton"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="30px"
+			android:layout_marginLeft="40px"
+			android:layout_marginRight="40px"
+			android:textSize="20sp"
+			android:textStyle="bold|italic"
+			android:text="View your stats"
+			/>
+		<Button 
+			android:id="@+id/aboutButton"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="30px"
+			android:layout_marginLeft="40px"
+			android:layout_marginRight="40px"
+			android:textSize="20sp"
+			android:textStyle="bold|italic"
+			android:text="About"
+			/>
+</LinearLayout>
+

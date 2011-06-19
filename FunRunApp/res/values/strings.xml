@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FunRunApp</string>
+	<string name="spinner_prompt">Choose a Category</string>
+	<string-array name="category_array">
+		<item>Point of Interest</item>
+        <item>Park</item>
+        <item>Cafe</item>
+        <item>Smoothies</item>
+        <item>Food cart</item>
+        <item>Bookstore</item>
+		<item>Clothing Store</item>
+		<item>Bicycle Store</item>
+		<item>Florist</item>
+		<item>Library</item>
+		<item>Museum</item>
+		<item>Art Gallery</item>
+		<item>Pet store</item>
+        <item>Bar</item>
+    </string-array>
+</resources>
