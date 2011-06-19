@@ -89,7 +89,7 @@ public class PlaceSearcher {
 
 		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
 			while ((aLine = in.readLine()) != null) {
-				System.out.println(aLine);
+			//	System.out.println(aLine);
 				jsonString+=aLine;  
 			}
 		}

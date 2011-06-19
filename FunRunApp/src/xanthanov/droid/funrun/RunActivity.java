@@ -40,7 +40,8 @@ public class RunActivity extends MapActivity
 	private LocationListener myLocListener; 
 	private LocationManager myLocManager;
 	private TextView emptySpinnerView; 
-	private PlaceSearcher myPlaceSearcher; //Class to grab data from google maps API
+	private PlaceSearcher myPlaceSearcher; //Class to do HTTP request to get place data from google maps API
+	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
 	private Random myRandom; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
@@ -67,6 +68,7 @@ public class RunActivity extends MapActivity
 		myLocOverlay = new MyLocationOverlay(this, myMap); 
 		myMapController = myMap.getController(); 
 		myPlaceSearcher = new PlaceSearcher(); 
+		myDirectionGetter = new DirectionGetter(); 
 		myRandom = new Random(System.currentTimeMillis()); //For randomly choosing a place from list 
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
@@ -93,6 +95,8 @@ public class RunActivity extends MapActivity
 	protected void onPause() {
 		super.onPause(); 
 		myLocManager.removeUpdates(myLocListener); 
+		myLocOverlay.disableMyLocation(); 
+		myLocOverlay.disableCompass();
 	}
 
 	private void setupLocListener() {
@@ -183,14 +187,19 @@ public class RunActivity extends MapActivity
 		}
 
 		
-		if (foundPlaces == null || foundPlaces.size() == 0) {
+		if (foundPlaces == null || foundPlaces.size() <= 0) {
 			//Output dialog indicating nothing was found...choose a new category
+			return; 
 		}
 
 		//Choose a random place from list
 		GooglePlace runToPlace = foundPlaces.get(myRandom.nextInt(foundPlaces.size()));			
 
+		List<GoogleLeg> directions = myDirectionGetter.getDirections(lastLocation, runToPlace.getGeoPoint());
 		//Figure out how to get directions (straightforward) and how to put them on map (not sure)
+		for (GoogleLeg gl: directions) { //Debugging...print all directions
+			System.out.println(gl); 
+		}	
 	}
 
 	private GeoPoint getLastKnownLoc() {
