@@ -31,7 +31,7 @@ public class FunRunTitle extends Activity
 
 	private void setupButtons() {
 		
-		final Intent startRunIntent = new Intent(this, FunRunActivity.class); 
+		final Intent startRunIntent = new Intent(this, ChoosePlaceActivity.class); 
 
 		newRunButton.setOnClickListener(new View.OnClickListener() {
 				@Override

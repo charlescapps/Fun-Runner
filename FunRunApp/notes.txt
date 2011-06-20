@@ -1,0 +1,15 @@
+6-20-11
+
+Plan for the future
+
+	-Persistent data structure with completed legs.
+		Class RunData
+			List<GoogleLeg> legs
+			List<Long> legTimesMillis
+			assert(legTimesMillis.size()==legs.size()
+
+			int totalDistanceMeters
+			double avg_speed (miles per hour / meters per second?)  
+
+		Class AllRuns implements java.io.Serializable
+			List<RunData>

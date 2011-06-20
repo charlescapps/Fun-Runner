@@ -22,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		<activity android:name=".FunRunActivity" android:label="Choose a Category" />
+		<activity android:name=".ChoosePlaceActivity" android:label="Find your next Fun Destination" />
+		<activity android:name=".FunRunActivity" android:label="Running.................." />
     </application>
 </manifest> 

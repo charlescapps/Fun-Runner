@@ -19,6 +19,7 @@ import android.location.Location;
 import android.location.LocationListener;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Random; 
 
 import com.google.android.maps.MapActivity;
@@ -36,11 +37,10 @@ public class FunRunActivity extends MapActivity
 	private Spinner runCategorySpinner; 
 	private Button whereAmIButton; 
 	private Button nextDestinationButton;
-	private TextView latText;
-	private TextView lngText;
 	private MapView myMap;
 	private Button zoomInButton;
 	private Button zoomOutButton;
+	private Button startRunningButton;
 	//*******************OTHER OBJECTS****************************
 	private MyLocationOverlay myLocOverlay;
 	private MapController myMapController; 
@@ -50,13 +50,10 @@ public class FunRunActivity extends MapActivity
 	private PlaceSearcher myPlaceSearcher; //Class to do HTTP request to get place data from google maps API
 	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
 	private Random myRandom; 
-	private int myOverlayIndex; 
+	private FunRunOverlay myFunRunOverlay; 
 	private AlertDialog popup;
 	private GeoPoint lastKnownLocation; 
-	private DialogInterface.OnDismissListener acceptRejectListener;
-	private DialogInterface.OnCancelListener cancelListener;
-	private boolean runAccepted;
-	private boolean repeatQuery; 
+	//****************Temporary storage...seemingly necessary since the dialogs are asynchronous!*****
 	private List<GooglePlace> nearbyPlaces; 
 	private List<GooglePlace> remainingPlaces; 
 	private List<GoogleLeg> currentDirections; 
@@ -72,17 +69,16 @@ public class FunRunActivity extends MapActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.runlayout);
+        setContentView(R.layout.selectlayout);
 
 		//***************GET VIEWS DEFINED IN XML***********************
 		runCategorySpinner = (Spinner) findViewById(R.id.runCategorySpinner); 
 		myMap = (MapView) findViewById(R.id.myMap); 
-		latText = (TextView) findViewById(R.id.latText); 
-		lngText = (TextView) findViewById(R.id.lngText); 
 		whereAmIButton = (Button) findViewById(R.id.gpsButton); 
 		nextDestinationButton = (Button) findViewById(R.id.nextDestinationButton); 
 		zoomInButton = (Button) findViewById(R.id.buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.buttonZoomOut); 
+		startRunningButton = (Button) findViewById(R.id.startRunningButton); 
 		parentContainer = (LinearLayout) findViewById(R.id.parentContainer); 
 		//********************POPUP DIALOG*******************************
 		popup = null; 
@@ -92,32 +88,12 @@ public class FunRunActivity extends MapActivity
 		myPlaceSearcher = new PlaceSearcher(this.getResources()); 
 		myDirectionGetter = new DirectionGetter(); 
 		myRandom = new Random(System.currentTimeMillis()); //For randomly choosing a place from list 
-		myOverlayIndex = -1; 
 		lastKnownLocation = null;
-		runAccepted = repeatQuery = false;  
 		currentDirections = null; 
 		currentRunToPlace = null; 
+		nearbyPlaces = null; 
+		remainingPlaces = null; 
 
-		acceptRejectListener = new DialogInterface.OnDismissListener() {
-			@Override
-		    public void onDismiss(DialogInterface dia) {
-				if (runAccepted) {
-					startRunning(); 
-				}
-				else if (repeatQuery) {
-					chooseRandomPlace(); 
-				}
-			}
-		};
-
-		cancelListener = new DialogInterface.OnCancelListener() {
-			@Override
-		    public void onCancel(DialogInterface dia) {
-				//Set run accepted to false if user pressed Back button
-				//Don't immediately repeat query so that user can choose a new category
-				runAccepted = repeatQuery = false;
-			}
-		};
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
 		setupSpinner(); 
@@ -125,7 +101,9 @@ public class FunRunActivity extends MapActivity
 		setupWhereAmIButton(); 
 		setupNextButton(); 
 		setupZoomButtons(); 
+		setupStartRunningButton(); 
 		loadCoords(); 
+		
     }
 	
 	public boolean isRouteDisplayed() {
@@ -149,15 +127,9 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void startRunning() {
-		List<Overlay> overlays = myMap.getOverlays(); 
 
-		if (myOverlayIndex == -1) {
-			overlays.add(new FunRunOverlay(myMap, currentDirections)); 
-			myOverlayIndex = overlays.size() - 1; 
-		}
-		else {
-			overlays.set(myOverlayIndex, new FunRunOverlay(myMap, currentDirections)); 
-		}
+		myFunRunOverlay.updateCurrentDirections(currentDirections); 
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		
 		myMap.postInvalidate();
 
@@ -188,11 +160,10 @@ public class FunRunActivity extends MapActivity
 		 
 		Double latPoint=l.getLatitude(); 
 		Double lngPoint=l.getLongitude(); 
-			
-		latText.setText(latPoint.toString()); 
-		lngText.setText(lngPoint.toString()); 
 	
 		this.lastKnownLocation = new GeoPoint((int) (latPoint*1E6), (int) (lngPoint*1E6)); 
+		
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 
 	}
 
@@ -210,9 +181,11 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupMap() {
+		myFunRunOverlay = new FunRunOverlay(myMap, null);
 		myMap.getOverlays().add(myLocOverlay); 
+		myMap.getOverlays().add(myFunRunOverlay); 
 		myMapController.setZoom(DEFAULT_ZOOM); 
-		myLocOverlay.enableMyLocation(); 
+		myLocOverlay.enableMyLocation(); //Disable for now, have stick figure instead 
 		myLocOverlay.enableCompass(); 	
 		myMap.postInvalidate(); 
 	}
@@ -235,13 +208,20 @@ public class FunRunActivity extends MapActivity
 		nextDestinationButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					performPlacesQuery(); 
+					try {
+						performPlacesQuery(); 
+					}
+					catch (Exception e) {
+						showPopup("Error connecting to\nGoogle Maps", e.getMessage()); 
+						nearbyPlaces = remainingPlaces = null; 
+						return; 
+					}
 					chooseRandomPlace();
 				}
 			});	
 	}
 
-	private void performPlacesQuery() {
+	private void performPlacesQuery() throws Exception {
 		System.out.println("Entering performGmapQuery()..."); 
 		String search = (String)runCategorySpinner.getSelectedItem();
 		GeoPoint lastLocation = getLastKnownLoc();
@@ -256,12 +236,16 @@ public class FunRunActivity extends MapActivity
 		while ( currentRadiusMeters <= MAX_RADIUS_METERS && (foundPlaces == null || foundPlaces.size() <= 0)) {
 			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters);
 			
-			if (foundPlaces == null || foundPlaces.size() == 0) {
+			if (foundPlaces == null || foundPlaces.size() <= 0) {
 				//Output some message and increase search radius
 				currentRadiusMeters*=2; 
 			}
 		}
-		
+
+		//Done attempting to get places, so assign to field nearbyPlaces (and remainingPlaces)		
+		nearbyPlaces = foundPlaces; 
+		remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); //Shallow copy to have a separate record of which places remain 
+
 		if (foundPlaces == null || foundPlaces.size() <= 0) {
 			//Output dialog indicating nothing was found...choose a new category
 			showPopup("Choose a new category", "No '" + search + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
@@ -269,38 +253,42 @@ public class FunRunActivity extends MapActivity
 			System.out.println("Places query: ZERO PLACES FOUND"); 
 			return; 
 		}
-		else {
-			remainingPlaces = nearbyPlaces = foundPlaces; 		
-			 
-		}	
 		//If we successfully got the places, print them out for debugging.
-		//PlaceSearcher.printListOfPlaces(foundPlaces);  
+		PlaceSearcher.printListOfPlaces(foundPlaces);  
 
 	}
 
 	private void chooseRandomPlace() {
+
+		if (nearbyPlaces == null || nearbyPlaces.size() == 0 ) {
+			//There *should* be an asynchronous dialog alerting the user to this fact!
+			return; 
+		}
 		//check if no places are remaining
-		if (remainingPlaces.size() ==0) {
-			remainingPlaces = nearbyPlaces; 
-			showPopup("All nearby places of this type rejected :-(", "You rejected all nearby places of this type! Choose a new category, or click next destination to see your options again");
+		if (remainingPlaces.size() == 0) {
+			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
+			showPopup("All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Destination' to see your options again.");
 			return; 
 		}
 
 		//Choose a random place from list of remaining places
 		currentRunToPlace = remainingPlaces.get(myRandom.nextInt(remainingPlaces.size()));			
+		remainingPlaces.remove(currentRunToPlace); 
 		System.out.println("Chosen place:" + currentRunToPlace); 
 
 		//Make another HTTP request to get directions from current location to 'runToPlace'
 		currentDirections = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
 
-		assert (currentDirections.size() ==1); //Only 1 leg since we don't define any random waypoints
+		if (currentDirections != null) {
+			assert (currentDirections.size() ==1); //Only 1 leg since we don't define any random waypoints
 
-		showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
-			"Place: " + currentRunToPlace.getName() + "\n" +
-			"Distance: " + currentDirections.get(0).getDistanceString() + " / " + currentDirections.get(0).getDistanceMeters() + "m" );	
-		
-
-
+			showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
+				"Place: " + currentRunToPlace.getName() + "\n" +
+				"Distance: " + currentDirections.get(0).getDistanceString() + " / " + currentDirections.get(0).getDistanceMeters() + "m" );	
+		}
+		else {
+			showPopup("Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
+		}
 	}
 
 	private GeoPoint getLastKnownLoc() {
@@ -321,6 +309,7 @@ public class FunRunActivity extends MapActivity
 
 		if (l!= null) {
 			lastKnownLocation = new GeoPoint((int) (l.getLatitude()*1E6), (int) (l.getLongitude()*1E6)); 
+			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		}
 		return lastKnownLocation; 
 	}
@@ -360,9 +349,6 @@ public class FunRunActivity extends MapActivity
 			return;
 		}
 
-		latText.setText(latPoint.toString());
-		lngText.setText(lngPoint.toString());
-
 		setupMap(latPoint, lngPoint); 
 	}
 
@@ -394,7 +380,7 @@ public class FunRunActivity extends MapActivity
 		myBuilder.setTitle(title); 
 		myBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
-				dialog.cancel();
+				dialog.dismiss();
            }
        }); 
 
@@ -409,25 +395,30 @@ public class FunRunActivity extends MapActivity
 
 		myBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
-				runAccepted = true; 
-				repeatQuery = false; 
 				dialog.dismiss();
+				startRunning(); 
            }
        }); 
 
 		myBuilder.setNegativeButton("Next Place!", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
-				runAccepted = false; 
-				repeatQuery = true; 
 				dialog.dismiss();
+				chooseRandomPlace(); 
            }
        }); 
 
 		popup = myBuilder.create(); 
 		popup.setCancelable(true); 
-		popup.setOnDismissListener(acceptRejectListener);
-		popup.setOnCancelListener(cancelListener);
 		popup.show(); 
+	}
+
+	private void setupStartRunningButton() {
+		startRunningButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					
+				}
+			});
 	}
 }
 

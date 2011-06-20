@@ -5,9 +5,14 @@
         <item>@string/park</item>
         <item>@string/cafe</item>
         <item>@string/smoothies</item>
+        <item>@string/juice_bar</item>
         <item>@string/food_cart</item>
         <item>@string/book_store</item>
+		<item>@string/shopping_mall</item>
+		<item>@string/brew_pub</item>
 		<item>@string/clothing_store</item>
+		<item>@string/bowling_alley</item>
+		<item>@string/movie_theater</item>
 		<item>@string/bicycle_store</item>
 		<item>@string/florist</item>
 		<item>@string/library</item>
@@ -16,5 +21,8 @@
 		<item>@string/pet_store</item>
         <item>@string/bar</item>
 		<item>@string/point_of_interest</item>
+        <item>@string/aquarium</item>
+		<item>@string/amusement_park</item>
+		<item>@string/natural_feature</item>
     </string-array>
 </resources>

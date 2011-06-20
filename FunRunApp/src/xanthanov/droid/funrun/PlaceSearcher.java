@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URL; 
 import java.net.HttpURLConnection; 
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 
 import android.content.res.Resources; 
 
@@ -30,39 +31,61 @@ public class PlaceSearcher {
 		stringToQuery = new HashMap<CharSequence, CharSequence>();	
 		stringToQuery.put(res.getText(R.string.cafe), "types=cafe");   
 		stringToQuery.put(res.getText(R.string.point_of_interest), "types=point_of_interest"); 
-		stringToQuery.put(res.getText(R.string.smoothies),"types=food|restaurant&name=smoothies"); 
+		stringToQuery.put(res.getText(R.string.smoothies),"types=food|restaurant|bar|meal_takeaway|meal_delivery|shopping_mall&name=smoothie"); 
+		stringToQuery.put(res.getText(R.string.juice_bar),"types=food|restaurant|bar|meal_takeaway|meal_delivery|shopping_mall&name=juice"); 
 		stringToQuery.put(res.getText(R.string.park), "types=park"); 
 		stringToQuery.put(res.getText(R.string.book_store), "types=book_store"); 
 		stringToQuery.put(res.getText(R.string.clothing_store), "types=clothing_store"); 
 		stringToQuery.put(res.getText(R.string.bicycle_store), "types=bicycle_store"); 
 		stringToQuery.put(res.getText(R.string.florist), "types=florist"); 
 		stringToQuery.put(res.getText(R.string.library), "types=library"); 
-		stringToQuery.put(res.getText(R.string.food_cart), "types=food|restaurant&name=food%20cart"); 
+		stringToQuery.put(res.getText(R.string.food_cart), "types=food|restaurant&name=food+cart"); 
 		stringToQuery.put(res.getText(R.string.museum), "types=museum"); 
 		stringToQuery.put(res.getText(R.string.art_gallery), "types=art_gallery"); 
 		stringToQuery.put(res.getText(R.string.pet_store), "types=pet_store"); 
 		stringToQuery.put(res.getText(R.string.bar), "types=bar"); 
+
+		stringToQuery.put(res.getText(R.string.aquarium), "types=aquarium");   
+		stringToQuery.put(res.getText(R.string.amusement_park), "types=amusement_park"); 
+		stringToQuery.put(res.getText(R.string.movie_theater),"types=movie_theater"); 
+		stringToQuery.put(res.getText(R.string.bowling_alley), "types=bowling_alley"); 
+		stringToQuery.put(res.getText(R.string.shopping_mall), "types=shopping_mall"); 
+		stringToQuery.put(res.getText(R.string.natural_feature), "types=natural_feature"); 
+		stringToQuery.put(res.getText(R.string.brew_pub), "types=bar|food|restaurant&name=brew%20pub"); 
 	}
 
-	public List<GooglePlace> getNearbyPlaces(String search, GeoPoint currentLocation, int radiusMeters) {
+	public List<GooglePlace> getNearbyPlaces(String search, GeoPoint currentLocation, int radiusMeters) throws UnknownHostException, GmapException, JSONException, MalformedURLException {
 		URL url= null; 
 		HttpURLConnection conn= null; 
+		String urlString = null; 
 
 		try {
-			url = new URL(mapsApiUrl + "?" + buildLocationString(currentLocation) 
+			urlString = mapsApiUrl + "?" + buildLocationString(currentLocation) 
 								+ "&radius=" + radiusMeters 
 								+ "&" + stringToQuery.get(search)
 								+ "&sensor=true"
-								+ "&key=" + apiKey);	
+								+ "&key=" + apiKey;
+
+			url = new URL(urlString); 	
 
 			conn = (HttpURLConnection) url.openConnection(); 	
 
 			return parseJsonResult(new BufferedReader(new InputStreamReader(conn.getInputStream()))); 
 		}
-		catch (Exception e) {
-			System.err.println("Error creating java.net.URL or opening connection or reading input stream:"); 
-			e.printStackTrace(); 
-			return null; 
+		catch (MalformedURLException e) {
+			throw new MalformedURLException("Invalid URL: " + urlString + "\nPlease check your internet connection and try again."); 
+		}
+		catch (UnknownHostException e) {
+			throw new UnknownHostException("Unable to connect to Google Maps.\nPlease check your internet connection and try again."); 
+		}
+		catch(JSONException e) {
+			throw new JSONException("Failure parsing place info retreived from Google Maps.\nPlease try again later.");
+		}
+		catch(IOException e) {
+			throw new JSONException("Error downloading info from Google Maps.\nPlease check your internet connection and try again.");
+		}
+		catch (GmapException e) {
+			throw new GmapException(e.getMessage() + "\nPlease check your internet connection and try again.");  
 		}
 		finally {
 			if (conn != null) conn.disconnect(); 
@@ -80,7 +103,7 @@ public class PlaceSearcher {
 		return locStr;
 	}
 	
-	private List<GooglePlace> parseJsonResult(BufferedReader in) throws GmapException {
+	private List<GooglePlace> parseJsonResult(BufferedReader in) throws GmapException, IOException, JSONException {
 		
 		String jsonString = new String(); 
 		String aLine = null; 
@@ -88,40 +111,26 @@ public class PlaceSearcher {
 		String status = null; 
 		JSONObject jObj = null; 
 
-		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
-			while ((aLine = in.readLine()) != null) {
-			//	System.out.println(aLine);
-				jsonString+=aLine;  
-			}
-		}
-		catch (IOException e) {
-			System.err.println("Error reading Google Maps API HTTP output"); 
-			e.printStackTrace(); 
-			return null; 
+		while ((aLine = in.readLine()) != null) {
+		//	System.out.println(aLine);
+			jsonString+=aLine;  
 		}
 
-		try {//Try block for parsing the returned JSON String...seems unlikely google would return an invalid string if the first try block succeeded
-			jObj = (JSONObject) new JSONTokener(jsonString).nextValue();	
-			status = jObj.getString("status"); 
-			JSONArray results = jObj.getJSONArray("results");
+		jObj = (JSONObject) new JSONTokener(jsonString).nextValue();	
+		status = jObj.getString("status"); 
+		JSONArray results = jObj.getJSONArray("results");
 
-			if (status.equals("ZERO_RESULTS")) {
-				return foundPlaces; //Return empty array if no results 
-			}		
-			else if (!status.equals("OK")) {
-				throw new GmapException("Gmaps API returned error code: " + status); 
-			}
-
-			for (int i = 0; i < results.length(); i++) {
-				foundPlaces.add(parseGmapResult(results.getJSONObject(i))); 
-			} 	
-
+		if (status.equals("ZERO_RESULTS")) {
+			return foundPlaces; //Return empty array if no results 
+		}		
+		else if (!status.equals("OK")) {
+			throw new GmapException("Google Maps returned an error code:\n" + status); 
 		}
-		catch (JSONException e) {
-			System.err.println("ERROR Parsing JSON string from Google Maps API"); 
-			e.printStackTrace(); 
-			return null; 
-		}
+
+		for (int i = 0; i < results.length(); i++) {
+			foundPlaces.add(parseGmapResult(results.getJSONObject(i))); 
+		} 	
+
 
 		return foundPlaces; 
 	} 
@@ -153,6 +162,9 @@ public class PlaceSearcher {
 	}
 
 	public static void printListOfPlaces(List<GooglePlace> places) {
+		if (places == null) {
+			return;
+		}
 		for (GooglePlace gp: places) {
 			System.out.println(gp); 
 		}

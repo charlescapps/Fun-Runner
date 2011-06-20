@@ -17,121 +17,157 @@ import com.google.android.maps.MapView;
 
 public class FunRunOverlay extends Overlay {
 	
-	// ===========================================================
-	// Final Fields
-	// ===========================================================
-	/** The tip of the pin is located at x=5, y=29 */
-	//private final android.graphics.Point PIN_HOTSPOT = new android.graphics.Point(5,29);
+	//********************CONSTANTS***************************
+	private final static int paintAlpha = 200; 
+	private final static int paintRed = 220; 
+	private final static int paintGreen = 100; 
+	private final static int paintBlue = 100; 
+	private final static Point PIN_HOTSPOT = new Point(5,29);
+	private final static Point STICK_GUY_OFFSET = new Point(15,27);
+
+	private MapView theMapView = null;
+	private Paint pathPaint = null;
+	private List<GoogleLeg> directions = null;
+	private GeoPoint currentLoc = null;
 	
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
-
-	MapView theMapView = null;
-	Paint pathPaint = null;
-	List<GoogleLeg> directions = null;
-	
-//	private Bitmap PIN_START = null;
-//	private Bitmap PIN_END = null;
-	//private Bitmap INFO_LOWER_LEFT = null;
-
-	// ===========================================================
-	// "Constructors"
-	// ===========================================================
+	private Bitmap PIN_START = null;
+	private Bitmap PIN_END = null;
+	private Bitmap INFO_LOWER_LEFT = null;
+	private Bitmap STICK_GUY_RUN1 = null; 
+	private Bitmap STICK_GUY_RUN2 = null; 
+	private Bitmap STICK_GUY_BG = null; 
+	private Bitmap CURRENT_STICK_GUY = null; 
+	private int frameNo; 
 	
 	public FunRunOverlay(MapView map, List<GoogleLeg> directions) {
 		this.theMapView = map;
 		this.directions = directions;
 		this.pathPaint = new Paint();
+		if (directions != null) {
+			this.currentLoc = directions.get(0).getFirstPoint();
+		}
+		else {
+			this.currentLoc = null; 
+		}
+		this.frameNo = 0; 
+
+		//Paint settings
 		this.pathPaint.setAntiAlias(true);
 	
 		//System.out.println(map.getContext()); 
 		
-	//	PIN_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_blue);
-	//	PIN_END = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_red);
-	//	INFO_LOWER_LEFT = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.lower_left_info);
+		PIN_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_blue);
+		PIN_END = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_red);
+		INFO_LOWER_LEFT = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.lower_left_info);
+
+		STICK_GUY_RUN1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run1);
+		STICK_GUY_RUN2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run2);
+		CURRENT_STICK_GUY = STICK_GUY_RUN1; 
+		STICK_GUY_BG = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_bg);
 	}
 
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
+	public void updateCurrentLocation(GeoPoint loc) {
+		this.currentLoc = loc; 
+	}	
 
-	// ===========================================================
-	// Methods
-	// ===========================================================
+	public void updateCurrentDirections(List<GoogleLeg> directions) {
+		this.directions = directions;
+	}
 
-	/** This function does some fancy drawing of the 
-	 * Driving-Directions. It could be shortened a lot. */
 	@Override
 	public void draw(Canvas canvas, MapView map, boolean b) {
 		super.draw(canvas, map, b);
 		
+		if (++frameNo %10 == 0) { //Every 20 times draw is called alternate the stick figure we draw
+			CURRENT_STICK_GUY = (CURRENT_STICK_GUY == STICK_GUY_RUN1 ? STICK_GUY_RUN2 : STICK_GUY_RUN1);  
+		}
+
 		//System.out.println("In draw method..."); 
 		//Get a Projection object to convert between lat/lng --> x/y
 		Projection pro = theMapView.getProjection(); 
 
 		/* Reset our paint. */
 		this.pathPaint.setStrokeWidth((float)4.0);
-		this.pathPaint.setARGB(100, 113, 105, 252);
+		this.pathPaint.setARGB(paintAlpha, paintRed, paintGreen, paintBlue);
 
 		// holders of mapped coords...
 		Point screenCoords = new Point();
 
-		// method in the custom map view to return the DrivingDirection object.
-		/* First get Start end End Point of the route. */
-		GeoPoint startPoint = directions.get(0).getFirstPoint();
-		GeoPoint endPoint = directions.get(directions.size()-1).getLastPoint(); 
 
-		pro.toPixels(startPoint, screenCoords); 
-		//System.out.println("Start point pixels: " + screenCoords); 
+		//If directions is null, return
+		if (directions != null) {
+			//**********************SET UP PATH***************************
 
-		/* Create a path-that will be filled with map-points 
-		 * and will be drawn to the canvas in the end*/
-		Path thePath = new Path();
-		thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
-		
-		/* Retrieve distinct GeoPoints of the route, w/o the redundancies. */
-		List<GeoPoint> route = DirectionGetter.legsToPoints(directions);
-		
-		if(route == null || route.size() == 0)
-			return;
-		
-		/* Loop through all MapPoints returned. */
-		for (GeoPoint current : route) {
-			/* Transform current MapPoint's Lat/Lng 
-			 * into corresponding point on canvas 
-			 * using the pixelCalculator. */
-			if(current != null){
-				pro.toPixels(current, screenCoords); 
-				/* Add point to path. */
-				thePath.lineTo((float)screenCoords.x, (float)screenCoords.y);
+			// method in the custom map view to return the DrivingDirection object.
+			/* First get Start end End Point of the route. */
+			GeoPoint startPoint = directions.get(0).getFirstPoint(); //First point of the first leg
+			GeoPoint endPoint = directions.get(directions.size()-1).getLastPoint();  //Last point of the last leg
+
+			pro.toPixels(startPoint, screenCoords); 
+
+			/* Create a path-that will be filled with map-points 
+			 * and will be drawn to the canvas in the end*/
+			Path thePath = new Path();
+			thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
+			
+			/* Retrieve distinct GeoPoints of the route, w/o the redundancies. */
+			List<GeoPoint> route = DirectionGetter.legsToPoints(directions);
+			
+			if(route == null || route.size() == 0)
+				return;
+			
+			/* Loop through all MapPoints returned. */
+			for (GeoPoint current : route) {
+				/* Transform current MapPoint's Lat/Lng 
+				 * into corresponding point on canvas 
+				 * using the pixelCalculator. */
+				if(current != null){
+					pro.toPixels(current, screenCoords); 
+					/* Add point to path. */
+					thePath.lineTo((float)screenCoords.x, (float)screenCoords.y);
+				}
 			}
+			
+			//Use Stroke style
+			this.pathPaint.setStyle(Paint.Style.STROKE);
+
+			/* Draw the actual route to the canvas. */
+			canvas.drawPath(thePath, this.pathPaint);
+			
+			/* Draw start of route.*/
+			/*
+			pro.toPixels(startPoint, screenCoords);
+			
+			canvas.drawBitmap(PIN_START, 
+					screenCoords.x - PIN_HOTSPOT.x, 
+					screenCoords.y - PIN_HOTSPOT.y, 
+					pathPaint);
+			*/
+
+			/* Draw end of route */ 
+			pro.toPixels(endPoint, screenCoords);
+			
+			canvas.drawBitmap(PIN_END, 
+					screenCoords.x - PIN_HOTSPOT.x, 
+					screenCoords.y - PIN_HOTSPOT.y, 
+					pathPaint);
 		}
-		
-		//Use Stroke style
-		this.pathPaint.setStyle(Paint.Style.STROKE);
 
-		/* Draw the actual route to the canvas. */
-		canvas.drawPath(thePath, this.pathPaint);
+		//Draw stick guy
+		if (currentLoc != null) {
+			pro.toPixels(currentLoc, screenCoords);
 		
-		/* Finally draw a fancy PIN to mark the start... */ 
-		pro.toPixels(endPoint, screenCoords);
-		
-		/*canvas.drawBitmap(PIN_END, 
-				screenCoords.x - PIN_HOTSPOT.x, 
-				screenCoords.y - PIN_HOTSPOT.y, 
+			canvas.drawBitmap(STICK_GUY_BG, 
+				screenCoords.x - STICK_GUY_OFFSET.x, 
+				screenCoords.y - STICK_GUY_OFFSET.y, 
 				pathPaint);
-		*/
-		/* ...and the end of the route.*/
 
-		pro.toPixels(startPoint, screenCoords);
-		/*
-		canvas.drawBitmap(PIN_START, 
-				screenCoords.x - PIN_HOTSPOT.x, 
-				screenCoords.y - PIN_HOTSPOT.y, 
+			canvas.drawBitmap(STICK_GUY_RUN1, 
+				screenCoords.x - STICK_GUY_OFFSET.x, 
+				screenCoords.y - STICK_GUY_OFFSET.y, 
 				pathPaint);
-		*/
+		}
+
 		/* Get the height of the underlying MapView.*/
 		int mapViewHeight = theMapView.getHeight();
 		

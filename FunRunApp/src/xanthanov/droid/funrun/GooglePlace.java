@@ -20,6 +20,19 @@ public class GooglePlace {
 		this.iconUrl = icon; 
 	}
 
+	public float distanceTo(GeoPoint myLocation) {
+		double startLat = myLocation.getLatitudeE6()*1E-6; 
+		double startLng = myLocation.getLongitudeE6()*1E-6;
+		double endLat = geoPt.getLatitudeE6()*1E-6; 
+		double endLng = geoPt.getLongitudeE6()*1E-6; 
+ 
+		float result[] = new float[1]; 
+
+		android.location.Location.distanceBetween(startLat, startLng, endLat, endLng, result); 
+
+		return result[0]; 
+	}
+
 	public String getName() {
 		return name; 
 	}
@@ -40,6 +53,24 @@ public class GooglePlace {
 		s+="GeoPt:'" + geoPt + "',"; 
 		s+="Icon:'" + iconUrl + "'"; 
 		return s; 
+	}
+	
+	@Override 
+	public boolean equals(Object o) {
+		if (this==o) {
+			return true; 
+		}
+		if (!GooglePlace.class.isInstance(o)) {
+			return false; 
+		}
+		GooglePlace other = (GooglePlace) o; 
+
+		if (this.name.equals(other.name) && this.geoPt.equals(other.geoPt) && this.iconUrl.equals(other.iconUrl)) {
+			return true; 
+		}
+
+		return false; 
+	
 	}
 
 }

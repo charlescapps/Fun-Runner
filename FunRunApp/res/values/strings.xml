@@ -6,9 +6,14 @@
 	<string name="park">Park</string>
 	<string name="cafe">Cafe</string>
 	<string name="smoothies">Smoothie Joint</string>
+	<string name="juice_bar">Juice Bar</string>
 	<string name="food_cart">Food cart</string>
 	<string name="book_store">Bookstore</string>
+	<string name="shopping_mall">Shopping Mall</string>
+	<string name="brew_pub">Brew Pub</string>
 	<string name="clothing_store">Clothing Store</string>
+	<string name="bowling_alley">Bowling Alley</string>
+	<string name="movie_theater">Movie Theater</string>
 	<string name="bicycle_store">Bicycle Store</string>
 	<string name="florist">Florist</string>
 	<string name="library">Library</string>
@@ -17,4 +22,7 @@
 	<string name="pet_store">Pet Store</string>
 	<string name="bar">Bar</string>
 	<string name="point_of_interest">Point of Interest</string>
+	<string name="aquarium">Aquarium</string>
+	<string name="amusement_park">Amusement Park</string>
+	<string name="natural_feature">Natural Feature</string>
 </resources>
