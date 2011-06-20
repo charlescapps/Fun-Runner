@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">FunRunApp</string>
 	<string name="spinner_prompt">Choose a Category</string>
-	<string-array name="category_array">
-		<item>Point of Interest</item>
-        <item>Park</item>
-        <item>Cafe</item>
-        <item>Smoothies</item>
-        <item>Food cart</item>
-        <item>Bookstore</item>
-		<item>Clothing Store</item>
-		<item>Bicycle Store</item>
-		<item>Florist</item>
-		<item>Library</item>
-		<item>Museum</item>
-		<item>Art Gallery</item>
-		<item>Pet store</item>
-        <item>Bar</item>
-    </string-array>
+
+	<string name="park">Park</string>
+	<string name="cafe">Cafe</string>
+	<string name="smoothies">Smoothie Joint</string>
+	<string name="food_cart">Food cart</string>
+	<string name="book_store">Bookstore</string>
+	<string name="clothing_store">Clothing Store</string>
+	<string name="bicycle_store">Bicycle Store</string>
+	<string name="florist">Florist</string>
+	<string name="library">Library</string>
+	<string name="museum">Museum</string>
+	<string name="art_gallery">Art Gallery</string>
+	<string name="pet_store">Pet Store</string>
+	<string name="bar">Bar</string>
+	<string name="point_of_interest">Point of Interest</string>
 </resources>

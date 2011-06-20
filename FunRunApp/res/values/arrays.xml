@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<string-array name="category_array">
+        <item>@string/park</item>
+        <item>@string/cafe</item>
+        <item>@string/smoothies</item>
+        <item>@string/food_cart</item>
+        <item>@string/book_store</item>
+		<item>@string/clothing_store</item>
+		<item>@string/bicycle_store</item>
+		<item>@string/florist</item>
+		<item>@string/library</item>
+		<item>@string/museum</item>
+		<item>@string/art_gallery</item>
+		<item>@string/pet_store</item>
+        <item>@string/bar</item>
+		<item>@string/point_of_interest</item>
+    </string-array>
+</resources>

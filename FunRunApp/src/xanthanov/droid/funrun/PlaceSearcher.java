@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.HttpURLConnection; 
 import java.net.MalformedURLException;
 
+import android.content.res.Resources; 
+
 import com.google.android.maps.GeoPoint; 
 import org.json.*; 
 
@@ -21,26 +23,25 @@ public class PlaceSearcher {
 	//TODO: Get a license so app can do > 1000 queries per day
 	private final static String apiKey = "AIzaSyANveACY4fX2f9MXUHxbE6UbnCkHA0_C6Q";
 
-	private HashMap<String, String> stringToQuery;
+	private HashMap<CharSequence, CharSequence> stringToQuery;
 
-	public PlaceSearcher() {
+	public PlaceSearcher(Resources res) {
 		//Define a map between category strings (res/strings/strings.xml)) --> google map API URI parameters
-		stringToQuery = new HashMap<String, String>();	
-		stringToQuery.put("Cafe", "types=cafe");   
-		stringToQuery.put("Point of Interest", "types=point_of_interest"); 
-		stringToQuery.put("Smoothies","types=food|restaurant&name=smoothies"); 
-		stringToQuery.put("Park", "types=park"); 
-		stringToQuery.put("Bookstore", "types=book_store"); 
-		stringToQuery.put("Clothing Store", "types=clothing_store"); 
-		stringToQuery.put("Bicycle Store", "types=bicycle_store"); 
-		stringToQuery.put("Florist", "types=florist"); 
-		stringToQuery.put("Library", "types=library"); 
-		stringToQuery.put("Food Cart", "types=food|restaurant&name=food%20cart"); 
-		stringToQuery.put("Library", "types=library"); 
-		stringToQuery.put("Museum", "types=museum"); 
-		stringToQuery.put("Art Gallery", "types=art_gallery"); 
-		stringToQuery.put("Pet Store", "types=pet_store"); 
-		stringToQuery.put("Bar", "types=bar"); 
+		stringToQuery = new HashMap<CharSequence, CharSequence>();	
+		stringToQuery.put(res.getText(R.string.cafe), "types=cafe");   
+		stringToQuery.put(res.getText(R.string.point_of_interest), "types=point_of_interest"); 
+		stringToQuery.put(res.getText(R.string.smoothies),"types=food|restaurant&name=smoothies"); 
+		stringToQuery.put(res.getText(R.string.park), "types=park"); 
+		stringToQuery.put(res.getText(R.string.book_store), "types=book_store"); 
+		stringToQuery.put(res.getText(R.string.clothing_store), "types=clothing_store"); 
+		stringToQuery.put(res.getText(R.string.bicycle_store), "types=bicycle_store"); 
+		stringToQuery.put(res.getText(R.string.florist), "types=florist"); 
+		stringToQuery.put(res.getText(R.string.library), "types=library"); 
+		stringToQuery.put(res.getText(R.string.food_cart), "types=food|restaurant&name=food%20cart"); 
+		stringToQuery.put(res.getText(R.string.museum), "types=museum"); 
+		stringToQuery.put(res.getText(R.string.art_gallery), "types=art_gallery"); 
+		stringToQuery.put(res.getText(R.string.pet_store), "types=pet_store"); 
+		stringToQuery.put(res.getText(R.string.bar), "types=bar"); 
 	}
 
 	public List<GooglePlace> getNearbyPlaces(String search, GeoPoint currentLocation, int radiusMeters) {

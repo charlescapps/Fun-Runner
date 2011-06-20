@@ -9,7 +9,7 @@ package xanthanov.droid.funrun;
 
 public final class R {
     public static final class array {
-        public static final int category_array=0x7f040000;
+        public static final int category_array=0x7f030000;
     }
     public static final class attr {
     }
@@ -34,7 +34,21 @@ public final class R {
         public static final int title=0x7f020001;
     }
     public static final class string {
-        public static final int app_name=0x7f030000;
-        public static final int spinner_prompt=0x7f030001;
+        public static final int app_name=0x7f040000;
+        public static final int art_gallery=0x7f04000c;
+        public static final int bar=0x7f04000e;
+        public static final int bicycle_store=0x7f040008;
+        public static final int book_store=0x7f040006;
+        public static final int cafe=0x7f040003;
+        public static final int clothing_store=0x7f040007;
+        public static final int florist=0x7f040009;
+        public static final int food_cart=0x7f040005;
+        public static final int library=0x7f04000a;
+        public static final int museum=0x7f04000b;
+        public static final int park=0x7f040002;
+        public static final int pet_store=0x7f04000d;
+        public static final int point_of_interest=0x7f04000f;
+        public static final int smoothies=0x7f040004;
+        public static final int spinner_prompt=0x7f040001;
     }
 }
