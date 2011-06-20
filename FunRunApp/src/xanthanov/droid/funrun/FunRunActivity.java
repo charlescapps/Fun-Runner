@@ -1,13 +1,18 @@
 package xanthanov.droid.funrun;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface; 
+
 import android.os.Bundle;
 import android.view.View;
+import android.view.Gravity;
 import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.content.Context; 
 import android.location.LocationManager;
 import android.location.Location;
@@ -27,8 +32,9 @@ public class FunRunActivity extends MapActivity
 {
 
 	//***********VIEW OBJECTS DEFINED IN XML**********************
+	private LinearLayout parentContainer; 
 	private Spinner runCategorySpinner; 
-	private Button gpsButton; 
+	private Button whereAmIButton; 
 	private Button nextDestinationButton;
 	private TextView latText;
 	private TextView lngText;
@@ -45,10 +51,13 @@ public class FunRunActivity extends MapActivity
 	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
 	private Random myRandom; 
 	private int myOverlayIndex; 
+	private AlertDialog popup;
+	private GeoPoint lastKnownLocation; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 500;
-	private final static int MAX_RADIUS_METERS = 4000; 
+	public final static int MAX_RADIUS_METERS = 4000; 
+	public final static int MIN_RADIUS_METERS = 50; 
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -57,15 +66,18 @@ public class FunRunActivity extends MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.runlayout);
 
-		//***************GET VIEWS DEFINED IN XML******************
+		//***************GET VIEWS DEFINED IN XML***********************
 		runCategorySpinner = (Spinner) findViewById(R.id.runCategorySpinner); 
 		myMap = (MapView) findViewById(R.id.myMap); 
 		latText = (TextView) findViewById(R.id.latText); 
 		lngText = (TextView) findViewById(R.id.lngText); 
-		gpsButton = (Button) findViewById(R.id.gpsButton); 
+		whereAmIButton = (Button) findViewById(R.id.gpsButton); 
 		nextDestinationButton = (Button) findViewById(R.id.nextDestinationButton); 
 		zoomInButton = (Button) findViewById(R.id.buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.buttonZoomOut); 
+		parentContainer = (LinearLayout) findViewById(R.id.parentContainer); 
+		//********************POPUP DIALOG*******************************
+		popup = null; 
 		//******************DEFINE OTHER OBJECTS**************************
 		myLocOverlay = new MyLocationOverlay(this, myMap); 
 		myMapController = myMap.getController(); 
@@ -73,11 +85,12 @@ public class FunRunActivity extends MapActivity
 		myDirectionGetter = new DirectionGetter(); 
 		myRandom = new Random(System.currentTimeMillis()); //For randomly choosing a place from list 
 		myOverlayIndex = -1; 
+		lastKnownLocation = null; 
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
 		setupSpinner(); 
 		setupMap(); 
-		setupGpsButton(); 
+		setupWhereAmIButton(); 
 		setupNextButton(); 
 		setupZoomButtons(); 
 		loadCoords(); 
@@ -131,7 +144,8 @@ public class FunRunActivity extends MapActivity
 		latText.setText(latPoint.toString()); 
 		lngText.setText(lngPoint.toString()); 
 	
-		setupMap(latPoint, lngPoint); 
+		this.lastKnownLocation = new GeoPoint((int) (latPoint*1E6), (int) (lngPoint*1E6)); 
+
 	}
 
 	private void setupSpinner() {
@@ -149,13 +163,20 @@ public class FunRunActivity extends MapActivity
 	private void setupMap() {
 		myMap.getOverlays().add(myLocOverlay); 
 		myMapController.setZoom(DEFAULT_ZOOM); 
+		myLocOverlay.enableMyLocation(); 
+		myLocOverlay.enableCompass(); 	
+		myMap.postInvalidate(); 
 	}
 
-	private void setupGpsButton() {
-		gpsButton.setOnClickListener(new View.OnClickListener() {
+	private void setupWhereAmIButton() {
+		final MapController mc = myMapController; 
+		final GeoPoint loc = getLastKnownLoc(); 
+
+		whereAmIButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					loadCoords(); 
+					if (loc != null) 
+						mc.animateTo(loc); 
 				}
 			});	
 	}
@@ -171,16 +192,18 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void performGmapQuery() {
+		System.out.println("Entering performGmapQuery()..."); 
 		String search = (String)runCategorySpinner.getSelectedItem();
 		GeoPoint lastLocation = getLastKnownLoc();
+
+		System.out.println("Search:" + search + ",Last location:" + lastLocation); 
 
 		int currentRadiusMeters = DEFAULT_RADIUS_METERS; 
  
 		List<GooglePlace> foundPlaces = null; 
 
-		while ( currentRadiusMeters < MAX_RADIUS_METERS && (foundPlaces == null || foundPlaces.size() == 0)) {
+		while ( currentRadiusMeters <= MAX_RADIUS_METERS && (foundPlaces == null || foundPlaces.size() <= 0)) {
 			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters);
-			printListOfPlaces(foundPlaces);  
 			
 			
 			if (foundPlaces == null || foundPlaces.size() == 0) {
@@ -192,9 +215,14 @@ public class FunRunActivity extends MapActivity
 		
 		if (foundPlaces == null || foundPlaces.size() <= 0) {
 			//Output dialog indicating nothing was found...choose a new category
+			showPopup("Choose a new category", "No " + search + "s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
+					+"Please choose a different category and try again."); 
 			System.out.println("Places query: ZERO PLACES FOUND"); 
 			return; 
 		}
+		
+		//If we successfully got the places, print them out.
+		PlaceSearcher.printListOfPlaces(foundPlaces);  
 
 		//Choose a random place from list
 		GooglePlace runToPlace = foundPlaces.get(myRandom.nextInt(foundPlaces.size()));			
@@ -203,9 +231,11 @@ public class FunRunActivity extends MapActivity
 		List<GoogleLeg> directions = myDirectionGetter.getDirections(lastLocation, runToPlace.getGeoPoint());
 		//Figure out how to get directions (straightforward) and how to put them on map (not sure)
 
-		for (GoogleLeg gl: directions) { //Debugging...print all directions
-			System.out.println(gl); 
-		}	
+		assert (directions.size() ==1); //Only 1 leg
+
+		showAcceptRejectPopup("Run to:\n" + runToPlace.getName() + "?", 
+			"Place: " + runToPlace.getName() + "\n" +
+			"Distance: " + directions.get(0).getDistanceString() + " / " + directions.get(0).getDistanceMeters() + "m" );	
 
 		List<Overlay> overlays = myMap.getOverlays(); 
 
@@ -222,6 +252,11 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private GeoPoint getLastKnownLoc() {
+		
+		if (lastKnownLocation != null) {
+			return lastKnownLocation; 
+		}
+
 		Location l= null; 
 
 		try { 
@@ -232,7 +267,10 @@ public class FunRunActivity extends MapActivity
 			return null; 
 		}
 
-		return new GeoPoint((int) (l.getLatitude()*1E6), (int) (l.getLongitude()*1E6)); 
+		if (l!= null) {
+			lastKnownLocation = new GeoPoint((int) (l.getLatitude()*1E6), (int) (l.getLongitude()*1E6)); 
+		}
+		return lastKnownLocation; 
 	}
 
 	private void loadCoords() {
@@ -298,11 +336,39 @@ public class FunRunActivity extends MapActivity
 			});	
 	}
 
-	private static void printListOfPlaces(List<GooglePlace> places) {
-		for (GooglePlace gp: places) {
-			System.out.println(gp); 
-		}
+	private void showPopup(String title, String txt) {
+		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
+		myBuilder.setMessage(txt); 
+		myBuilder.setTitle(title); 
+		myBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+           }
+       }); 
+
+		popup = myBuilder.create(); 
+		popup.show(); 
 	}
 
+	private void showAcceptRejectPopup(String title, String txt) {
+		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
+		myBuilder.setMessage(txt); 
+		myBuilder.setTitle(title); 
+
+		myBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+           }
+       }); 
+
+		myBuilder.setNegativeButton("Next Place!", new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+           }
+       }); 
+
+		popup = myBuilder.create(); 
+		popup.show(); 
+	}
 }
 

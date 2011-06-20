@@ -21,7 +21,7 @@ public class FunRunOverlay extends Overlay {
 	// Final Fields
 	// ===========================================================
 	/** The tip of the pin is located at x=5, y=29 */
-	private final android.graphics.Point PIN_HOTSPOT = new android.graphics.Point(5,29);
+	//private final android.graphics.Point PIN_HOTSPOT = new android.graphics.Point(5,29);
 	
 
 	// ===========================================================
@@ -46,7 +46,7 @@ public class FunRunOverlay extends Overlay {
 		this.pathPaint = new Paint();
 		this.pathPaint.setAntiAlias(true);
 	
-		System.out.println(map.getContext()); 
+		//System.out.println(map.getContext()); 
 		
 	//	PIN_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_blue);
 	//	PIN_END = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_red);
@@ -67,7 +67,7 @@ public class FunRunOverlay extends Overlay {
 	public void draw(Canvas canvas, MapView map, boolean b) {
 		super.draw(canvas, map, b);
 		
-		System.out.println("In draw method..."); 
+		//System.out.println("In draw method..."); 
 		//Get a Projection object to convert between lat/lng --> x/y
 		Projection pro = theMapView.getProjection(); 
 
@@ -84,7 +84,7 @@ public class FunRunOverlay extends Overlay {
 		GeoPoint endPoint = directions.get(directions.size()-1).getLastPoint(); 
 
 		pro.toPixels(startPoint, screenCoords); 
-		System.out.println("Start point pixels: " + screenCoords); 
+		//System.out.println("Start point pixels: " + screenCoords); 
 
 		/* Create a path-that will be filled with map-points 
 		 * and will be drawn to the canvas in the end*/

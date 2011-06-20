@@ -35,6 +35,10 @@ public class GoogleLeg {
 	public GeoPoint getLastPoint() {
 		return steps.get(steps.size()-1).getEnd(); 
 	}
+	
+	public String getDistanceString() {return distanceString;}
+
+	public int getDistanceMeters() {return distanceMeters; }
 
 	@Override
 	public String toString() {

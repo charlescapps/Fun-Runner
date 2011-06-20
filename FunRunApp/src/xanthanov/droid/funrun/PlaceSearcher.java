@@ -150,4 +150,11 @@ public class PlaceSearcher {
 
 		return new GooglePlace(name, new GeoPoint(latMicroDegrees, lngMicroDegrees), iconUrl);	
 	}
+
+	public static void printListOfPlaces(List<GooglePlace> places) {
+		for (GooglePlace gp: places) {
+			System.out.println(gp); 
+		}
+	}
+
 }
