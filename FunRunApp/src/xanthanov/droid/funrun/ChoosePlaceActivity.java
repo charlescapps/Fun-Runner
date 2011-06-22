@@ -17,6 +17,7 @@ import android.content.Context;
 import android.location.LocationManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.content.Intent;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -417,10 +418,11 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private void setupStartRunningButton() {
+		final Intent i = new Intent(this, FunRunActivity.class); 
 		startRunningButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					
+					startActivity(i); 
 				}
 			});
 	}

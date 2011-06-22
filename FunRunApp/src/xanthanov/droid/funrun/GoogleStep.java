@@ -11,6 +11,7 @@ public class GoogleStep {
 	int distanceMeters; 
 	String distanceString; 
 	String htmlInstructions; 
+	boolean completed; 
 
 	public GoogleStep(GeoPoint start, GeoPoint end, int distanceMeters, String distanceString, String html) {
 		this.start = start; 
@@ -18,6 +19,7 @@ public class GoogleStep {
 		this.distanceMeters = distanceMeters; 
 		this.distanceString = distanceString; 
 		this.htmlInstructions = html; 
+		this.completed = false; 
 	}
 
 	public GeoPoint getStart() {return start; }
@@ -25,6 +27,8 @@ public class GoogleStep {
 	public int getDistanceMeters() {return distanceMeters;}
 	public String getDistanceString() {return distanceString;}
 	public String getHtmlInstructions() {return htmlInstructions;}
+	public boolean isComplete() {return completed;}
+	public void completeStep() {completed = true; }
 
 	public String toString() {
 		return "Start:" + start + ",End:" + end + ",dist:" + distanceMeters + "distStr:"+distanceString; 

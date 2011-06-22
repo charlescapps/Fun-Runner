@@ -5,18 +5,9 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<TextView android_id="@+id/html_directions" 
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		>
-		<Button 
-			android:id="@+id/run_whereAmIButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Center on me"
-			/>
-	</LinearLayout>
+		android:layout_height="wrap_content"/>	
 	<RelativeLayout
 		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"
@@ -38,6 +29,15 @@
 			>
 		<Button android:id="@+id/run_buttonZoomOut" style="?android:attr/buttonStyleSmall" android:text="Zoom (-)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 		<Button android:id="@+id/run_buttonZoomIn" style="?android:attr/buttonStyleSmall" android:text="Zoom (+)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		</LinearLayout>
+		<LinearLayout android:id="@+id/run_centerButtons"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			>
+		<Button android:id="@+id/run_buttonZoomToRoute" style="?android:attr/buttonStyleSmall" android:text="Zoom to route" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonCenterOnMe" style="?android:attr/buttonStyleSmall" android:text="Center on me" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 		</LinearLayout>
 	</RelativeLayout>
 </LinearLayout>

@@ -23,27 +23,30 @@ public final class R {
         public static final int stick_guy_run2=0x7f020006;
     }
     public static final class id {
-        public static final int aboutButton=0x7f060014;
-        public static final int buttonZoomIn=0x7f060010;
-        public static final int buttonZoomOut=0x7f06000f;
-        public static final int gpsButton=0x7f06000a;
-        public static final int myMap=0x7f06000d;
-        public static final int newRunButton=0x7f060012;
-        public static final int nextDestinationButton=0x7f06000b;
-        public static final int parentContainer=0x7f060007;
-        public static final int relLayout=0x7f06000c;
-        public static final int runCategorySpinner=0x7f060009;
+        public static final int aboutButton=0x7f060017;
+        public static final int buttonZoomIn=0x7f060013;
+        public static final int buttonZoomOut=0x7f060012;
+        public static final int gpsButton=0x7f06000d;
+        public static final int html_directions=0x7f060001;
+        public static final int myMap=0x7f060010;
+        public static final int newRunButton=0x7f060015;
+        public static final int nextDestinationButton=0x7f06000e;
+        public static final int parentContainer=0x7f06000a;
+        public static final int relLayout=0x7f06000f;
+        public static final int runCategorySpinner=0x7f06000c;
+        public static final int run_buttonCenterOnMe=0x7f060009;
         public static final int run_buttonZoomIn=0x7f060006;
         public static final int run_buttonZoomOut=0x7f060005;
+        public static final int run_buttonZoomToRoute=0x7f060008;
+        public static final int run_centerButtons=0x7f060007;
         public static final int run_myMap=0x7f060003;
         public static final int run_parentContainer=0x7f060000;
         public static final int run_relLayout=0x7f060002;
-        public static final int run_whereAmIButton=0x7f060001;
         public static final int run_zoomButtonsLayout=0x7f060004;
-        public static final int spinnerTitle=0x7f060008;
-        public static final int startRunningButton=0x7f060011;
-        public static final int viewStatsButton=0x7f060013;
-        public static final int zoomButtonsLayout=0x7f06000e;
+        public static final int spinnerTitle=0x7f06000b;
+        public static final int startRunningButton=0x7f060014;
+        public static final int viewStatsButton=0x7f060016;
+        public static final int zoomButtonsLayout=0x7f060011;
     }
     public static final class layout {
         public static final int runlayout=0x7f030000;

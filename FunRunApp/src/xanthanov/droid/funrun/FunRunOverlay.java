@@ -44,7 +44,7 @@ public class FunRunOverlay extends Overlay {
 		this.directions = directions;
 		this.pathPaint = new Paint();
 		if (directions != null) {
-			this.currentLoc = directions.get(0).getFirstPoint();
+			this.currentLoc = directions.getFirstPoint();
 		}
 		else {
 			this.currentLoc = null; 

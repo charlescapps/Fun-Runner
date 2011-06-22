@@ -10,10 +10,12 @@ public class GoogleDirections {
 	private List<GoogleLeg> legs; 
 	private GeoPoint swBound;
 	private GeoPoint neBound;  
+	private boolean completed; 
 
 	public GoogleDirections() {
 		legs = new ArrayList<GoogleLeg>();
 		swBound = neBound = null; 
+		completed = false; 
 	}
 
 	public List<GoogleLeg> getLegs() {return legs;}
@@ -22,6 +24,8 @@ public class GoogleDirections {
 	public void setSwBound(GeoPoint b1) {swBound = b1;}
 	public int size() {return legs.size();}
 	public GoogleLeg get(int i) {return legs.get(i);}
+	public boolean isCompleted() {return completed;}
+	public void complete() {this.completed = true;} 
 
 	public GeoPoint getSwBound() {return swBound;}
 	public GeoPoint getNeBound() {return neBound;}
