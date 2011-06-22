@@ -56,7 +56,7 @@ public class ChoosePlaceActivity extends MapActivity
 	//****************Temporary storage...seemingly necessary since the dialogs are asynchronous!*****
 	private List<GooglePlace> nearbyPlaces; 
 	private List<GooglePlace> remainingPlaces; 
-	private List<GoogleLeg> currentDirections; 
+	private GoogleDirections currentDirections; 
 	private GooglePlace currentRunToPlace;  
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 

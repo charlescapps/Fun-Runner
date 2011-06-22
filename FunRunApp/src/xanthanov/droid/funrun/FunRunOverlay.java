@@ -27,7 +27,7 @@ public class FunRunOverlay extends Overlay {
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
-	private List<GoogleLeg> directions = null;
+	private GoogleDirections directions = null;
 	private GeoPoint currentLoc = null;
 	
 	private Bitmap PIN_START = null;
@@ -39,7 +39,7 @@ public class FunRunOverlay extends Overlay {
 	private Bitmap CURRENT_STICK_GUY = null; 
 	private int frameNo; 
 	
-	public FunRunOverlay(MapView map, List<GoogleLeg> directions) {
+	public FunRunOverlay(MapView map, GoogleDirections directions) {
 		this.theMapView = map;
 		this.directions = directions;
 		this.pathPaint = new Paint();
@@ -70,7 +70,7 @@ public class FunRunOverlay extends Overlay {
 		this.currentLoc = loc; 
 	}	
 
-	public void updateCurrentDirections(List<GoogleLeg> directions) {
+	public void updateCurrentDirections(GoogleDirections directions) {
 		this.directions = directions;
 	}
 
@@ -93,7 +93,6 @@ public class FunRunOverlay extends Overlay {
 		// holders of mapped coords...
 		Point screenCoords = new Point();
 
-
 		//If directions is null, return
 		if (directions != null) {
 			//**********************SET UP PATH***************************
@@ -111,7 +110,7 @@ public class FunRunOverlay extends Overlay {
 			thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
 			
 			/* Retrieve distinct GeoPoints of the route, w/o the redundancies. */
-			List<GeoPoint> route = DirectionGetter.legsToPoints(directions);
+			List<GeoPoint> route = directions.getPathPoints();
 			
 			if(route == null || route.size() == 0)
 				return;

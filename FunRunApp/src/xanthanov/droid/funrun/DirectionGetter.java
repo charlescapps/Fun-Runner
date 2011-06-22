@@ -28,7 +28,7 @@ public class DirectionGetter {
 		//Meh?
 	}
 
-	public List<GoogleLeg> getDirections(GeoPoint currentLocation, GeoPoint destination) {
+	public GoogleDirections getDirections(GeoPoint currentLocation, GeoPoint destination) {
 		URL url= null; 
 		HttpURLConnection conn= null; 
 
@@ -65,17 +65,22 @@ public class DirectionGetter {
 		return locStr;
 	}
 	
-	private List<GoogleLeg> parseJsonResult(BufferedReader in) throws GmapException {
+	private GoogleDirections parseJsonResult(BufferedReader in) throws GmapException {
 		
 		String jsonString = new String(); 
 		String aLine = null; 
-		List<GoogleLeg> directions = new ArrayList<GoogleLeg>(); 
+		GoogleDirections directions = new GoogleDirections(); 
 		String status = null; 
 		JSONObject jObj = null; 
+		//The bounds returned by Google for the route
+		double swLat = 0.0; 
+		double swLng = 0.0; 
+		double neLat = 0.0; 
+		double neLng = 0.0; 
 
 		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
 			while ((aLine = in.readLine()) != null) {
-			//	System.out.println(aLine);
+				System.out.println(aLine);
 				jsonString+=aLine;  
 			}
 		}
@@ -114,6 +119,14 @@ public class DirectionGetter {
 			double endLat = 0.0; 
 			double endLng = 0.0;  
 
+			swLat = theRoute.getJSONObject("bounds").getJSONObject("southwest").getDouble("lat"); 
+			swLng = theRoute.getJSONObject("bounds").getJSONObject("southwest").getDouble("lng"); 
+			swLat = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lat"); 
+			swLng = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lng"); 
+
+			directions.setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
+			directions.setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
+
 			for (int i = 0; i < legs.length(); i++) {
 				currentLeg = legs.getJSONObject(i);  //Get the current leg, the steps it contains, and the aggregate distance info for the leg
 				currentStepsArray = currentLeg.getJSONArray("steps"); 
@@ -151,23 +164,6 @@ public class DirectionGetter {
 		return directions; 
 	} 
 
-	//Method to take a list of legs and get back a simple list of points to draw!
-	public static List<GeoPoint> legsToPoints(List<GoogleLeg> legs) {
-		List<GeoPoint> points = new ArrayList<GeoPoint>(); 
-		GoogleLeg currentLeg = null; 
-
-		for (int i = 0; i < legs.size(); i++) {
-			currentLeg = legs.get(i); 
-
-			for (int j = 0; j < currentLeg.size(); j++) {
-				if (i==0 && j==0) {//If it's the very first leg/step, must add start point
-					points.add(currentLeg.get(j).getStart()); 
-				}
-				points.add(currentLeg.get(j).getEnd()); //Add end point of step
-			} 
-		}	
-		return points; 
-	}
 
 
 }
