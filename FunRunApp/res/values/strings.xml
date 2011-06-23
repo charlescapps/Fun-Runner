@@ -2,6 +2,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">FunRunApp</string>
 	<string name="spinner_prompt">Choose a Category</string>
+	<string name="show_directions">Show directions</string>
+	<string name="hide_directions">Hide directions</string>
 
 	<string name="park">Park</string>
 	<string name="cafe">Cafe</string>

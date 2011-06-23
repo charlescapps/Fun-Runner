@@ -50,7 +50,6 @@ public class ChoosePlaceActivity extends MapActivity
 	private TextView emptySpinnerView; 
 	private PlaceSearcher myPlaceSearcher; //Class to do HTTP request to get place data from google maps API
 	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
-	private Random myRandom; 
 	private FunRunOverlay myFunRunOverlay; 
 	private AlertDialog popup;
 	private GeoPoint lastKnownLocation; 
@@ -88,7 +87,6 @@ public class ChoosePlaceActivity extends MapActivity
 		myMapController = myMap.getController(); 
 		myPlaceSearcher = new PlaceSearcher(this.getResources()); 
 		myDirectionGetter = new DirectionGetter(); 
-		myRandom = new Random(System.currentTimeMillis()); //For randomly choosing a place from list 
 		lastKnownLocation = null;
 		currentDirections = null; 
 		currentRunToPlace = null; 
@@ -103,7 +101,6 @@ public class ChoosePlaceActivity extends MapActivity
 		setupNextButton(); 
 		setupZoomButtons(); 
 		setupStartRunningButton(); 
-		loadCoords(); 
 		
     }
 	
@@ -116,7 +113,7 @@ public class ChoosePlaceActivity extends MapActivity
 		super.onResume();
 		myLocOverlay.enableMyLocation(); 
 		myLocOverlay.enableCompass(); 	
-		myLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
+		myLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 	}
 	
 	@Override 
@@ -125,15 +122,6 @@ public class ChoosePlaceActivity extends MapActivity
 		myLocManager.removeUpdates(myLocListener); 
 		myLocOverlay.disableMyLocation(); 
 		myLocOverlay.disableCompass();
-	}
-
-	private void startRunning() {
-
-		myFunRunOverlay.updateCurrentDirections(currentDirections); 
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		
-		myMap.postInvalidate();
-
 	}
 
 	private void setupLocListener() {
@@ -174,11 +162,6 @@ public class ChoosePlaceActivity extends MapActivity
 		runCategorySpinner.setAdapter(adapter); 
 		
 		runCategorySpinner.setOnItemSelectedListener(new FunRunOnItemSelected());
-
-		/*emptySpinnerView = new TextView(this);
-		emptySpinnerView.setText("Choose a Fun Category"); 
-		runCategorySpinner.setEmptyView(emptySpinnerView); 
-		*/
 	}
 
 	private void setupMap() {
@@ -217,7 +200,7 @@ public class ChoosePlaceActivity extends MapActivity
 						nearbyPlaces = remainingPlaces = null; 
 						return; 
 					}
-					chooseRandomPlace();
+					getNextPlace();
 				}
 			});	
 	}
@@ -263,7 +246,7 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 	}
 
-	private void chooseRandomPlace() {
+	private void getNextPlace() {
 
 		if (nearbyPlaces == null || nearbyPlaces.size() == 0 || remainingPlaces == null ) {
 			//There *should* be an asynchronous dialog alerting the user to this fact!
@@ -319,51 +302,6 @@ public class ChoosePlaceActivity extends MapActivity
 		return lastKnownLocation; 
 	}
 
-	private void loadCoords() {
-		boolean isGpsEnabled = false; 
-		try {
-			isGpsEnabled = myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER); 
-			System.out.println(isGpsEnabled ? "GPS Status = ENABLED ": "GPS Staus = DISABLED"); 
-		}
-		catch (Exception e) {
-			System.out.println("Exception of type: " + e.getClass().getName()); 
-			e.printStackTrace();
-			return;   
-		}
-
-		if (!isGpsEnabled) {
-			System.out.println("Gps not enabled, returning..."); 
-			return; 
-		}
-		Double latPoint=0.0; 
-		Double lngPoint=0.0; 
-		try {
-			Location l = myLocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); 
-			if (l==null) {
-				System.out.println("Last Known Location is NULL, returning...");
-				return; 
-			}		
-			else {
-				latPoint= l.getLatitude(); 	
-				lngPoint= l.getLongitude(); 	
-			}
-		}
-		catch(Exception e) {
-			System.out.println("Failed to get Last known location:"); 
-			e.printStackTrace(); 
-			return;
-		}
-
-		setupMap(latPoint, lngPoint); 
-	}
-
-	private void setupMap(Double latPt, Double lngPt) {
-		GeoPoint myLocation = new GeoPoint((int) (latPt*1E6), (int) (lngPt*1E6)); 
-
-		myMapController.setCenter(myLocation); 
-		
-	}
-
 	private void setupZoomButtons() {
 		zoomInButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -397,18 +335,22 @@ public class ChoosePlaceActivity extends MapActivity
 		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
 		myBuilder.setMessage(txt); 
 		myBuilder.setTitle(title); 
+		final FunRunApplication fra = ((FunRunApplication)this.getApplicationContext());
 
 		myBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				startRunning(); 
+				fra.setRunDirections(currentDirections); 
+				fra.setRunPlace(currentRunToPlace); 
+				myFunRunOverlay.updateCurrentDirections(currentDirections); 
+				myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
            }
        }); 
 
 		myBuilder.setNegativeButton("Next Place!", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				chooseRandomPlace(); 
+				getNextPlace(); 
            }
        }); 
 
@@ -419,9 +361,15 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void setupStartRunningButton() {
 		final Intent i = new Intent(this, FunRunActivity.class); 
+		final FunRunApplication fra = ((FunRunApplication)this.getApplicationContext());
+
 		startRunningButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					if (fra.getRunDirections() == null || fra.getRunPlace() == null) {
+						showPopup("No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
+						return; 
+					}
 					startActivity(i); 
 				}
 			});

@@ -1,4 +1,3 @@
-// Created by plusminus on 14:00:27 - 30.01.2008
 package xanthanov.droid.funrun;
 
 import android.graphics.Bitmap;
@@ -18,17 +17,27 @@ import com.google.android.maps.MapView;
 public class FunRunOverlay extends Overlay {
 	
 	//********************CONSTANTS***************************
-	private final static int paintAlpha = 200; 
-	private final static int paintRed = 220; 
-	private final static int paintGreen = 100; 
-	private final static int paintBlue = 100; 
-	private final static Point PIN_HOTSPOT = new Point(5,29);
+	private final static int alphaDefault = 200; 
+	private final static int redDefault = 220; 
+	private final static int greenDefault = 100; 
+	private final static int blueDefault = 100; 
+
+	private final static int alphaComplete = 200; 
+	private final static int redComplete = 220; 
+	private final static int greenComplete = 100; 
+	private final static int blueComplete = 100; 
+
+	private final static float STROKE_WIDTH = 4.0f; 
+	private final static Paint.Style PAINT_STYLE = Paint.Style.STROKE; 
+
+	private final static Point PIN_OFFSET = new Point(5,29);
 	private final static Point STICK_GUY_OFFSET = new Point(15,27);
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
 	private GoogleDirections directions = null;
 	private GeoPoint currentLoc = null;
+	private GeoPoint currentStepPoint = null; 
 	
 	private Bitmap PIN_START = null;
 	private Bitmap PIN_END = null;
@@ -74,23 +83,21 @@ public class FunRunOverlay extends Overlay {
 		this.directions = directions;
 	}
 
+	public void updateStepPoint(GeoPoint pt) {
+		this.currentStepPoint = pt;
+	}
+
 	@Override
 	public void draw(Canvas canvas, MapView map, boolean b) {
 		super.draw(canvas, map, b);
-		
-		if (++frameNo %10 == 0) { //Every 20 times draw is called alternate the stick figure we draw
-			CURRENT_STICK_GUY = (CURRENT_STICK_GUY == STICK_GUY_RUN1 ? STICK_GUY_RUN2 : STICK_GUY_RUN1);  
-		}
 
-		//System.out.println("In draw method..."); 
 		//Get a Projection object to convert between lat/lng --> x/y
 		Projection pro = theMapView.getProjection(); 
 
-		/* Reset our paint. */
-		this.pathPaint.setStrokeWidth((float)4.0);
-		this.pathPaint.setARGB(paintAlpha, paintRed, paintGreen, paintBlue);
+		//Reset paint
+		this.pathPaint.setStrokeWidth(STROKE_WIDTH);
+		this.pathPaint.setARGB(alphaDefault, redDefault, greenDefault, blueDefault);
 
-		// holders of mapped coords...
 		Point screenCoords = new Point();
 
 		//If directions is null, return
@@ -128,27 +135,17 @@ public class FunRunOverlay extends Overlay {
 			}
 			
 			//Use Stroke style
-			this.pathPaint.setStyle(Paint.Style.STROKE);
+			this.pathPaint.setStyle(PAINT_STYLE);
 
 			/* Draw the actual route to the canvas. */
 			canvas.drawPath(thePath, this.pathPaint);
 			
-			/* Draw start of route.*/
-			/*
-			pro.toPixels(startPoint, screenCoords);
-			
-			canvas.drawBitmap(PIN_START, 
-					screenCoords.x - PIN_HOTSPOT.x, 
-					screenCoords.y - PIN_HOTSPOT.y, 
-					pathPaint);
-			*/
-
 			/* Draw end of route */ 
 			pro.toPixels(endPoint, screenCoords);
 			
 			canvas.drawBitmap(PIN_END, 
-					screenCoords.x - PIN_HOTSPOT.x, 
-					screenCoords.y - PIN_HOTSPOT.y, 
+					screenCoords.x - PIN_OFFSET.x, 
+					screenCoords.y - PIN_OFFSET.y, 
 					pathPaint);
 		}
 
@@ -168,7 +165,6 @@ public class FunRunOverlay extends Overlay {
 		}
 
 		/* Get the height of the underlying MapView.*/
-		int mapViewHeight = theMapView.getHeight();
 		
 		/* Now some real fancy stuff !*/
 		/* Draw a info-menu for the route.*/

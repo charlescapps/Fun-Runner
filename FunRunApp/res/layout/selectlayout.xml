@@ -23,16 +23,18 @@
 		android:gravity="center_horizontal"
 		>
 		<Button 
-			android:id="@+id/gpsButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Center on me"
-			/>
-		<Button 
 			android:id="@+id/nextDestinationButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Next Place"
+			android:text="Find a Place!"
+			/>
+		<Button 
+			android:id="@+id/startRunningButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Start Running!"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
 			/>
 	</LinearLayout>
 	<RelativeLayout
@@ -58,12 +60,12 @@
 			<Button android:id="@+id/buttonZoomIn" style="?android:attr/buttonStyleSmall" android:text="Zoom (+)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 		</LinearLayout>
 		<Button 
-			android:id="@+id/startRunningButton"
-			android:layout_width="fill_parent"
+			android:id="@+id/gpsButton"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Start Running!"
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
+			android:text="Center on me"
 			/>
 	</RelativeLayout>
 </LinearLayout>

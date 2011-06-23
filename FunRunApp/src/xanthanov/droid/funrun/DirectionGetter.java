@@ -80,7 +80,7 @@ public class DirectionGetter {
 
 		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
 			while ((aLine = in.readLine()) != null) {
-				System.out.println(aLine);
+	//			System.out.println(aLine);
 				jsonString+=aLine;  
 			}
 		}
@@ -121,9 +121,12 @@ public class DirectionGetter {
 
 			swLat = theRoute.getJSONObject("bounds").getJSONObject("southwest").getDouble("lat"); 
 			swLng = theRoute.getJSONObject("bounds").getJSONObject("southwest").getDouble("lng"); 
-			swLat = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lat"); 
-			swLng = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lng"); 
+			neLat = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lat"); 
+			neLng = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lng"); 
 
+			System.out.println("Southwest bound: " + swLat + "," + swLng); 	
+			System.out.println("Northeast bound: " + neLat + "," + neLng); 	
+		
 			directions.setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
 			directions.setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
 

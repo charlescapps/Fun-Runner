@@ -5,9 +5,27 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-	<TextView android_id="@+id/html_directions" 
+<!--
+	<RelativeLayout
+		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>	
+		android:layout_height="wrap_content"
+		>
+		<Button 
+			android:id="@+id/showDirectionsButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:text="@string/show_directions"
+			/>
+	</RelativeLayout>
+-->
+	<TextView android:id="@+id/directionsTextView" 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"	
+		android:textSize="30sp"
+		android:text=""
+		/>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"
