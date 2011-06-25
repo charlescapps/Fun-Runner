@@ -6,16 +6,17 @@
     android:layout_height="fill_parent"
     >
 		<TextView  
-			android:textSize="25sp"
+			android:textSize="35sp"
 			android:textStyle="bold"
-			android:shadowColor="#ffaaaa"
-			android:shadowRadius="5.0"
-			android:shadowDx="2.5"
-			android:shadowDy="2.5"
+			android:textColor="#aaaaff"
+			android:shadowColor="#5555aa"
+			android:shadowRadius="30.0"
+			android:shadowDx="5.5"
+			android:shadowDy="5.5"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content" 
 			android:layout_gravity="center_horizontal"
-			android:text="The Fun Run Planner!"
+			android:text="The Fun Run App"
 			/>
 		<Button 
 			android:id="@+id/newRunButton"
@@ -25,6 +26,7 @@
 			android:layout_marginLeft="40px"
 			android:layout_marginRight="40px"
 			android:textSize="20sp"
+			android:textColor="#222299"
 			android:textStyle="bold|italic"
 			android:text="Start a new run"
 			/>
@@ -36,6 +38,7 @@
 			android:layout_marginLeft="40px"
 			android:layout_marginRight="40px"
 			android:textSize="20sp"
+			android:textColor="#222299"
 			android:textStyle="bold|italic"
 			android:text="View your stats"
 			/>
@@ -47,6 +50,7 @@
 			android:layout_marginLeft="40px"
 			android:layout_marginRight="40px"
 			android:textSize="20sp"
+			android:textColor="#222299"
 			android:textStyle="bold|italic"
 			android:text="About"
 			/>

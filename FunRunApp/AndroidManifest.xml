@@ -6,24 +6,25 @@
 	<uses-permission android:name="android.permission.INTERNET"/>
 	<uses-permission android:name="android.permission.ACCESS_GPS"/>
 	<uses-permission android:name="android.permission.ACCESS_LOCATION"/>
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
 	<uses-permission android:name="android.permission.SET_DEBUG_APP"/>
 	<uses-permission android:name="android.permission.WRITE_GSERVICES"/>
 	<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+	<uses-permission android:name="android.permission.VIBRATE"/>
     <application android:name=".FunRunApplication" android:label="@string/app_name">
 		<uses-library android:name="com.google.android.maps" />
         <activity android:name=".FunRunTitle"
-                  android:label="Fun Run App"
+                  android:label="The Fun Run App"
 					android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		<activity android:name=".ChoosePlaceActivity" android:screenOrientation="portrait" android:label="Find your next Fun Destination" />
-		<activity android:name=".FunRunActivity" android:screenOrientation="portrait" android:label="Running..................................................................." />
+		<activity android:name=".ChoosePlaceActivity" android:screenOrientation="portrait" android:label="Find a destination" />
+		<activity android:name=".FunRunActivity" android:screenOrientation="portrait" android:label="RUNNING...>>>...>>>...RUNNING...>>>...>>>..." />
+		<activity android:name=".StepCompleteActivity" android:screenOrientation="portrait" android:label="Step Complete! Time for new directions." />
     </application>
 </manifest> 

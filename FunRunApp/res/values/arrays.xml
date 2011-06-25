@@ -9,6 +9,7 @@
         <item>@string/food_cart</item>
         <item>@string/book_store</item>
 		<item>@string/shopping_mall</item>
+		<item>@string/pizza</item>
 		<item>@string/brew_pub</item>
 		<item>@string/clothing_store</item>
 		<item>@string/bowling_alley</item>

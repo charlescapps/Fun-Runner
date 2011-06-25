@@ -1,5 +1,8 @@
 package xanthanov.droid.funrun; 
 
+import xanthanov.droid.gplace.*;
+import xanthanov.droid.funrun.exceptions.GmapException;
+
 import java.util.HashMap; 
 import java.util.List; 
 import java.util.ArrayList; 
@@ -127,8 +130,6 @@ public class DirectionGetter {
 			System.out.println("Southwest bound: " + swLat + "," + swLng); 	
 			System.out.println("Northeast bound: " + neLat + "," + neLng); 	
 		
-			directions.setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
-			directions.setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
 
 			for (int i = 0; i < legs.length(); i++) {
 				currentLeg = legs.getJSONObject(i);  //Get the current leg, the steps it contains, and the aggregate distance info for the leg
@@ -163,6 +164,8 @@ public class DirectionGetter {
 			e.printStackTrace(); 
 			return null; 
 		}
+		directions.get(0).setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
+		directions.get(0).setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
 
 		return directions; 
 	} 

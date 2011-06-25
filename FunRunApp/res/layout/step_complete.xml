@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/parentContainer"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+		<TextView  android:id="@+id/stepCompleteTitle"
+			android:textSize="25sp"
+			android:textStyle="bold"
+			android:shadowColor="#ffaaaa"
+			android:shadowRadius="5.0"
+			android:shadowDx="2.5"
+			android:shadowDy="2.5"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:layout_gravity="center_horizontal"
+			android:text="Step Complete!"/>
+		<TextView android:id="@+id/stepCompleteTextView"	
+			android:layout_width = "fill_parent"
+			android:layout_height = "wrap_content"/>
+		<TableLayout android:id="@+id/timeTable"
+			android:layout_width = "fill_parent"
+			android:layout_height = "wrap_content">
+			<TableRow android:id="@+id/stepTimeLayout"
+				android:layout_width = "fill_parent"
+				android:layout_height = "wrap_content"
+				android:padding="5sp">
+				<TextView android:id="@+id/stepTimeTitle"	
+					android:layout_width = "wrap_content"
+					android:layout_height = "wrap_content"
+					android:gravity="right"
+					android:text="Step time:"/>
+				<TextView android:id="@+id/stepTimeTextView"	
+					android:layout_width = "wrap_content"
+					android:layout_height = "wrap_content"/>
+			</TableRow>
+			<TableRow android:id="@+id/elapsedTimeToPlaceLayout"
+				android:layout_width = "fill_parent"
+				android:layout_height = "wrap_content"
+				android:padding="5sp">
+				<TextView android:id="@+id/elapsedTimeToPlaceTitle"	
+					android:layout_width = "wrap_content"
+					android:layout_height = "wrap_content"
+					android:gravity="right"
+					android:text="Elapsed time on leg:"/>
+				<TextView android:id="@+id/elapsedTimeToPlaceTextView"	
+					android:layout_width = "wrap_content"
+					android:layout_height = "wrap_content"/>
+			</TableRow>
+			<TableRow android:id="@+id/totalElapsedTimeLayout"
+				android:layout_width = "fill_parent"
+				android:layout_height = "wrap_content"
+				android:padding = "5sp">
+				<TextView android:id="@+id/totalElapsedTimeTitle"	
+					android:layout_width = "wrap_content"
+					android:layout_height = "wrap_content"
+					android:gravity="right"
+					android:text="Elapsed time on run:"/>
+				<TextView android:id="@+id/totalElapsedTimeTextView"	
+					android:layout_width = "wrap_content"
+					android:layout_height = "wrap_content"/>
+			</TableRow>
+		</TableLayout>
+		<Button 
+			android:id="@+id/nextDirectionsButton"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textSize="20sp"
+			android:textStyle="bold|italic"
+			android:text="Get next directions"/>
+</LinearLayout>
+

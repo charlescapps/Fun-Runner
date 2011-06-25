@@ -5,43 +5,35 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-	<TextView
-		android:id="@+id/spinnerTitle"
+	<TextView android:id="@+id/spinnerTitle"
 		android:layout_width ="fill_parent"
 		android:layout_height = "wrap_content"
-		android:text="Choose a Place Category:"
-		/>
-	<Spinner
-		android:id="@+id/runCategorySpinner"
+		android:textSize = "20sp"
+		android:textStyle="bold"
+		android:text="Choose a Category:"/>
+	<Spinner android:id="@+id/runCategorySpinner"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:prompt="@string/spinner_prompt" 
-		/>
+		android:textSize="20sp"
+		android:textStyle="bold"
+		android:prompt="@string/spinner_prompt" />
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		>
+		android:gravity="center_horizontal">
 		<Button 
 			android:id="@+id/nextDestinationButton"
-			android:layout_width="wrap_content"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="Find a Place!"
-			/>
-		<Button 
-			android:id="@+id/startRunningButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Start Running!"
-			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true"
-			/>
+			android:textSize="20sp"
+			android:textColor="#222299"
+			android:textStyle="bold|italic"
+			android:text="Find Nearby Places"/>
 	</LinearLayout>
 	<RelativeLayout
 		android:id="@+id/relLayout"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		>
+		android:layout_height="wrap_content">
 		<view class="com.google.android.maps.MapView"
 			android:id="@+id/myMap"
 			android:layout_width="wrap_content"

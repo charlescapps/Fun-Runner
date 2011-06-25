@@ -1,5 +1,8 @@
 package xanthanov.droid.funrun;
 
+import xanthanov.droid.gplace.*;
+import xanthanov.droid.xantools.*;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface; 
@@ -10,10 +13,11 @@ import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.LinearLayout;
 import android.content.Context; 
-import android.location.LocationManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.content.Intent;
+import android.app.PendingIntent;
 import android.text.Html; 
 import android.text.Spanned; 
 
@@ -30,7 +34,6 @@ import com.google.android.maps.Overlay;
 
 public class FunRunActivity extends MapActivity
 {
-
 	//***********VIEW OBJECTS DEFINED IN XML**********************
 	private LinearLayout parentContainer; 
 	private Button centerOnMeButton; 
@@ -38,30 +41,29 @@ public class FunRunActivity extends MapActivity
 	private Button zoomInButton;
 	private Button zoomOutButton;
 	private Button zoomToRouteButton;
-	private Button showDirectionsButton; 
 	private TextView directionsTextView; 
+	private TextView chosenPlaceTextView; 
 	//*******************OTHER OBJECTS****************************
-	private FunRunApplication fra; 
+	private FunRunApplication funRunApp; 
 	private MyLocationOverlay myLocOverlay;
 	private MapController myMapController; 
 	private LocationListener myLocListener; 
-	private LocationManager myLocManager;
 	private FunRunOverlay myFunRunOverlay; 
-	private AlertDialog popup;
 	private GeoPoint lastKnownLocation; 
 	private GoogleDirections runDirections; 
-	private GooglePlace runPlace;  
+	private GoogleLeg currentLeg; 
 	private GoogleStep currentStep; 
+	private GooglePlace runPlace;  
 	private Spanned htmlInstructions; 
-	private String showDirections; 
-	private String hideDirections; 
+	private DroidLoc droidLoc; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static int ACCEPT_RADIUS_METERS = 50; 
+	public final static float ACCEPT_RADIUS_METERS = 25.0f; 
+	public final static float PATH_INCREMENT_METERS = 50.0f; 
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -76,42 +78,56 @@ public class FunRunActivity extends MapActivity
 		zoomToRouteButton = (Button) findViewById(R.id.run_buttonZoomToRoute); 
 		zoomInButton = (Button) findViewById(R.id.run_buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.run_buttonZoomOut); 
-//		showDirectionsButton = (Button) findViewById(R.id.showDirectionsButton); 
 		directionsTextView = (TextView) findViewById(R.id.directionsTextView); 
+		chosenPlaceTextView = (TextView) findViewById(R.id.chosenPlaceTextView); 
 		parentContainer = (LinearLayout) findViewById(R.id.run_parentContainer); 
-		//********************POPUP DIALOG*******************************
-		popup = null; 
 		//******************DEFINE OTHER OBJECTS**************************
+		droidLoc = new DroidLoc(this); 
 		myLocOverlay = new MyLocationOverlay(this, myMap); 
 		myMapController = myMap.getController(); 
-		//Get the Application object with global data
-		fra = (FunRunApplication) this.getApplicationContext(); 
-		runDirections = fra.getRunDirections(); 
-		runPlace = fra.getRunPlace();
-		//Initialize currentStep to the first step in the first leg of the GoogleDirections object
-		currentStep = runDirections.get(runDirections.size() - 1).get(0);  
+		//Get the Application object and its global data
+		funRunApp = (FunRunApplication) this.getApplicationContext(); 
+		runDirections = funRunApp.getRunDirections(); 
+		runPlace = funRunApp.getRunPlace();
+		//Initialize currentStep to the first step in the last leg of the GoogleDirections object
+		//As the runner arrives at destinations, new legs will be added
+		currentLeg = runDirections.get(runDirections.size()-1); 
+		currentStep = currentLeg.get(0);  
+		//Store current step in the Application object to pass between activities
+		funRunApp.setCurrentStep(currentStep); 
 
-		//Just string constants used on the "Show / Hide directions" button
-//		showDirections= (String)(this.getResources().getText(R.string.show_directions)); 
-//		hideDirections= (String)(this.getResources().getText(R.string.hide_directions)); 
-
-		//Get the HTML directions from the raw string
-		htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions());		
-		
+		//Get the HTML directions from the raw string and set the text view
+		htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
+		System.out.println("HTML: " + htmlInstructions); 
+		chosenPlaceTextView.setText("Running to " + runPlace.getName()); 		
+		updateDirectionsTextView(); 
 
 		//******************CALL SETUP METHODS****************************
-		//Get the last known location in case GPS isn't currently going
 		setupLocListener(); 
 		setupMap(); 
 		setupCenterOnMeButton(); 
 		setupZoomToRouteButton(); 
 		setupZoomButtons(); 
-//		setupShowDirectionsButton(); 
-		updateDirectionsTextView(); 
-		lastKnownLocation = getLastKnownLoc(); //this gets the last known location, even if the location updates aren't working yet
+
+		long theTime = System.currentTimeMillis(); 
+
+		//onCreate() is called when a new leg starts, so set the start time to now
+		currentLeg.setStartTime(theTime); 
+
+		//Make a proximity alert for end of route and current step, in case runner randomly takes a different route than given
+		if (!currentStep.equals(currentLeg.finalStep())) {
+			setupStepProximityAlert(currentStep, theTime);  
+		}		
+
+		setupStepProximityAlert(currentLeg.finalStep(), theTime);  
+
+		lastKnownLocation = droidLoc.getLastKnownLoc(); 
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		myFunRunOverlay.updateCurrentDirections(runDirections); 
-		centerOnMe(); 
+		//Add current location to the actual path. 
+		currentLeg.getActualPath().add(lastKnownLocation);		
+
+		zoomToRoute(); 
     }
 	
 	public boolean isRouteDisplayed() {
@@ -121,16 +137,18 @@ public class FunRunActivity extends MapActivity
 	@Override 
 	protected void onResume() {
 		super.onResume();
-		myLocOverlay.enableMyLocation(); 
 		myLocOverlay.enableCompass(); 	
-		myLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
+		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
+		if (funRunApp.killRunActivity()) {
+			funRunApp.setKillRunActivity(false); 
+			finish(); 
+		}
 	}
 	
 	@Override 
 	protected void onPause() {
 		super.onPause(); 
-		myLocManager.removeUpdates(myLocListener); 
-		myLocOverlay.disableMyLocation(); 
+		droidLoc.getLocManager().removeUpdates(myLocListener); 
 		myLocOverlay.disableCompass();
 	}
 
@@ -139,8 +157,6 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupLocListener() {
-		myLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
 		myLocListener = new LocationListener() {
 			@Override
 			public void onLocationChanged(Location l) {
@@ -153,55 +169,68 @@ public class FunRunActivity extends MapActivity
 		    public void onProviderDisabled(String provider) {}		
 		};
 
-		myLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
+		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
 	}
 
-	private GeoPoint getLastKnownLoc() {
+	void setupStepProximityAlert(GoogleStep step, long startTime) {
+		//Add a proximity alert for the end point of the current step, start activity StepCompleteActivity
+		step.setStartTime(startTime); 
 		
-		//If we've gotten our location from the location update listener, just return what we already have. 
-		if (lastKnownLocation != null) {
-			return lastKnownLocation; 
-		}
+		PendingIntent stepCompleteIntent = PendingIntent.getActivity(this, 0,  new Intent(this, StepCompleteActivity.class), PendingIntent.FLAG_ONE_SHOT); 	
 
-		Location l= null; 
-
-		//Otherwise, try to get the last known location from the LocationManager
-		try { 
-			l = myLocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); 	
-		}
-		catch (Exception e) {
-			System.out.println("Failure getting last known location."); 
-			return null; 
-		}
-
-		if (l!= null) {
-			lastKnownLocation = new GeoPoint((int) (l.getLatitude()*1E6), (int) (l.getLongitude()*1E6)); 
-			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		}
-		return lastKnownLocation; 
+		double latLng[] = DroidLoc.geoPointToDegrees(step.getEnd()); 
+		droidLoc.getLocManager().addProximityAlert(latLng[0], latLng[1], ACCEPT_RADIUS_METERS, -1, stepCompleteIntent);    
 	}
 
 	private void updateLocation(Location l) {
-		if (l==null) {
+		if (l==null) { //not sure if this locListener will ever return null here. May as well check
 			return;
 		}
-		 
-		Double latPoint=l.getLatitude(); 
-		Double lngPoint=l.getLongitude(); 
-	
 		//Update the local variable with the last known location
-		this.lastKnownLocation = new GeoPoint((int) (latPoint*1E6), (int) (lngPoint*1E6)); 
+		lastKnownLocation = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
 		
 		//Update the overlay so it draws properly
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		myMap.postInvalidate(); 
+
+		//Just for fun! Animate the title bar.
+		//As a side effect, this indicates whether GPS is working or not (^o ^o)
+		animateTitleBar(); 
+
+		//Add a GeoPoint to the actualPath in the currentLeg, provided the previous point is far enough away from the current point. 
+		//This obviously is intended to prevent 
+		addToActualPath(lastKnownLocation); 
+	}
+
+	private void addToActualPath(GeoPoint g) {
+		List<GeoPoint> actualPath = currentLeg.getActualPath();
+		int size = actualPath.size(); 
+		GeoPoint lastPathPoint = actualPath.get(size - 1); 
+		double[] lastPathPtDeg = DroidLoc.geoPointToDegrees(lastPathPoint); 
+		double[] lastKnownDeg = DroidLoc.geoPointToDegrees(g); 
+		float[] distance = new float[1]; 
+
+		android.location.Location.distanceBetween(lastPathPtDeg[0], lastPathPtDeg[1], lastKnownDeg[0], lastKnownDeg[1], distance);
+
+		if (distance[0] >= PATH_INCREMENT_METERS) {
+			actualPath.add(g); 
+		}
+	}
+
+	private void animateTitleBar() {
+		String txt = (String)(this.getTitle());  
+		int len = txt.length(); 
+		char lastChar = txt.charAt(len - 1); 
+		txt = (String.valueOf(lastChar) + txt).substring(0, len); 
+
+		setTitle(txt); 
+		
 	}
 
 	private void setupMap() {
 		myFunRunOverlay = new FunRunOverlay(myMap, null);
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
-		myMapController.setZoom(DEFAULT_ZOOM); 
-		//myLocOverlay.enableMyLocation(); //Disable for now, have stick figure instead 
 		myLocOverlay.enableCompass(); 	
 		myMap.postInvalidate(); 
 	}
@@ -244,52 +273,24 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupZoomToRouteButton() {
-		GeoPoint neBound = runDirections.getNeBound(); 
-		GeoPoint swBound = runDirections.getSwBound(); 
-		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
-		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
-		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 
-		final MapController mc = myMapController; 
 
 		zoomToRouteButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					 mc.animateTo(midPoint); 
-					 mc.zoomToSpan(latSpan, lngSpan); 
+					zoomToRoute(); 
 				}
 			});	
 	} 
-/*
-	private void setupShowDirectionsButton() {
 
-		showDirectionsButton.setOnClickListener( new View.OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				if (showDirectionsButton.getText().equals(showDirections) ) {
-					directionsTextView.setVisibility(View.VISIBLE); 				
-					showDirectionsButton.setText(hideDirections);
-				}
-				else {
-					directionsTextView.setVisibility(View.GONE); 				
-					showDirectionsButton.setText(showDirections);
-				}
-			}
-		});	
-	}
-*/
+	private void zoomToRoute() {
+		final GeoPoint neBound = currentLeg.getNeBound(); 
+		final GeoPoint swBound = currentLeg.getSwBound(); 
+		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
+		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
+		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 
 
-	private void showPopup(String title, String txt) {
-		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
-		myBuilder.setMessage(txt); 
-		myBuilder.setTitle(title); 
-		myBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-           public void onClick(DialogInterface dialog, int id) {
-				dialog.dismiss();
-           }
-       }); 
-
-		popup = myBuilder.create(); 
-		popup.show(); 
+		myMapController.animateTo(midPoint); 
+		myMapController.zoomToSpan(latSpan, lngSpan); 
 	}
 
 }

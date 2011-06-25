@@ -1,4 +1,5 @@
 package xanthanov.droid.funrun;
+
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AdapterView; 
 

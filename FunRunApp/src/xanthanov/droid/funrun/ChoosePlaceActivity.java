@@ -1,5 +1,8 @@
 package xanthanov.droid.funrun;
 
+import xanthanov.droid.xantools.*; 
+import xanthanov.droid.gplace.*;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface; 
@@ -41,19 +44,17 @@ public class ChoosePlaceActivity extends MapActivity
 	private MapView myMap;
 	private Button zoomInButton;
 	private Button zoomOutButton;
-	private Button startRunningButton;
 	//*******************OTHER OBJECTS****************************
+	private DroidLoc droidLoc; 
 	private MyLocationOverlay myLocOverlay;
 	private MapController myMapController; 
 	private LocationListener myLocListener; 
-	private LocationManager myLocManager;
-	private TextView emptySpinnerView; 
 	private PlaceSearcher myPlaceSearcher; //Class to do HTTP request to get place data from google maps API
 	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
 	private FunRunOverlay myFunRunOverlay; 
 	private AlertDialog popup;
 	private GeoPoint lastKnownLocation; 
-	//****************Temporary storage...seemingly necessary since the dialogs are asynchronous!*****
+	//****************Temporary storage for places search...seemingly necessary since the dialogs are asynchronous!*****
 	private List<GooglePlace> nearbyPlaces; 
 	private List<GooglePlace> remainingPlaces; 
 	private GoogleDirections currentDirections; 
@@ -78,29 +79,29 @@ public class ChoosePlaceActivity extends MapActivity
 		nextDestinationButton = (Button) findViewById(R.id.nextDestinationButton); 
 		zoomInButton = (Button) findViewById(R.id.buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.buttonZoomOut); 
-		startRunningButton = (Button) findViewById(R.id.startRunningButton); 
 		parentContainer = (LinearLayout) findViewById(R.id.parentContainer); 
 		//********************POPUP DIALOG*******************************
 		popup = null; 
 		//******************DEFINE OTHER OBJECTS**************************
+		droidLoc = new DroidLoc(this); 
 		myLocOverlay = new MyLocationOverlay(this, myMap); 
 		myMapController = myMap.getController(); 
 		myPlaceSearcher = new PlaceSearcher(this.getResources()); 
 		myDirectionGetter = new DirectionGetter(); 
-		lastKnownLocation = null;
+		lastKnownLocation = droidLoc.getLastKnownLoc();
 		currentDirections = null; 
 		currentRunToPlace = null; 
 		nearbyPlaces = null; 
 		remainingPlaces = null; 
-
 		//******************CALL SETUP METHODS****************************
+		checkGps(); 
 		setupLocListener(); 
 		setupSpinner(); 
 		setupMap(); 
 		setupWhereAmIButton(); 
 		setupNextButton(); 
 		setupZoomButtons(); 
-		setupStartRunningButton(); 
+		centerOnMe(); 
 		
     }
 	
@@ -111,21 +112,33 @@ public class ChoosePlaceActivity extends MapActivity
 	@Override 
 	protected void onResume() {
 		super.onResume();
-		myLocOverlay.enableMyLocation(); 
 		myLocOverlay.enableCompass(); 	
-		myLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
+		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 	}
 	
 	@Override 
 	protected void onPause() {
 		super.onPause(); 
-		myLocManager.removeUpdates(myLocListener); 
-		myLocOverlay.disableMyLocation(); 
+		droidLoc.getLocManager().removeUpdates(myLocListener); 
 		myLocOverlay.disableCompass();
 	}
 
+	private void checkGps() {
+		LocationManager lm = droidLoc.getLocManager(); 
+		boolean isGpsEnabled = false; 
+		try {		
+			isGpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER); 
+		}
+		catch (Exception e) {
+			//Do nothing, isGpsEnabled will remain false if anything goes awry	
+		}
+		if (!isGpsEnabled) {
+			showCriticalErrorPopup("GPS Not Enabled", "GPS appears to be disabled on your device.\nPlease turn on GPS and restart the Fun Run App."); 
+		}
+
+	}
+
 	private void setupLocListener() {
-		myLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
 		myLocListener = new LocationListener() {
 			@Override
@@ -139,21 +152,16 @@ public class ChoosePlaceActivity extends MapActivity
 		    public void onProviderDisabled(String provider) {}		
 		};
 
-		myLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
+		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
 	}
 
 	private void updateLocation(Location l) {
 		if (l==null) {
 			return;
 		}
-		 
-		Double latPoint=l.getLatitude(); 
-		Double lngPoint=l.getLongitude(); 
 	
-		this.lastKnownLocation = new GeoPoint((int) (latPoint*1E6), (int) (lngPoint*1E6)); 
-		
+		lastKnownLocation = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-
 	}
 
 	private void setupSpinner() {
@@ -166,28 +174,37 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void setupMap() {
 		myFunRunOverlay = new FunRunOverlay(myMap, null);
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
 		myMapController.setZoom(DEFAULT_ZOOM); 
-		myLocOverlay.enableMyLocation(); //Disable for now, have stick figure instead 
 		myLocOverlay.enableCompass(); 	
 		myMap.postInvalidate(); 
 	}
 
 	private void setupWhereAmIButton() {
-		final MapController mc = myMapController; 
-		final GeoPoint loc = getLastKnownLoc(); 
 
 		whereAmIButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if (loc != null) 
-						mc.animateTo(loc); 
+					centerOnMe(); 
 				}
 			});	
 	}
 
+	private void centerOnMe() {
+		//Force update of location
+		GeoPoint g = droidLoc.getLastKnownLoc(); 
+		if (g != null) {
+			lastKnownLocation = g; 
+		}
+
+		myMapController.animateTo(lastKnownLocation); 
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+	}
+
 	private void setupNextButton() {
+		final Context c = this; 
 		
 		nextDestinationButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -196,7 +213,7 @@ public class ChoosePlaceActivity extends MapActivity
 						performPlacesQuery(); 
 					}
 					catch (Exception e) {
-						showPopup("Error connecting to\nGoogle Maps", e.getMessage()); 
+						DroidDialogs.showPopup(c, "Error connecting to\nGoogle Maps", e.getMessage()); 
 						nearbyPlaces = remainingPlaces = null; 
 						return; 
 					}
@@ -208,7 +225,8 @@ public class ChoosePlaceActivity extends MapActivity
 	private void performPlacesQuery() throws Exception {
 		System.out.println("Entering performGmapQuery()..."); 
 		String search = (String)runCategorySpinner.getSelectedItem();
-		GeoPoint lastLocation = getLastKnownLoc();
+		GeoPoint lastLocation = droidLoc.getLastKnownLoc();
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 
 		System.out.println("Search:" + search + ",Last location:" + lastLocation); 
 
@@ -216,25 +234,34 @@ public class ChoosePlaceActivity extends MapActivity
  
 		List<GooglePlace> foundPlaces = null; 
 
+		//START LOADING DIALOG???
+
 		//Increase the radius until something is found (or the max radius is reached)
-		while ( currentRadiusMeters <= MAX_RADIUS_METERS && (foundPlaces == null || foundPlaces.size() <= 0)) {
+		while ( currentRadiusMeters <= MAX_RADIUS_METERS ) {
 			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters);
 			
+			//IF we didn't find nothin', 
+			//Increase search radius, though google says it is merely a "suggestion" so fuck if I know how much this matters
 			if (foundPlaces == null || foundPlaces.size() <= 0) {
-				//Output some message and increase search radius
 				currentRadiusMeters*=2; 
+			}
+			else {
+				break; //Done. We found at least one place 
 			}
 		}
 
-		//Done attempting to get places, so assign to field nearbyPlaces (and remainingPlaces)		
+		//END LOADING DIALOG???
+
+		//Done attempting to get places, so assign to field nearbyPlaces 
 		nearbyPlaces = foundPlaces; 
-		remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); //Shallow copy to have a separate record of which places remain 
+		//Set remainingPlaces = shallow copy of nearbyPlaces  
+		remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); 
 
 		if (foundPlaces == null || foundPlaces.size() <= 0) {
 			//Output dialog indicating nothing was found...choose a new category
-			showPopup("Choose a new category", "No '" + search + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
+			DroidDialogs.showPopup(this, "Choose a new category", "No '" + search + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
 					+ "Please choose a different category and try again."); 
-			System.out.println("Places query: ZERO PLACES FOUND"); 
+			System.err.println("Places query: ZERO PLACES FOUND"); 
 			return; 
 		}
 		else {
@@ -249,13 +276,15 @@ public class ChoosePlaceActivity extends MapActivity
 	private void getNextPlace() {
 
 		if (nearbyPlaces == null || nearbyPlaces.size() == 0 || remainingPlaces == null ) {
-			//There *should* be an asynchronous dialog alerting the user to this fact!
+			//There *should* be a dialog alerting the user if no places were found!
 			return; 
 		}
 		//check if no places are remaining
 		if (remainingPlaces.size() == 0) {
 			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
-			showPopup("All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Place' to see your options again.");
+			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Place' to see your options again.");
+			currentDirections = null; 
+			currentRunToPlace = null; 
 			return; 
 		}
 
@@ -265,41 +294,23 @@ public class ChoosePlaceActivity extends MapActivity
 		System.out.println("Chosen place:" + currentRunToPlace); 
 
 		//Make another HTTP request to get directions from current location to 'runToPlace'
+		lastKnownLocation = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		currentDirections = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
 
 		if (currentDirections != null) {
-			assert (currentDirections.size() ==1); //Only 1 leg since we don't define any random waypoints
+			assert (currentDirections.size() ==1): "More than 1 leg returned from directions query!"; //Only 1 leg since we don't define any random waypoints
+			assert(false==true) : "Are assertions on?";
+			
+			myFunRunOverlay.updateCurrentDirections(currentDirections); 
 
 			showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
 				"Place: " + currentRunToPlace.getName() + "\n" +
 				"Distance: " + currentDirections.get(0).getDistanceString() + " / " + currentDirections.get(0).getDistanceMeters() + "m" );	
 		}
 		else {
-			showPopup("Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
+			DroidDialogs.showPopup(this, "Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
 		}
-	}
-
-	private GeoPoint getLastKnownLoc() {
-		
-		if (lastKnownLocation != null) {
-			return lastKnownLocation; 
-		}
-
-		Location l= null; 
-
-		try { 
-			l = myLocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); 	
-		}
-		catch (Exception e) {
-			System.out.println("Failure getting last known location."); 
-			return null; 
-		}
-
-		if (l!= null) {
-			lastKnownLocation = new GeoPoint((int) (l.getLatitude()*1E6), (int) (l.getLongitude()*1E6)); 
-			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		}
-		return lastKnownLocation; 
 	}
 
 	private void setupZoomButtons() {
@@ -317,33 +328,18 @@ public class ChoosePlaceActivity extends MapActivity
 			});	
 	}
 
-	private void showPopup(String title, String txt) {
-		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
-		myBuilder.setMessage(txt); 
-		myBuilder.setTitle(title); 
-		myBuilder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-           public void onClick(DialogInterface dialog, int id) {
-				dialog.dismiss();
-           }
-       }); 
-
-		popup = myBuilder.create(); 
-		popup.show(); 
-	}
 
 	private void showAcceptRejectPopup(String title, String txt) {
 		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
 		myBuilder.setMessage(txt); 
 		myBuilder.setTitle(title); 
-		final FunRunApplication fra = ((FunRunApplication)this.getApplicationContext());
 
 		myBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				fra.setRunDirections(currentDirections); 
-				fra.setRunPlace(currentRunToPlace); 
 				myFunRunOverlay.updateCurrentDirections(currentDirections); 
 				myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+				startRunning(); 
            }
        }); 
 
@@ -359,20 +355,37 @@ public class ChoosePlaceActivity extends MapActivity
 		popup.show(); 
 	}
 
-	private void setupStartRunningButton() {
-		final Intent i = new Intent(this, FunRunActivity.class); 
-		final FunRunApplication fra = ((FunRunApplication)this.getApplicationContext());
+	private void showCriticalErrorPopup(String title, String txt) {
+		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
+		myBuilder.setMessage(txt); 
+		myBuilder.setTitle(title); 
 
-		startRunningButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (fra.getRunDirections() == null || fra.getRunPlace() == null) {
-						showPopup("No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
-						return; 
-					}
-					startActivity(i); 
-				}
-			});
+		myBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+           public void onClick(DialogInterface dialog, int id) {
+				dialog.dismiss();
+				finish(); 
+           }
+       }); 
+
+		popup = myBuilder.create(); 
+		popup.setCancelable(false); 
+		popup.show(); 
+
+	}
+
+	private void startRunning() {
+		final Intent i = new Intent(this, FunRunActivity.class); 
+		final FunRunApplication funRunApp = ((FunRunApplication)this.getApplicationContext());
+		final Context c = this; 
+
+		if (currentDirections == null || currentRunToPlace == null) {
+			DroidDialogs.showPopup(c, "No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
+			return; 
+		}
+		//If the user presses "Start Running" then add this "leg" to the global directions object
+		funRunApp.getRunDirections().add(currentDirections.get(0)); 
+		funRunApp.setRunPlace(currentRunToPlace); 
+		startActivity(i); 
 	}
 }
 

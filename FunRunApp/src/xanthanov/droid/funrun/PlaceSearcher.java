@@ -1,5 +1,8 @@
 package xanthanov.droid.funrun; 
 
+import xanthanov.droid.gplace.*;
+import xanthanov.droid.funrun.exceptions.GmapException;
+
 import java.util.HashMap; 
 import java.util.List; 
 import java.util.ArrayList; 
@@ -51,6 +54,7 @@ public class PlaceSearcher {
 		stringToQuery.put(res.getText(R.string.bowling_alley), "types=bowling_alley"); 
 		stringToQuery.put(res.getText(R.string.shopping_mall), "types=shopping_mall"); 
 		stringToQuery.put(res.getText(R.string.natural_feature), "types=natural_feature"); 
+		stringToQuery.put(res.getText(R.string.pizza), "types=food|bar|restaurant|meal_takeaway|meal_delivery&name=pizza"); 
 		stringToQuery.put(res.getText(R.string.brew_pub), "types=bar|food|restaurant&name=brew%20pub"); 
 	}
 

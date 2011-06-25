@@ -5,25 +5,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<!--
-	<RelativeLayout
-		android:id="@+id/run_relLayout"
+	<TextView android:id="@+id/chosenPlaceTextView"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		>
-		<Button 
-			android:id="@+id/showDirectionsButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:text="@string/show_directions"
-			/>
-	</RelativeLayout>
--->
+		android:gravity="center_horizontal"
+		android:textSize="24sp"
+		android:textColor="#ee8888"
+		/>
 	<TextView android:id="@+id/directionsTextView" 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"	
-		android:textSize="30sp"
+		android:textSize="20sp"
 		android:text=""
 		/>
 	<RelativeLayout
@@ -37,8 +29,7 @@
 			android:layout_height="wrap_content" 
 			android:enabled="true"
 			android:clickable="true"
-			android:apiKey="0qcLJ4NCw2oBfdBl0B8Z3pRZkLzoFICh-1KsJdQ"
-			/>
+			android:apiKey="0qcLJ4NCw2oBfdBl0B8Z3pRZkLzoFICh-1KsJdQ"/>
 		<LinearLayout android:id="@+id/run_zoomButtonsLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

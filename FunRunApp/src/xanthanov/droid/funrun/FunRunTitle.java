@@ -1,9 +1,12 @@
 package xanthanov.droid.funrun;
 
+import xanthanov.droid.gplace.*;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button; 
 import android.content.Intent; 
+import android.content.Context; 
 import android.view.View;
 
 public class FunRunTitle extends Activity
@@ -25,6 +28,7 @@ public class FunRunTitle extends Activity
 	
 	//	System.out.println("newRunButton:" + newRunButton); 
 		//****************End Get Views************************ 
+
 
 		setupButtons(); 
     }
