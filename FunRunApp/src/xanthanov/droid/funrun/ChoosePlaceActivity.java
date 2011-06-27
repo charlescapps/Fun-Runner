@@ -219,25 +219,31 @@ public class ChoosePlaceActivity extends MapActivity
  
 		List<GooglePlace> foundPlaces = null; 
 
-		//START LOADING DIALOG???
+		//START LOADING DIALOG
 		ProgressRunnable pr = DroidDialogs.showProgressDialog(this, "", "Loading nearby places...");  
 		
-		//Increase the radius until something is found (or the max radius is reached)
-		while ( currentRadiusMeters <= MAX_RADIUS_METERS ) {
-			//Create a new thread 
-			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters); 
+		try {
+			//Increase the radius until something is found (or the max radius is reached)
+			while ( currentRadiusMeters <= MAX_RADIUS_METERS ) {
+				//Create a new thread 
+				foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters); 
 
-			//IF we didn't find nothin', 
-			//Increase search radius, though google says it is merely a "suggestion" so fuck if I know how much this matters
-			if (foundPlaces == null || foundPlaces.size() <= 0) {
-				currentRadiusMeters*=2; 
-			}
-			else {
-				break; //Done. We found at least one place 
+				//IF we didn't find nothin', 
+				//Increase search radius, though google says it is merely a "suggestion" so fuck if I know how much this matters
+				if (foundPlaces == null || foundPlaces.size() <= 0) {
+					currentRadiusMeters*=2; 
+				}
+				else {
+					break; //Done. We found at least one place 
+				}
 			}
 		}
-
-		pr.dismissDialog();
+		catch (Exception e) {
+			throw e; 
+		}
+		finally {
+			pr.dismissDialog();
+		}
 
 		return foundPlaces; 
 

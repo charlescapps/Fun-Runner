@@ -25,6 +25,15 @@ public class ProgressRunnable implements Runnable {
 	}
 
 	public boolean dismissDialog() {
+		//If the dialog hasn't been initialized yet, wait a second and attempt to dismiss 
+		if (pd == null) {
+			try {
+				Thread.sleep(1000); 
+			} catch (Exception e) {
+				;
+			}
+		}
+
 		if (pd != null) {
 			pd.dismiss();
 			return true;  
