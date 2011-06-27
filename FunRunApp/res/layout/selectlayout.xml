@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
 	android:id="@+id/parentContainer"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 	<TextView android:id="@+id/spinnerTitle"
 		android:layout_width ="fill_parent"
 		android:layout_height = "wrap_content"
@@ -61,4 +60,3 @@
 			/>
 	</RelativeLayout>
 </LinearLayout>
-

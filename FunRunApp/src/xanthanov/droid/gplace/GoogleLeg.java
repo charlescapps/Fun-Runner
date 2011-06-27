@@ -33,6 +33,22 @@ public class GoogleLeg {
 		actualPath = new ArrayList<GeoPoint>(); 
 	}
 
+	//Method to take a list of legs and get back a simple list of points to draw!
+	public List<GeoPoint> getPathPoints() {
+		List<GeoPoint> points = new ArrayList<GeoPoint>(); 
+		if (steps.size() == 0) {
+			return points; 
+		} 
+
+		points.add(steps.get(0).getStart()); 
+
+		for (int j = 0; j < steps.size(); j++) {
+			points.add(steps.get(j).getEnd()); //Add end point of step
+		}	
+
+		return points; 
+	}
+
 	public boolean isDone() {return doneRunning; }
 
 	public void finishLeg() {doneRunning = true; }

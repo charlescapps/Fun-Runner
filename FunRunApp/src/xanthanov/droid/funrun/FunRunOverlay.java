@@ -20,19 +20,11 @@ import com.google.android.maps.MapView;
 public class FunRunOverlay extends Overlay {
 	
 	//********************CONSTANTS***************************
-	private final static int[] DEFAULT_COLOR = new int[] {200, 220, 100, 100};
+	private final static int[] ROUTE_COLOR = new int[] {200, 240, 100, 100};
+	private final static int[] ACTUAL_COLOR = new int[] {200, 120, 180, 250};
 
-	private final static int alphaComplete = 200; 
-	private final static int redComplete = 220; 
-	private final static int greenComplete = 100; 
-	private final static int blueComplete = 100; 
-
-	private final static int alphaActual = 100; 
-	private final static int redActual = 100; 
-	private final static int greenActual = 120; 
-	private final static int blueActual = 240; 
-
-	private final static Paint.Style PAINT_STYLE = Paint.Style.STROKE; 
+	private final static Style ROUTE_STYLE = Style.STROKE; 
+	private final static Style ACTUAL_STYLE = Style.STROKE; 
 	private final static float STROKE_WIDTH = 4.0f; 
 
 	private final static Point PIN_OFFSET = new Point(5,29);
@@ -96,86 +88,51 @@ public class FunRunOverlay extends Overlay {
 		//Get a Projection object to convert between lat/lng --> x/y
 		Projection pro = theMapView.getProjection(); 
 
-		//Reset paint
-		this.pathPaint.setStrokeWidth(STROKE_WIDTH);
-		this.pathPaint.setARGB(DEFAULT_COLOR[0], DEFAULT_COLOR[1], DEFAULT_COLOR[2], DEFAULT_COLOR[3]);
-		//Use Stroke style
-		this.pathPaint.setStyle(PAINT_STYLE);
+		Point startCoords = new Point();
+		Point endCoords = new Point();
+		Point currentCoords = new Point();
 
-		Point screenCoords = new Point();
-
-		//If directions is null, return
+		//If directions isn't null, draw the directions in red
 		if (directions != null) {
-			//**********************SET UP PATH***************************
-			GeoPoint startPoint = directions.get(0).getFirstPoint(); //First point of the first leg
-			GeoPoint endPoint = directions.get(directions.size()-1).getLastPoint();  //Last point of the last leg
+			GeoPoint startPoint = directions.lastLeg().getFirstPoint(); //First point of the last leg
+			GeoPoint endPoint = directions.lastLeg().getLastPoint();  //Last point of the last leg
 
-			pro.toPixels(startPoint, screenCoords); 
+			pro.toPixels(startPoint, startCoords); 
+			pro.toPixels(endPoint, endCoords);
 
-			//Create the path
-			Path thePath = new Path();
-			thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
+			//Draw the route for the most recent leg of the journey (i.e. the place you are currently running to)
+			drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);
 			
-			//Retrieve distinct GeoPoints of the route, w/o the redundancies.
-			List<GeoPoint> route = directions.getPathPoints();
-			
-			if(route == null || route.size() == 0) {
-				return;
-			}
-			
-			//Loop through all GeoPoints
-			for (GeoPoint current : route) {
-				//Convert GeoPoint to pixels and add to path
-				if(current != null){
-					pro.toPixels(current, screenCoords); 
-					thePath.lineTo((float)screenCoords.x, (float)screenCoords.y);
-				}
-			}
-			
-
-			/* Draw the actual route to the canvas. */
-			canvas.drawPath(thePath, this.pathPaint);
-			
-			/* Draw end of route */ 
-			pro.toPixels(endPoint, screenCoords);
-			
-			canvas.drawBitmap(PIN_END, 
-					screenCoords.x - PIN_OFFSET.x, 
-					screenCoords.y - PIN_OFFSET.y, 
-					pathPaint);
+			//Draw end point
+			canvas.drawBitmap(PIN_END, endCoords.x - PIN_OFFSET.x, endCoords.y - PIN_OFFSET.y, pathPaint);
 		}
 
-		//Draw stick guy
-		if (currentLoc != null) {
-			pro.toPixels(currentLoc, screenCoords);
-		
-			canvas.drawBitmap(STICK_GUY_BG, 
-				screenCoords.x - STICK_GUY_OFFSET.x, 
-				screenCoords.y - STICK_GUY_OFFSET.y, 
-				pathPaint);
+		if (actualPath != null) {
+			drawAPath(actualPath, canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro);
+		}
 
-			canvas.drawBitmap(STICK_GUY_RUN1, 
-				screenCoords.x - STICK_GUY_OFFSET.x, 
-				screenCoords.y - STICK_GUY_OFFSET.y, 
-				pathPaint);
+		//Draw stick guy at current location
+		if (currentLoc != null) {
+			pro.toPixels(currentLoc, currentCoords);
+		
+			canvas.drawBitmap(STICK_GUY_BG, currentCoords.x - STICK_GUY_OFFSET.x, currentCoords.y - STICK_GUY_OFFSET.y, pathPaint);
+			canvas.drawBitmap(STICK_GUY_RUN1, currentCoords.x - STICK_GUY_OFFSET.x, currentCoords.y - STICK_GUY_OFFSET.y, pathPaint);
 		}
 
 	}
 
-	private void drawAPath(List<GeoPoint> path, float strokeWidth, Style paintStyle, int[] color) {
+	private void drawAPath(List<GeoPoint> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro) {
 
 		if(path == null || path.size() == 0) {
 			return;
 		}
 
-		//Get a Projection object to convert between lat/lng --> x/y
-		Projection pro = theMapView.getProjection(); 
 
 		//Add style and color to paint
 		this.pathPaint.setStrokeWidth(strokeWidth);
 		this.pathPaint.setARGB(color[0], color[1], color[2], color[3]);
 		//Use Stroke style
-		this.pathPaint.setStyle(PAINT_STYLE);
+		this.pathPaint.setStyle(paintStyle);
 
 		//Generic Point used in this method
 		Point screenCoords = new Point();

@@ -28,6 +28,7 @@ public class StepCompleteActivity extends Activity {
 	private Button nextDirectionsButton; 
 
 	private Vibrator vibe; 
+	private final static long[] VIB_PATTERN = new long[] {500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 1000, 100, 1000, 100, 1000, 100}; 
 
 	@Override
 	public void onCreate(Bundle b) {
@@ -123,6 +124,6 @@ public class StepCompleteActivity extends Activity {
 	}
 
 	private static void vibrate(Vibrator v) {
-		v.vibrate(new long[] {500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 1000, 100, 1000, 100, 1000, 100}, -1); 
+		v.vibrate(VIB_PATTERN, -1);  
 	}
 }

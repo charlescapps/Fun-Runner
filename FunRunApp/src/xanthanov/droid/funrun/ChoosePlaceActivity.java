@@ -2,12 +2,16 @@ package xanthanov.droid.funrun;
 
 import xanthanov.droid.xantools.*; 
 import xanthanov.droid.gplace.*;
+import xanthanov.droid.funrun.threads.*;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog; 
 import android.content.DialogInterface; 
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.AsyncTask; 
 import android.view.View;
 import android.view.Gravity;
 import android.widget.TextView;
@@ -54,7 +58,8 @@ public class ChoosePlaceActivity extends MapActivity
 	private FunRunOverlay myFunRunOverlay; 
 	private AlertDialog popup;
 	private GeoPoint lastKnownLocation; 
-	//****************Temporary storage for places search...seemingly necessary since the dialogs are asynchronous!*****
+	private GeoPoint firstGpsFix = null; 
+	//Places found, directions found, etc.
 	private List<GooglePlace> nearbyPlaces; 
 	private List<GooglePlace> remainingPlaces; 
 	private GoogleDirections currentDirections; 
@@ -94,7 +99,6 @@ public class ChoosePlaceActivity extends MapActivity
 		nearbyPlaces = null; 
 		remainingPlaces = null; 
 		//******************CALL SETUP METHODS****************************
-		checkGps(); 
 		setupLocListener(); 
 		setupSpinner(); 
 		setupMap(); 
@@ -112,6 +116,7 @@ public class ChoosePlaceActivity extends MapActivity
 	@Override 
 	protected void onResume() {
 		super.onResume();
+		checkGps(); 
 		myLocOverlay.enableCompass(); 	
 		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 	}
@@ -160,7 +165,7 @@ public class ChoosePlaceActivity extends MapActivity
 			return;
 		}
 	
-		lastKnownLocation = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
+		lastKnownLocation = firstGpsFix = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 	}
 
@@ -195,51 +200,33 @@ public class ChoosePlaceActivity extends MapActivity
 	private void centerOnMe() {
 		//Force update of location
 		GeoPoint g = droidLoc.getLastKnownLoc(); 
+		
 		if (g != null) {
 			lastKnownLocation = g; 
 		}
 
-		myMapController.animateTo(lastKnownLocation); 
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		if (lastKnownLocation !=null) {
+			myMapController.animateTo(lastKnownLocation); 
+			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		}
 	}
 
 	private void setupNextButton() {
-		final Context c = this; 
-		
-		nextDestinationButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					try {
-						performPlacesQuery(); 
-					}
-					catch (Exception e) {
-						DroidDialogs.showPopup(c, "Error connecting to\nGoogle Maps", e.getMessage()); 
-						nearbyPlaces = remainingPlaces = null; 
-						return; 
-					}
-					getNextPlace();
-				}
-			});	
+		nextDestinationButton.setOnClickListener(new OnClickNext(this));
 	}
 
-	private void performPlacesQuery() throws Exception {
-		System.out.println("Entering performGmapQuery()..."); 
-		String search = (String)runCategorySpinner.getSelectedItem();
-		GeoPoint lastLocation = droidLoc.getLastKnownLoc();
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-
-		System.out.println("Search:" + search + ",Last location:" + lastLocation); 
-
-		int currentRadiusMeters = DEFAULT_RADIUS_METERS; 
+	private List<GooglePlace> performPlacesQuery(String search, GeoPoint lastLocation, int currentRadiusMeters) throws Exception {
  
 		List<GooglePlace> foundPlaces = null; 
 
 		//START LOADING DIALOG???
-
+		ProgressRunnable pr = DroidDialogs.showProgressDialog(this, "", "Loading nearby places...");  
+		
 		//Increase the radius until something is found (or the max radius is reached)
 		while ( currentRadiusMeters <= MAX_RADIUS_METERS ) {
-			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters);
-			
+			//Create a new thread 
+			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters); 
+
 			//IF we didn't find nothin', 
 			//Increase search radius, though google says it is merely a "suggestion" so fuck if I know how much this matters
 			if (foundPlaces == null || foundPlaces.size() <= 0) {
@@ -250,27 +237,10 @@ public class ChoosePlaceActivity extends MapActivity
 			}
 		}
 
-		//END LOADING DIALOG???
+		pr.dismissDialog();
 
-		//Done attempting to get places, so assign to field nearbyPlaces 
-		nearbyPlaces = foundPlaces; 
-		//Set remainingPlaces = shallow copy of nearbyPlaces  
-		remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); 
+		return foundPlaces; 
 
-		if (foundPlaces == null || foundPlaces.size() <= 0) {
-			//Output dialog indicating nothing was found...choose a new category
-			DroidDialogs.showPopup(this, "Choose a new category", "No '" + search + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
-					+ "Please choose a different category and try again."); 
-			System.err.println("Places query: ZERO PLACES FOUND"); 
-			return; 
-		}
-		else {
-		//If we successfully got the places, print them out for debugging.
-		//AND sort them by which is closer...
-		//To avoid getting directions for all of them, do the crude thing of getting "as the bird flies" distance
-			PlaceSearcher.printListOfPlaces(nearbyPlaces);  
-			java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownLocation)); 
-		}
 	}
 
 	private void getNextPlace() {
@@ -296,11 +266,13 @@ public class ChoosePlaceActivity extends MapActivity
 		//Make another HTTP request to get directions from current location to 'runToPlace'
 		lastKnownLocation = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+
+		//Start ProgressDialog 
+		
+
 		currentDirections = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
 
 		if (currentDirections != null) {
-			assert (currentDirections.size() ==1): "More than 1 leg returned from directions query!"; //Only 1 leg since we don't define any random waypoints
-			assert(false==true) : "Are assertions on?";
 			
 			myFunRunOverlay.updateCurrentDirections(currentDirections); 
 
@@ -363,7 +335,6 @@ public class ChoosePlaceActivity extends MapActivity
 		myBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				finish(); 
            }
        }); 
 
@@ -376,10 +347,10 @@ public class ChoosePlaceActivity extends MapActivity
 	private void startRunning() {
 		final Intent i = new Intent(this, FunRunActivity.class); 
 		final FunRunApplication funRunApp = ((FunRunApplication)this.getApplicationContext());
-		final Context c = this; 
+		final Activity a = this; 
 
 		if (currentDirections == null || currentRunToPlace == null) {
-			DroidDialogs.showPopup(c, "No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
+			DroidDialogs.showPopup(a, "No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
 			return; 
 		}
 		//If the user presses "Start Running" then add this "leg" to the global directions object
@@ -387,5 +358,80 @@ public class ChoosePlaceActivity extends MapActivity
 		funRunApp.setRunPlace(currentRunToPlace); 
 		startActivity(i); 
 	}
+
+	private class PlacesQueryTask extends AsyncTask<String, Integer, List<GooglePlace>>{
+		private String searchStr = null; 
+		private Activity a = null;
+
+		public PlacesQueryTask(Activity a) {
+			super(); 
+			this.a = a; 
+		}
+
+	
+		protected List<GooglePlace> doInBackground(String... searchParams) {
+			searchStr = searchParams[0]; 
+			List<GooglePlace> result = null; 
+
+			try {
+				result = performPlacesQuery(searchStr, lastKnownLocation, DEFAULT_RADIUS_METERS ); 	
+			}
+			catch (Exception e) {
+				DroidDialogs.showPopup(a, "Error connecting to Google Maps", "Unable to connect to Google Maps.\nPlease check your internet connection and try again."); 
+				e.printStackTrace(); 
+				return null; 
+			}
+			return result; 
+		
+		}
+
+		protected void onPostExecute(List<GooglePlace> result) {
+			//Done attempting to get places, so assign to field nearbyPlaces 
+			nearbyPlaces = result; 
+			//Set remainingPlaces = shallow copy of nearbyPlaces  
+			remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); 
+
+			if (result == null || result.size() <= 0) {
+				//Output dialog indicating nothing was found...choose a new category
+				DroidDialogs.showPopup(a, "Choose a new category", "No '" + searchStr + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
+						+ "Please choose a different category and try again."); 
+				System.err.println("Places query: ZERO PLACES FOUND"); 
+				
+				return; 
+			}
+			else {
+			//If we successfully got the places, print them out for debugging.
+			//AND sort them by which is closer...
+			//To avoid getting directions for all of them, do the crude thing of getting "as the bird flies" distance
+				//PlaceSearcher.printListOfPlaces(nearbyPlaces);  
+				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownLocation)); 
+			}
+			//Call the dialog to cycle through places
+			getNextPlace();
+		}
+	}
+
+	private class OnClickNext implements View.OnClickListener {
+
+		private Activity a = null; 
+
+		public OnClickNext(Activity a) {
+			super(); 
+			this.a = a; 
+		}
+		
+		public void onClick(View v) {
+
+			if (firstGpsFix == null) {
+				DroidDialogs.showPopup(a, "No GPS location found", "A fix on your current location hasn't been found since the app started.\nMake sure you are outside and your GPS is turned on, then try again.");
+				return;
+			}
+
+			String search = (String)runCategorySpinner.getSelectedItem();
+			new PlacesQueryTask(a).execute(search); 	
+		}
+
+	}
+	
 }
 

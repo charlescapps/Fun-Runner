@@ -62,8 +62,8 @@ public class FunRunActivity extends MapActivity
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static float ACCEPT_RADIUS_METERS = 25.0f; 
-	public final static float PATH_INCREMENT_METERS = 50.0f; 
+	public final static float ACCEPT_RADIUS_METERS = 40.0f; 
+	public final static float PATH_INCREMENT_METERS = 20.0f; 
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -124,8 +124,6 @@ public class FunRunActivity extends MapActivity
 		lastKnownLocation = droidLoc.getLastKnownLoc(); 
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		myFunRunOverlay.updateCurrentDirections(runDirections); 
-		//Add current location to the actual path. 
-		currentLeg.getActualPath().add(lastKnownLocation);		
 
 		zoomToRoute(); 
     }
@@ -200,11 +198,16 @@ public class FunRunActivity extends MapActivity
 		//Add a GeoPoint to the actualPath in the currentLeg, provided the previous point is far enough away from the current point. 
 		//This obviously is intended to prevent 
 		addToActualPath(lastKnownLocation); 
+		myFunRunOverlay.updateActualPath(currentLeg.getActualPath()); 
 	}
 
 	private void addToActualPath(GeoPoint g) {
 		List<GeoPoint> actualPath = currentLeg.getActualPath();
 		int size = actualPath.size(); 
+		if (size == 0) {
+			actualPath.add(g); 
+			return; 
+		}
 		GeoPoint lastPathPoint = actualPath.get(size - 1); 
 		double[] lastPathPtDeg = DroidLoc.geoPointToDegrees(lastPathPoint); 
 		double[] lastKnownDeg = DroidLoc.geoPointToDegrees(g); 
