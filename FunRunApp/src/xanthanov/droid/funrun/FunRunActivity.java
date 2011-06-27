@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation; 
+import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.LinearLayout;
@@ -242,6 +244,10 @@ public class FunRunActivity extends MapActivity
 		final MapController mc = myMapController; 
 		final GeoPoint loc = lastKnownLocation; 
 
+		Animation animation = new AlphaAnimation(1.0f, 0.7f);
+		animation.setFillAfter(true);
+		centerOnMeButton.startAnimation(animation);
+
 		centerOnMeButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -261,6 +267,11 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupZoomButtons() {
+		Animation animation = new AlphaAnimation(1.0f, 0.7f);
+		animation.setFillAfter(true);
+		zoomInButton.startAnimation(animation);
+		zoomOutButton.startAnimation(animation);
+
 		zoomInButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -276,6 +287,10 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupZoomToRouteButton() {
+
+		Animation animation = new AlphaAnimation(1.0f, 0.7f);
+		animation.setFillAfter(true);
+		zoomToRouteButton.startAnimation(animation);
 
 		zoomToRouteButton.setOnClickListener(new View.OnClickListener() {
 				@Override

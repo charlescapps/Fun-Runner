@@ -36,8 +36,8 @@
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			>
-		<Button android:id="@+id/run_buttonZoomOut" style="?android:attr/buttonStyleSmall" android:text="Zoom (-)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-		<Button android:id="@+id/run_buttonZoomIn" style="?android:attr/buttonStyleSmall" android:text="Zoom (+)" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonZoomOut" style="?android:attr/buttonStyleSmall" android:text="Zoom (-)" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonZoomIn" style="?android:attr/buttonStyleSmall" android:text="Zoom (+)" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 		</LinearLayout>
 		<LinearLayout android:id="@+id/run_centerButtons"
 			android:layout_width="wrap_content"
@@ -45,8 +45,8 @@
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
 			>
-		<Button android:id="@+id/run_buttonZoomToRoute" style="?android:attr/buttonStyleSmall" android:text="Zoom to route" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-		<Button android:id="@+id/run_buttonCenterOnMe" style="?android:attr/buttonStyleSmall" android:text="Center on me" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonZoomToRoute" style="?android:attr/buttonStyleSmall" android:text="Zoom to route" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonCenterOnMe" style="?android:attr/buttonStyleSmall" android:text="Center on me" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 		</LinearLayout>
 	</RelativeLayout>
 </LinearLayout>

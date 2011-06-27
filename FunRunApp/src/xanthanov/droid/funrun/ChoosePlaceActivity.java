@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.os.AsyncTask; 
 import android.view.View;
 import android.view.Gravity;
+import android.view.animation.Animation; 
+import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.Spinner;
@@ -189,6 +191,10 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void setupWhereAmIButton() {
 
+		Animation animation = new AlphaAnimation(1.0f, 0.7f);
+		animation.setFillAfter(true);
+		whereAmIButton.startAnimation(animation);
+
 		whereAmIButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -292,6 +298,11 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private void setupZoomButtons() {
+		Animation animation = new AlphaAnimation(1.0f, 0.7f);
+		animation.setFillAfter(true);
+		zoomInButton.startAnimation(animation);
+		zoomOutButton.startAnimation(animation);
+
 		zoomInButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
