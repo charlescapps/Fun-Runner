@@ -6,7 +6,6 @@ import android.app.Application;
 public class FunRunApplication extends Application {
 
 	private GoogleDirections runDirections; 
-	private GooglePlace runPlace; 
 	private GoogleStep currentStep; 
 	private boolean killRunActivity; 
 
@@ -15,17 +14,12 @@ public class FunRunApplication extends Application {
 	public FunRunApplication() {
 		super(); 
 		runDirections = new GoogleDirections(); 
-		runPlace = null; 
 		killRunActivity = false; 
 	}
 
 	public void setRunDirections(GoogleDirections d) {runDirections = d;}
 	
 	public GoogleDirections getRunDirections() {return runDirections; }
-
-	public void setRunPlace(GooglePlace p) { runPlace = p; }
-	
-	public GooglePlace getRunPlace() {return runPlace; }
 
 	public GoogleStep getCurrentStep() {return currentStep;} 
 

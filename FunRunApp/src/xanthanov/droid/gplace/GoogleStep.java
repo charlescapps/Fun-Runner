@@ -3,17 +3,20 @@ package xanthanov.droid.gplace;
 import java.util.List;
 import java.util.ArrayList;
 
+import android.app.PendingIntent; 
+
 import com.google.android.maps.GeoPoint; 
 
 public class GoogleStep {
 
-	GeoPoint start, end; 
-	int distanceMeters; 
-	String distanceString; 
-	String htmlInstructions; 
-	boolean completed; 
-	long startTime;
-	long endTime; 
+	private	GeoPoint start, end; 
+	private int distanceMeters; 
+	private String distanceString; 
+	private String htmlInstructions; 
+	private boolean completed; 
+	private long startTime;
+	private long endTime;
+	private PendingIntent proximityIntent;  
 
 	public GoogleStep(GeoPoint start, GeoPoint end, int distanceMeters, String distanceString, String html) {
 		this.start = start; 
@@ -23,6 +26,7 @@ public class GoogleStep {
 		this.htmlInstructions = html; 
 		this.completed = false; 
 		this.startTime = this.endTime = 0; 
+		this.proximityIntent = null; 
 	}
 
 	public GeoPoint getStart() {return start; }
@@ -36,6 +40,8 @@ public class GoogleStep {
 	public long getEndTime() {return endTime;}
 	public void setStartTime(long st) {startTime = st;}
 	public void setEndTime(long et) {endTime = et;}
+	public void setProximityIntent(PendingIntent i) {proximityIntent = i; }
+	public PendingIntent getProximityIntent() {return proximityIntent; }
 	
 	@Override
 	public boolean equals(Object o) {

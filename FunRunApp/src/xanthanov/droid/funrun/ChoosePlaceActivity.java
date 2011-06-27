@@ -373,8 +373,9 @@ public class ChoosePlaceActivity extends MapActivity
 			return; 
 		}
 		//If the user presses "Start Running" then add this "leg" to the global directions object
-		funRunApp.getRunDirections().add(currentDirections.get(0)); 
-		funRunApp.setRunPlace(currentRunToPlace); 
+		GoogleLeg legToAdd = currentDirections.get(0); 
+		legToAdd.setLegDestination(currentRunToPlace);
+		funRunApp.getRunDirections().add(legToAdd); 
 		startActivity(i); 
 	}
 

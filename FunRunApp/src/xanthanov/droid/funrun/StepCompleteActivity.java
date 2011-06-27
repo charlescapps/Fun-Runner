@@ -11,15 +11,16 @@ import android.app.Application;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button; 
+import android.content.Intent;
 
 public class StepCompleteActivity extends Activity {
 
+	private GoogleStep completedStep = null; 
 	private GoogleDirections runDirections;
-	private GoogleStep completedStep;
 	private GoogleLeg currentLeg; 
 	private GooglePlace runToPlace; 
-	private int stepNo;  
 	private FunRunApplication funRunApp; 
+	private int completedStepIndex = -1; 
 
 	private TextView stepCompleteText; 
 	private TextView stepTimeText; 
@@ -36,11 +37,39 @@ public class StepCompleteActivity extends Activity {
 		setContentView(R.layout.step_complete); 
 
 		funRunApp = (FunRunApplication) getApplicationContext(); 
-		completedStep = funRunApp.getCurrentStep(); 
-		runToPlace = funRunApp.getRunPlace(); 
+		Intent startIntent = this.getIntent();
+		int lat = startIntent.getIntExtra("lat", -1);
+		int lng = startIntent.getIntExtra("lng", -1); 
+
+		if (lat == -1 || lng == -1) {
+			System.err.println("Step completed, but no latitude / longitude was stored in the intent!"); 
+			finish(); 
+			return; 
+		}	  
+
 		runDirections = funRunApp.getRunDirections(); 
 		currentLeg = runDirections.lastLeg(); 
-		stepNo = currentLeg.getSteps().indexOf(completedStep) + 1; 
+		runToPlace = currentLeg.getLegDestination(); 
+
+		//Find the index of the step that ends on the lat / lng passed to this activity by its starting Intent
+		for (int i = 0; i < currentLeg.size(); i++) {
+			GoogleStep gs = currentLeg.get(i); 
+			if (gs.getEnd().getLatitudeE6() == lat && gs.getEnd().getLongitudeE6() == lng) {
+				completedStepIndex = i; 
+				break; 				
+			}
+		}
+
+		if (completedStepIndex == -1) {
+			System.err.println("Step completed, but there was no step in current leg for the given lat / lng!"); 
+			finish(); 
+			return; 
+		}	  
+
+		completedStep = currentLeg.get(completedStepIndex); 
+
+		//If everything goes well, remove all the proximity listeners for this step and prior
+		currentLeg.removeProximityAlerts(completedStep, this); 
 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
 		stepTimeText = (TextView) findViewById(R.id.stepTimeTextView); 
@@ -63,16 +92,18 @@ public class StepCompleteActivity extends Activity {
 
 	private void setStopTime(long endTime) {
 		completedStep.setEndTime(endTime); 
-		currentLeg.setEndTime(endTime); 
+		if (completedStepIndex >= currentLeg.size() - 1) {
+			currentLeg.setEndTime(endTime); 
+		}
 	}
 
 	private void setNextStep() {
-		if (completedStep.equals(currentLeg.finalStep())) {
+		//If we've finished the leg, set current step to null
+		if (completedStepIndex >= currentLeg.size() - 1) {
 			funRunApp.setCurrentStep(null); 
-			funRunApp.setRunPlace(null); 
 		}
 		else {
-			int nextIndex = currentLeg.getSteps().indexOf(completedStep) + 1; 
+			int nextIndex = completedStepIndex + 1; 
 			funRunApp.setCurrentStep(currentLeg.get(nextIndex)); 
 		}
 	}
@@ -84,7 +115,7 @@ public class StepCompleteActivity extends Activity {
 			msg = "You've arrived at " + runToPlace.getName() + "!"; 
 		}
 		else {
-			msg = "You completed step " + stepNo + " on your way to " + runToPlace.getName() + "!";  
+			msg = "You completed step " + (completedStepIndex + 1) + " on your way to " + runToPlace.getName() + "!";  
 		}
 		
 		legElapsedTime = DroidTime.msToStr(stepEndTime - currentLeg.getStartTime()); 
@@ -98,29 +129,20 @@ public class StepCompleteActivity extends Activity {
 	}
 
 	private void setupNextDirectionsButton() {
-		if (completedStep.equals(currentLeg.finalStep())) {
+		//If we've finished the leg, change the text to "Choose next destination" 
+		if (completedStepIndex >= currentLeg.size() - 1) {
 			nextDirectionsButton.setText("Choose next destination"); 
-
-			nextDirectionsButton.setOnClickListener(new View.OnClickListener() {
-				@Override 
-				public void onClick(View v) {
-					funRunApp.setKillRunActivity(true); 
-					finish(); 
-				}
-			});
-			//Go back to place selection screen	
-
 		}
 		else {
 			nextDirectionsButton.setText("Get next directions"); 
-
-			nextDirectionsButton.setOnClickListener(new View.OnClickListener() {
-				@Override 
-				public void onClick(View v) {
-					finish(); 
-				}
-			});
 		}
+		//Finish the activity to return to the FunRunActivity upon click
+		nextDirectionsButton.setOnClickListener(new View.OnClickListener() {
+			@Override 
+			public void onClick(View v) {
+				finish(); 
+			}
+		});
 	}
 
 	private static void vibrate(Vibrator v) {

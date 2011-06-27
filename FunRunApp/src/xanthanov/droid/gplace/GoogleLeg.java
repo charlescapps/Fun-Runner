@@ -3,6 +3,9 @@ package xanthanov.droid.gplace;
 import java.util.List;
 import java.util.ArrayList;
 
+import xanthanov.droid.xantools.DroidLoc; 
+import android.content.Context; 
+
 import com.google.android.maps.GeoPoint; 
 
 public class GoogleLeg {
@@ -18,6 +21,7 @@ public class GoogleLeg {
 	private long startTime; 
 	private long endTime; 
 	boolean doneRunning; 
+	private GooglePlace legDestination; 
 
 	//ACTUAL PATH RAN
 	List<GeoPoint> actualPath; 
@@ -31,6 +35,7 @@ public class GoogleLeg {
 		doneRunning = false; 
 		swBound = neBound = null; 
 		actualPath = new ArrayList<GeoPoint>(); 
+		legDestination = null; 
 	}
 
 	//Method to take a list of legs and get back a simple list of points to draw!
@@ -50,9 +55,7 @@ public class GoogleLeg {
 	}
 
 	public boolean isDone() {return doneRunning; }
-
 	public void finishLeg() {doneRunning = true; }
-
 	public void setNeBound(GeoPoint b0) {neBound = b0;}
 	public void setSwBound(GeoPoint b1) {swBound = b1;}
 	public GeoPoint getSwBound() {return swBound;}
@@ -72,6 +75,8 @@ public class GoogleLeg {
 	public GoogleStep finalStep() {return steps.get(steps.size() - 1); }
 	public GoogleStep firstStep() {return steps.get(0); }
 	public List<GeoPoint> getActualPath() {return actualPath;}
+	public void setLegDestination(GooglePlace gp) {this.legDestination = gp; }
+	public GooglePlace getLegDestination() {return legDestination; }
 
 	public void setActualDistanceToCompletedSteps() {
 		int dist = 0; 
@@ -98,5 +103,17 @@ public class GoogleLeg {
 			s += "\tStep #" + i + ": " + steps.get(i).toString() + "\n"; 
 		}
 		return s;
+	}
+
+	public void removeProximityAlerts(GoogleStep stepArrivedAt, Context c) {
+		int index = steps.indexOf(stepArrivedAt); 
+		if (index < 0) {
+			System.err.println("Attempt to remove proximity alert for nonexistent step"); 
+			return; 
+		}	
+		DroidLoc dLoc = new DroidLoc(c); 
+		for (int i = 0; i <= index; i++) {
+			dLoc.getLocManager().removeProximityAlert(steps.get(i).getProximityIntent()); 
+		}
 	}
 }

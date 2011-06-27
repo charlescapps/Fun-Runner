@@ -13,3 +13,17 @@ Plan for the future
 
 		Class AllRuns implements java.io.Serializable
 			List<RunData>
+
+6-27-11
+
+Finished loading dialogs. 
+Tracks your actual path ran. 
+
+TODO: 
+
+	-Make proximity listeners for every step. Get rid of all previous listeners when a step is finished. 
+	-In StepComplete activity store appropriate data. 
+	-Must complete a step to track your movement? Seems like a natural solution. 
+		*Must delete the leg if a step isn't completed. 
+
+	-Persist to disk

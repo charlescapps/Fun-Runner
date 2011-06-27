@@ -22,6 +22,7 @@ public class FunRunOverlay extends Overlay {
 	//********************CONSTANTS***************************
 	private final static int[] ROUTE_COLOR = new int[] {200, 240, 100, 100};
 	private final static int[] ACTUAL_COLOR = new int[] {200, 120, 180, 250};
+	private final static int[] COMPLETED_COLOR = new int[] {200, 180, 240, 180};
 
 	private final static Style ROUTE_STYLE = Style.STROKE; 
 	private final static Style ACTUAL_STYLE = Style.STROKE; 
@@ -34,8 +35,6 @@ public class FunRunOverlay extends Overlay {
 	private Paint pathPaint = null;
 	private GoogleDirections directions = null;
 	private GeoPoint currentLoc = null;
-	private GeoPoint currentStepPoint = null; 
-	private List<GeoPoint> actualPath = null;
 	
 	private Bitmap PIN_START = null;
 	private Bitmap PIN_END = null;
@@ -44,7 +43,6 @@ public class FunRunOverlay extends Overlay {
 	private Bitmap STICK_GUY_RUN2 = null; 
 	private Bitmap STICK_GUY_BG = null; 
 	private Bitmap CURRENT_STICK_GUY = null; 
-	private int frameNo; 
 	
 	public FunRunOverlay(MapView map, GoogleDirections directions) {
 		this.theMapView = map;
@@ -56,12 +54,9 @@ public class FunRunOverlay extends Overlay {
 		else {
 			this.currentLoc = null; 
 		}
-		this.frameNo = 0; 
 
 		//Paint settings
 		this.pathPaint.setAntiAlias(true);
-	
-		//System.out.println(map.getContext()); 
 		
 		PIN_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_blue);
 		PIN_END = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_red);
@@ -76,10 +71,6 @@ public class FunRunOverlay extends Overlay {
 	public void updateCurrentLocation(GeoPoint loc) { this.currentLoc = loc; }	
 
 	public void updateCurrentDirections(GoogleDirections directions) { this.directions = directions;}
-
-	public void updateStepPoint(GeoPoint pt) { this.currentStepPoint = pt;}
-
-	public void updateActualPath(List<GeoPoint> path) {actualPath = path; }
 
 	@Override
 	public void draw(Canvas canvas, MapView map, boolean b) {
@@ -100,15 +91,20 @@ public class FunRunOverlay extends Overlay {
 			pro.toPixels(startPoint, startCoords); 
 			pro.toPixels(endPoint, endCoords);
 
-			//Draw the route for the most recent leg of the journey (i.e. the place you are currently running to)
-			drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);
-			
 			//Draw end point
 			canvas.drawBitmap(PIN_END, endCoords.x - PIN_OFFSET.x, endCoords.y - PIN_OFFSET.y, pathPaint);
-		}
 
-		if (actualPath != null) {
-			drawAPath(actualPath, canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro);
+			//Draw the directions for the current leg in ROUTE_COLOR
+			drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);
+
+			//Draw the current path you've ran for the leg in ACTUAL_COLOR
+			drawAPath(directions.lastLeg().getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro); 
+
+			//Draw all your previous actual path's in COMPLETED_COLOR
+			for (int i = 0; i < directions.size() - 1; i++) {
+				drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro); 
+			}
+			
 		}
 
 		//Draw stick guy at current location
@@ -126,7 +122,6 @@ public class FunRunOverlay extends Overlay {
 		if(path == null || path.size() == 0) {
 			return;
 		}
-
 
 		//Add style and color to paint
 		this.pathPaint.setStrokeWidth(strokeWidth);

@@ -90,11 +90,11 @@ public class FunRunActivity extends MapActivity
 		//Get the Application object and its global data
 		funRunApp = (FunRunApplication) this.getApplicationContext(); 
 		runDirections = funRunApp.getRunDirections(); 
-		runPlace = funRunApp.getRunPlace();
 		//Initialize currentStep to the first step in the last leg of the GoogleDirections object
 		//As the runner arrives at destinations, new legs will be added
-		currentLeg = runDirections.get(runDirections.size()-1); 
+		currentLeg = runDirections.lastLeg(); 
 		currentStep = currentLeg.get(0);  
+		runPlace = currentLeg.getLegDestination();
 		//Store current step in the Application object to pass between activities
 		funRunApp.setCurrentStep(currentStep); 
 
@@ -113,15 +113,14 @@ public class FunRunActivity extends MapActivity
 
 		long theTime = System.currentTimeMillis(); 
 
-		//onCreate() is called when a new leg starts, so set the start time to now
+		//onCreate() is called when a new leg starts, so set the start time for the leg and the first step
 		currentLeg.setStartTime(theTime); 
+		currentLeg.get(0).setStartTime(theTime); 
 
-		//Make a proximity alert for end of route and current step, in case runner randomly takes a different route than given
-		if (!currentStep.equals(currentLeg.finalStep())) {
-			setupStepProximityAlert(currentStep, theTime);  
-		}		
-
-		setupStepProximityAlert(currentLeg.finalStep(), theTime);  
+		//Setup proximity alerts for every step
+		for (GoogleStep step: currentLeg.getSteps() ) {
+			setupStepProximityAlert(step);  
+		}
 
 		lastKnownLocation = droidLoc.getLastKnownLoc(); 
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
@@ -137,10 +136,16 @@ public class FunRunActivity extends MapActivity
 	@Override 
 	protected void onResume() {
 		super.onResume();
-		myLocOverlay.enableCompass(); 	
-		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
-		if (funRunApp.killRunActivity()) {
-			funRunApp.setKillRunActivity(false); 
+		//See if current step was updated by StepCompleteActivity
+		currentStep = ((FunRunApplication)getApplication()).getCurrentStep(); 
+		if (currentStep != null) {
+			myLocOverlay.enableCompass(); 	
+			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
+			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
+			updateDirectionsTextView(); 
+		}
+		else {
+			//Go choose another place	
 			finish(); 
 		}
 	}
@@ -172,13 +177,22 @@ public class FunRunActivity extends MapActivity
 		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
 	}
 
-	void setupStepProximityAlert(GoogleStep step, long startTime) {
-		//Add a proximity alert for the end point of the current step, start activity StepCompleteActivity
-		step.setStartTime(startTime); 
-		
-		PendingIntent stepCompleteIntent = PendingIntent.getActivity(this, 0,  new Intent(this, StepCompleteActivity.class), PendingIntent.FLAG_ONE_SHOT); 	
+	void setupStepProximityAlert(GoogleStep step) {
+		//Create the intent and add the end point lat/lng so we know what step it's for in the new activity
+		Intent runStepComplete = new Intent(this, StepCompleteActivity.class); 
+		runStepComplete.putExtra("lat", step.getEnd().getLatitudeE6()); 	
+		runStepComplete.putExtra("lng", step.getEnd().getLongitudeE6()); 	
+		//Create the PendingIntent, since this is what we have to pass to setProximityIntent
+		PendingIntent stepCompleteIntent = PendingIntent.getActivity(this, 0,  runStepComplete, PendingIntent.FLAG_ONE_SHOT); 	
 
+		//Store PendingIntent in step, necessary so we can remove it later! 
+		step.setProximityIntent(stepCompleteIntent); 		
+
+		//Get coordinates of the end point of the step
 		double latLng[] = DroidLoc.geoPointToDegrees(step.getEnd()); 
+
+		//Add the proximity alert to the LocationManager for this context. 
+		//Note: I'm not sure if I can get the LocationManager from a different context to remove the alerts. Will test. 
 		droidLoc.getLocManager().addProximityAlert(latLng[0], latLng[1], ACCEPT_RADIUS_METERS, -1, stepCompleteIntent);    
 	}
 
