@@ -5,16 +5,25 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<TextView android:id="@+id/spinnerTitle"
-		android:layout_width ="fill_parent"
+		android:layout_width ="wrap_content"
 		android:layout_height = "wrap_content"
-		android:textSize = "20sp"
+		android:layout_gravity="center_horizontal"
+		android:textSize = "25dp"
 		android:textStyle="bold"
+		android:textColor="#1133ff"
+		android:shadowColor="#7777ff"
+		android:shadowRadius="1.5"
+		android:shadowDx="1.8"
+		android:shadowDy="1.8"
 		android:text="Choose a Category:"/>
 	<Spinner android:id="@+id/runCategorySpinner"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:textSize="20sp"
-		android:textStyle="bold"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
+		android:textSize="20dp"
 		android:prompt="@string/spinner_prompt" />
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent"
@@ -22,9 +31,14 @@
 		android:gravity="center_horizontal">
 		<Button 
 			android:id="@+id/nextDestinationButton"
+			android:background="@drawable/button_style"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:textSize="20sp"
+			android:layout_marginLeft="10dp"
+			android:layout_marginRight="10dp"
+			android:paddingTop="10dp"
+			android:paddingBottom="10dp"
+			android:textSize="20dp"
 			android:textColor="#222299"
 			android:textStyle="bold|italic"
 			android:text="Find Nearby Places"/>
@@ -47,17 +61,43 @@
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			>
-			<Button android:id="@+id/buttonZoomOut" style="?android:attr/buttonStyleSmall" android:text="Zoom (-)" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-			<Button android:id="@+id/buttonZoomIn" style="?android:attr/buttonStyleSmall" android:text="Zoom (+)"  android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+			<Button android:id="@+id/buttonZoomOut" 
+				style="?android:attr/buttonStyleSmall" 
+				android:background="@drawable/button_style"
+				android:text="Zoom (-)" 
+				android:textStyle="bold" 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:paddingTop="3dp"
+				android:paddingBottom="3dp"
+				/>
+			<Button android:id="@+id/buttonZoomIn" 
+				style="?android:attr/buttonStyleSmall" 
+				android:background="@drawable/button_style"
+				android:text="Zoom (+)"  
+				android:textStyle="bold" 
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:paddingTop="3dp"
+				android:paddingBottom="3dp"
+				/>
 		</LinearLayout>
 		<Button 
 			android:id="@+id/gpsButton"
+			android:background="@drawable/button_style"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
 			android:text="Center on me"
 			android:textStyle="bold"
-			/>
+			android:paddingLeft="3dp"
+			android:paddingRight="3dp"
+			android:paddingTop="3dp"
+			android:paddingBottom="3dp"/>
 	</RelativeLayout>
 </LinearLayout>

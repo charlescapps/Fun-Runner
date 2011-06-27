@@ -27,6 +27,7 @@ import android.location.LocationManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.content.Intent;
+import android.text.Spanned;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -172,6 +173,7 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private void setupSpinner() {
+
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_spinner_item);	
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		runCategorySpinner.setAdapter(adapter); 
@@ -444,7 +446,7 @@ public class ChoosePlaceActivity extends MapActivity
 				return;
 			}
 
-			String search = (String)runCategorySpinner.getSelectedItem();
+			String search = (runCategorySpinner.getSelectedItem()).toString();
 			new PlacesQueryTask(a).execute(search); 	
 		}
 

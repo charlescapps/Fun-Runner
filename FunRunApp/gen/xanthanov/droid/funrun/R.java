@@ -14,13 +14,17 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int icon=0x7f020000;
-        public static final int lower_left_info=0x7f020001;
-        public static final int mappin_blue=0x7f020002;
-        public static final int mappin_red=0x7f020003;
-        public static final int stick_guy_bg=0x7f020004;
-        public static final int stick_guy_run1=0x7f020005;
-        public static final int stick_guy_run2=0x7f020006;
+        public static final int button_down=0x7f020000;
+        public static final int button_focused=0x7f020001;
+        public static final int button_style=0x7f020002;
+        public static final int button_up=0x7f020003;
+        public static final int icon=0x7f020004;
+        public static final int lower_left_info=0x7f020005;
+        public static final int mappin_blue=0x7f020006;
+        public static final int mappin_red=0x7f020007;
+        public static final int stick_guy_bg=0x7f020008;
+        public static final int stick_guy_run1=0x7f020009;
+        public static final int stick_guy_run2=0x7f02000a;
     }
     public static final class id {
         public static final int aboutButton=0x7f060024;
