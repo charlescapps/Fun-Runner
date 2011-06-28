@@ -174,15 +174,15 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void setupSpinner() {
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_spinner_item);	
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_array, R.layout.normal_spinner);	
+		adapter.setDropDownViewResource(R.layout.spinner_dropdown);
 		runCategorySpinner.setAdapter(adapter); 
 		
 		runCategorySpinner.setOnItemSelectedListener(new FunRunOnItemSelected());
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, false);
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
@@ -441,11 +441,12 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 		
 		public void onClick(View v) {
-
+			/*
 			if (firstGpsFix == null) {
 				DroidDialogs.showPopup(a, "No GPS location found", "A fix on your current location hasn't been found since the app started.\nMake sure you are outside and your GPS is turned on, then try again.");
 				return;
 			}
+			*/
 
 			String search = (runCategorySpinner.getSelectedItem()).toString();
 			new PlacesQueryTask(a).execute(search); 	

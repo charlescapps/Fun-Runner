@@ -1,12 +1,15 @@
 package xanthanov.droid.gplace; 
 
+import android.graphics.Bitmap; 
 import com.google.android.maps.GeoPoint; 
-import java.net.URL; 
+import java.net.URL;
+import xanthanov.droid.xantools.*;  
 
 public class GooglePlace {
 	private String name; 
 	private GeoPoint geoPt;
 	private URL iconUrl;  
+	private Bitmap iconBmp; 
 
 	public GooglePlace() {
 		name = null; 
@@ -18,6 +21,10 @@ public class GooglePlace {
 		this.name = name; 
 		this.geoPt = geoPt; 
 		this.iconUrl = icon; 
+
+		//Download the Bitmap
+		iconBmp = DroidBitmapDownload.getBitmapFromURL(iconUrl); 
+		iconBmp.setDensity(iconBmp.getDensity() * 2 ) ;
 	}
 
 	public float distanceTo(GeoPoint myLocation) {
@@ -43,6 +50,10 @@ public class GooglePlace {
 
 	public URL getIconUrl() {
 		return iconUrl; 
+	}
+
+	public Bitmap getIconBmp() {
+		return iconBmp; 
 	}
 
 	@Override

@@ -30,12 +30,15 @@ public class FunRunOverlay extends Overlay {
 
 	private final static Point PIN_OFFSET = new Point(5,29);
 	private final static Point STICK_GUY_OFFSET = new Point(15,27);
+	private final static Point JOURNEY_START_OFFSET = new Point(35,0);
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
 	private GoogleDirections directions = null;
 	private GeoPoint currentLoc = null;
+	private boolean drawRoute = false; 
 	
+	private Bitmap JOURNEY_START = null; 
 	private Bitmap PIN_START = null;
 	private Bitmap PIN_END = null;
 	private Bitmap INFO_LOWER_LEFT = null;
@@ -44,9 +47,10 @@ public class FunRunOverlay extends Overlay {
 	private Bitmap STICK_GUY_BG = null; 
 	private Bitmap CURRENT_STICK_GUY = null; 
 	
-	public FunRunOverlay(MapView map, GoogleDirections directions) {
+	public FunRunOverlay(MapView map, GoogleDirections directions, boolean drawRoute) {
 		this.theMapView = map;
 		this.directions = directions;
+		this.drawRoute = drawRoute; 
 		this.pathPaint = new Paint();
 		if (directions != null) {
 			this.currentLoc = directions.getFirstPoint();
@@ -58,6 +62,7 @@ public class FunRunOverlay extends Overlay {
 		//Paint settings
 		this.pathPaint.setAntiAlias(true);
 		
+		JOURNEY_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.journey_start); 
 		PIN_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_blue);
 		PIN_END = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_red);
 		INFO_LOWER_LEFT = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.lower_left_info);
@@ -85,17 +90,23 @@ public class FunRunOverlay extends Overlay {
 
 		//If directions isn't null, draw the directions in red
 		if (directions != null) {
-			GeoPoint startPoint = directions.lastLeg().getFirstPoint(); //First point of the last leg
-			GeoPoint endPoint = directions.lastLeg().getLastPoint();  //Last point of the last leg
 
-			pro.toPixels(startPoint, startCoords); 
-			pro.toPixels(endPoint, endCoords);
+			//If drawRoute==true, draw the directions given by google in red
+			if (drawRoute) {
+				GeoPoint startPoint = directions.lastLeg().getFirstPoint(); //First point of the last leg
+				GeoPoint endPoint = directions.lastLeg().getLastPoint();  //Last point of the last leg
 
-			//Draw end point
-			canvas.drawBitmap(PIN_END, endCoords.x - PIN_OFFSET.x, endCoords.y - PIN_OFFSET.y, pathPaint);
+				pro.toPixels(startPoint, startCoords); 
+				pro.toPixels(endPoint, endCoords);
 
-			//Draw the directions for the current leg in ROUTE_COLOR
-			drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);
+				//Draw place image at end point
+				Bitmap bmp = directions.lastLeg().getLegDestination().getIconBmp(); 
+				canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
+
+				//Draw the directions for the current leg in ROUTE_COLOR
+				drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);
+
+			}
 
 			//Draw the current path you've ran for the leg in ACTUAL_COLOR
 			drawAPath(directions.lastLeg().getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro); 
@@ -104,6 +115,11 @@ public class FunRunOverlay extends Overlay {
 			for (int i = 0; i < directions.size() - 1; i++) {
 				drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro); 
 			}
+
+			//Draw journey-start sign at initial point
+			Point journeyStartPoint = new Point(); 
+			pro.toPixels(directions.getFirstPoint(), journeyStartPoint); 
+			canvas.drawBitmap(JOURNEY_START, journeyStartPoint.x - JOURNEY_START_OFFSET.x, journeyStartPoint.y - JOURNEY_START_OFFSET.y, pathPaint); 
 			
 		}
 

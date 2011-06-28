@@ -9,15 +9,13 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center_horizontal"
-		android:textSize="24sp"
-		android:textColor="#ee8888"
-		/>
+		android:textSize="24dp"
+		android:textColor="#ee5555"/>
 	<TextView android:id="@+id/directionsTextView" 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"	
-		android:textSize="20sp"
-		android:text=""
-		/>
+		android:textSize="20dp"
+		android:text=""/>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"

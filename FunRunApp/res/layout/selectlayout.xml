@@ -10,8 +10,8 @@
 		android:layout_gravity="center_horizontal"
 		android:textSize = "25dp"
 		android:textStyle="bold"
-		android:textColor="#1133ff"
-		android:shadowColor="#7777ff"
+		android:textColor="#6688ff"
+		android:shadowColor="#2222ff"
 		android:shadowRadius="1.5"
 		android:shadowDx="1.8"
 		android:shadowDy="1.8"
@@ -19,30 +19,16 @@
 	<Spinner android:id="@+id/runCategorySpinner"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:background="@drawable/button_style"
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"
 		android:paddingTop="10dp"
 		android:paddingBottom="10dp"
 		android:textSize="20dp"
 		android:prompt="@string/spinner_prompt" />
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal">
-		<Button 
-			android:id="@+id/nextDestinationButton"
-			android:background="@drawable/button_style"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="10dp"
-			android:layout_marginRight="10dp"
-			android:paddingTop="10dp"
-			android:paddingBottom="10dp"
-			android:textSize="20dp"
-			android:textColor="#222299"
-			android:textStyle="bold|italic"
-			android:text="Find Nearby Places"/>
-	</LinearLayout>
+	<Button android:id="@+id/nextDestinationButton"
+		style="@style/big_button"
+		android:text="Find Nearby Places"/>
 	<RelativeLayout
 		android:id="@+id/relLayout"
 		android:layout_width="fill_parent"

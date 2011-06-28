@@ -34,6 +34,14 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay; 
 import com.google.android.maps.Overlay; 
 
+/**
+*	Copyright (c) 2011 Charles L. Capps
+*
+*	@author Xanthanov
+*
+**/
+
+
 public class FunRunActivity extends MapActivity
 {
 	//***********VIEW OBJECTS DEFINED IN XML**********************
@@ -64,8 +72,8 @@ public class FunRunActivity extends MapActivity
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static float ACCEPT_RADIUS_METERS = 40.0f; 
-	public final static float PATH_INCREMENT_METERS = 20.0f; 
+	public final static float ACCEPT_RADIUS_METERS = 50.0f; 
+	public final static float PATH_INCREMENT_METERS = 10.0f; 
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -100,8 +108,8 @@ public class FunRunActivity extends MapActivity
 
 		//Get the HTML directions from the raw string and set the text view
 		htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
-		System.out.println("HTML: " + htmlInstructions); 
-		chosenPlaceTextView.setText("Running to " + runPlace.getName()); 		
+		Spanned txt = android.text.Html.fromHtml("Running to <b>" + runPlace.getName() + "</b>"); 		
+		chosenPlaceTextView.setText(txt); 
 		updateDirectionsTextView(); 
 
 		//******************CALL SETUP METHODS****************************
@@ -182,6 +190,7 @@ public class FunRunActivity extends MapActivity
 		Intent runStepComplete = new Intent(this, StepCompleteActivity.class); 
 		runStepComplete.putExtra("lat", step.getEnd().getLatitudeE6()); 	
 		runStepComplete.putExtra("lng", step.getEnd().getLongitudeE6()); 	
+
 		//Create the PendingIntent, since this is what we have to pass to setProximityIntent
 		PendingIntent stepCompleteIntent = PendingIntent.getActivity(this, 0,  runStepComplete, PendingIntent.FLAG_ONE_SHOT); 	
 
@@ -214,7 +223,6 @@ public class FunRunActivity extends MapActivity
 		//Add a GeoPoint to the actualPath in the currentLeg, provided the previous point is far enough away from the current point. 
 		//This obviously is intended to prevent 
 		addToActualPath(lastKnownLocation); 
-		myFunRunOverlay.updateActualPath(currentLeg.getActualPath()); 
 	}
 
 	private void addToActualPath(GeoPoint g) {
@@ -247,7 +255,7 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, true);
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
 		myLocOverlay.enableCompass(); 	

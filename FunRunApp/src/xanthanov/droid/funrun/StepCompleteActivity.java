@@ -22,6 +22,7 @@ public class StepCompleteActivity extends Activity {
 	private FunRunApplication funRunApp; 
 	private int completedStepIndex = -1; 
 
+	private TextView stepCompleteTitle;
 	private TextView stepCompleteText; 
 	private TextView stepTimeText; 
 	private TextView elapsedTimeToPlaceText; 
@@ -71,6 +72,7 @@ public class StepCompleteActivity extends Activity {
 		//If everything goes well, remove all the proximity listeners for this step and prior
 		currentLeg.removeProximityAlerts(completedStep, this); 
 
+		stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
 		stepTimeText = (TextView) findViewById(R.id.stepTimeTextView); 
 		elapsedTimeToPlaceText = (TextView) findViewById(R.id.elapsedTimeToPlaceTextView); 
@@ -81,6 +83,9 @@ public class StepCompleteActivity extends Activity {
 		vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 		long stepEndTime = System.currentTimeMillis(); 
 
+		if (completedStepIndex >= currentLeg.size() - 1) {
+			stepCompleteTitle.setText("YOU HAVE ARRIVED!"); 
+		}
 		completedStep.completeStep(); 
 		setStopTime(stepEndTime); 
 		setNextStep(); 
@@ -111,11 +116,11 @@ public class StepCompleteActivity extends Activity {
 	private void displayMsg(long stepEndTime) {
 		String msg = null, stepTime= null, legElapsedTime = null, totalElapsedTime = null;
 
-		if (completedStep.equals(currentLeg.finalStep())) {
-			msg = "You've arrived at " + runToPlace.getName() + "!"; 
+		if (completedStepIndex>=currentLeg.size() - 1) {
+			msg = "You ran to <b>" + runToPlace.getName() + "</b>!"; 
 		}
 		else {
-			msg = "You completed step " + (completedStepIndex + 1) + " on your way to " + runToPlace.getName() + "!";  
+			msg = "You completed step #" + (completedStepIndex + 1) + " on your way to " + runToPlace.getName() + "!";  
 		}
 		
 		legElapsedTime = DroidTime.msToStr(stepEndTime - currentLeg.getStartTime()); 
