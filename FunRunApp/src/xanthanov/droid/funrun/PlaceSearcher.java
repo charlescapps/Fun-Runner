@@ -148,8 +148,7 @@ public class PlaceSearcher {
 		String lat = coords.getString("lat");
 		String lng = coords.getString("lng");
 		
-		int latMicroDegrees = (int) (Double.parseDouble(lat)*1E6); 
-		int lngMicroDegrees = (int) (Double.parseDouble(lng)*1E6); 
+		double[] latLng = new double[] {Double.parseDouble(lat), Double.parseDouble(lng)};
 		
 		URL iconUrl = null; 
 
@@ -162,7 +161,7 @@ public class PlaceSearcher {
 			return null; 
 		}
 
-		return new GooglePlace(name, new GeoPoint(latMicroDegrees, lngMicroDegrees), iconUrl);	
+		return new GooglePlace(name, latLng, iconUrl);	
 	}
 
 	public static void printListOfPlaces(List<GooglePlace> places) {

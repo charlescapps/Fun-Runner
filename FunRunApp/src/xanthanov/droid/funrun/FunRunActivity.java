@@ -6,6 +6,7 @@ import xanthanov.droid.xantools.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface; 
+import android.content.IntentFilter; 
 
 import android.os.Bundle;
 import android.view.View;
@@ -66,14 +67,18 @@ public class FunRunActivity extends MapActivity
 	private GooglePlace runPlace;  
 	private Spanned htmlInstructions; 
 	private DroidLoc droidLoc; 
+	private int maxStepFinished = -1; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static float ACCEPT_RADIUS_METERS = 50.0f; 
+	public final static float ACCEPT_RADIUS_METERS = 30.0f; 
 	public final static float PATH_INCREMENT_METERS = 10.0f; 
+
+	public final String PROXIMITY_ACTION = "xanthanov.droid.funrun.PROXIMITY_ALERT";
+	public final static String STEP_EXTRA = "step_no";
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -125,16 +130,8 @@ public class FunRunActivity extends MapActivity
 		currentLeg.setStartTime(theTime); 
 		currentLeg.get(0).setStartTime(theTime); 
 
-		//Setup proximity alerts for every step
-		for (GoogleStep step: currentLeg.getSteps() ) {
-			setupStepProximityAlert(step);  
-		}
-
-		lastKnownLocation = droidLoc.getLastKnownLoc(); 
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		myFunRunOverlay.updateCurrentDirections(runDirections); 
-
 		zoomToRoute(); 
+
     }
 	
 	public boolean isRouteDisplayed() {
@@ -151,6 +148,11 @@ public class FunRunActivity extends MapActivity
 			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
 			updateDirectionsTextView(); 
+
+			lastKnownLocation = droidLoc.getLastKnownLoc(); 
+			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+			myFunRunOverlay.updateCurrentDirections(runDirections); 
+			myMap.postInvalidate(); 
 		}
 		else {
 			//Go choose another place	
@@ -185,32 +187,15 @@ public class FunRunActivity extends MapActivity
 		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
 	}
 
-	void setupStepProximityAlert(GoogleStep step) {
-		//Create the intent and add the end point lat/lng so we know what step it's for in the new activity
-		Intent runStepComplete = new Intent(this, StepCompleteActivity.class); 
-		runStepComplete.putExtra("lat", step.getEnd().getLatitudeE6()); 	
-		runStepComplete.putExtra("lng", step.getEnd().getLongitudeE6()); 	
-
-		//Create the PendingIntent, since this is what we have to pass to setProximityIntent
-		PendingIntent stepCompleteIntent = PendingIntent.getActivity(this, 0,  runStepComplete, PendingIntent.FLAG_ONE_SHOT); 	
-
-		//Store PendingIntent in step, necessary so we can remove it later! 
-		step.setProximityIntent(stepCompleteIntent); 		
-
-		//Get coordinates of the end point of the step
-		double latLng[] = DroidLoc.geoPointToDegrees(step.getEnd()); 
-
-		//Add the proximity alert to the LocationManager for this context. 
-		//Note: I'm not sure if I can get the LocationManager from a different context to remove the alerts. Will test. 
-		droidLoc.getLocManager().addProximityAlert(latLng[0], latLng[1], ACCEPT_RADIUS_METERS, -1, stepCompleteIntent);    
-	}
-
 	private void updateLocation(Location l) {
 		if (l==null) { //not sure if this locListener will ever return null here. May as well check
 			return;
 		}
 		//Update the local variable with the last known location
 		lastKnownLocation = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
+
+		//Check if we've finished a step
+		checkForCompleteSteps(); 
 		
 		//Update the overlay so it draws properly
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
@@ -224,6 +209,24 @@ public class FunRunActivity extends MapActivity
 		//This obviously is intended to prevent 
 		addToActualPath(lastKnownLocation); 
 	}
+
+	private void checkForCompleteSteps() {
+		float distance[] = new float[1]; 
+		GoogleStep step = null;
+		double latLng[] = DroidLoc.geoPointToDegrees(lastKnownLocation); 
+		for (int i = maxStepFinished + 1; i < currentLeg.size(); i++) {
+			step = currentLeg.get(i); 
+			Location.distanceBetween(step.getEnd()[0], step.getEnd()[1], latLng[0], latLng[1], distance); 
+			if (distance[0] <= ACCEPT_RADIUS_METERS) {
+				maxStepFinished = i; 
+				currentLeg.setMaxStepCompleted(i); 
+				Intent completeStepIntent = new Intent(this, StepCompleteActivity.class); 
+				completeStepIntent.putExtra(STEP_EXTRA, i); 
+				startActivity(completeStepIntent);
+				break;  
+			} 
+		}
+	} 
 
 	private void addToActualPath(GeoPoint g) {
 		List<GeoPoint> actualPath = currentLeg.getActualPath();

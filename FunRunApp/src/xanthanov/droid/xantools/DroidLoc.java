@@ -46,8 +46,8 @@ public class DroidLoc {
 
 	public static double[] geoPointToDegrees(GeoPoint g) {
 		double[] latLng = new double[2]; 
-		latLng[0] = g.getLatitudeE6()*1E-6;
-		latLng[1] = g.getLongitudeE6()*1E-6;
+		latLng[0] = ((double)g.getLatitudeE6())*1E-6;
+		latLng[1] = ((double)g.getLongitudeE6())*1E-6;
 		return latLng; 
 	}
 

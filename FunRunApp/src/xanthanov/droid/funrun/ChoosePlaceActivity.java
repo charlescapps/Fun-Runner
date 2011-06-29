@@ -376,6 +376,17 @@ public class ChoosePlaceActivity extends MapActivity
 		GoogleLeg legToAdd = currentDirections.get(0); 
 		legToAdd.setLegDestination(currentRunToPlace);
 		funRunApp.getRunDirections().add(legToAdd); 
+
+		//Download image for new leg in a thread
+		Thread downloadImageThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				currentRunToPlace.downloadImage(); 
+			}
+		});
+
+		downloadImageThread.start(); 
+
 		startActivity(i); 
 	}
 
@@ -441,7 +452,7 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 		
 		public void onClick(View v) {
-			/*
+			/* Off while debugging
 			if (firstGpsFix == null) {
 				DroidDialogs.showPopup(a, "No GPS location found", "A fix on your current location hasn't been found since the app started.\nMake sure you are outside and your GPS is turned on, then try again.");
 				return;

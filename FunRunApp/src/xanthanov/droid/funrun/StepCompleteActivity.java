@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button; 
 import android.content.Intent;
+import android.text.Spanned;
 
 public class StepCompleteActivity extends Activity {
 
@@ -24,7 +25,8 @@ public class StepCompleteActivity extends Activity {
 
 	private TextView stepCompleteTitle;
 	private TextView stepCompleteText; 
-	private TextView stepTimeText; 
+	private TextView avgSpeedText; 
+	private TextView avgSpeedRunText; 
 	private TextView elapsedTimeToPlaceText; 
 	private TextView totalElapsedTimeText; 
 	private Button nextDirectionsButton; 
@@ -36,15 +38,18 @@ public class StepCompleteActivity extends Activity {
 	public void onCreate(Bundle b) {
 		super.onCreate(b);
 		setContentView(R.layout.step_complete); 
+		System.out.println("In step complete activity..."); 
 
 		funRunApp = (FunRunApplication) getApplicationContext(); 
 		Intent startIntent = this.getIntent();
-		int lat = startIntent.getIntExtra("lat", -1);
-		int lng = startIntent.getIntExtra("lng", -1); 
+		completedStepIndex = startIntent.getIntExtra(FunRunActivity.STEP_EXTRA, -1); 
+		System.out.println("Completed step index: " + completedStepIndex); 
 
-		if (lat == -1 || lng == -1) {
-			System.err.println("Step completed, but no latitude / longitude was stored in the intent!"); 
-			finish(); 
+		if (completedStepIndex == -1) {
+			String msg = "Step completed, but stepNo was -1 in IntExtra"; 
+			System.err.println(msg); 
+			DroidDialogs.showPopup(this,"Error--Debugging", msg); 
+			//finish(); 
 			return; 
 		}	  
 
@@ -52,29 +57,15 @@ public class StepCompleteActivity extends Activity {
 		currentLeg = runDirections.lastLeg(); 
 		runToPlace = currentLeg.getLegDestination(); 
 
-		//Find the index of the step that ends on the lat / lng passed to this activity by its starting Intent
-		for (int i = 0; i < currentLeg.size(); i++) {
-			GoogleStep gs = currentLeg.get(i); 
-			if (gs.getEnd().getLatitudeE6() == lat && gs.getEnd().getLongitudeE6() == lng) {
-				completedStepIndex = i; 
-				break; 				
-			}
-		}
-
-		if (completedStepIndex == -1) {
-			System.err.println("Step completed, but there was no step in current leg for the given lat / lng!"); 
-			finish(); 
-			return; 
-		}	  
-
 		completedStep = currentLeg.get(completedStepIndex); 
 
 		//If everything goes well, remove all the proximity listeners for this step and prior
-		currentLeg.removeProximityAlerts(completedStep, this); 
+		currentLeg.removeProximityAlerts(completedStep, getApplicationContext()); 
 
 		stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
-		stepTimeText = (TextView) findViewById(R.id.stepTimeTextView); 
+		avgSpeedText = (TextView) findViewById(R.id.avgSpeedTextView); 
+		avgSpeedRunText = (TextView) findViewById(R.id.avgSpeedRunTextView); 
 		elapsedTimeToPlaceText = (TextView) findViewById(R.id.elapsedTimeToPlaceTextView); 
 		totalElapsedTimeText = (TextView) findViewById(R.id.totalElapsedTimeTextView); 
 
@@ -84,7 +75,7 @@ public class StepCompleteActivity extends Activity {
 		long stepEndTime = System.currentTimeMillis(); 
 
 		if (completedStepIndex >= currentLeg.size() - 1) {
-			stepCompleteTitle.setText("YOU HAVE ARRIVED!"); 
+			stepCompleteTitle.setText("Congratulations!"); 
 		}
 		completedStep.completeStep(); 
 		setStopTime(stepEndTime); 
@@ -114,23 +105,36 @@ public class StepCompleteActivity extends Activity {
 	}
 
 	private void displayMsg(long stepEndTime) {
-		String msg = null, stepTime= null, legElapsedTime = null, totalElapsedTime = null;
+		Spanned msg = null, avgSpeed= null, avgSpeedRun = null, legElapsedTime = null, totalElapsedTime = null;
 
 		if (completedStepIndex>=currentLeg.size() - 1) {
-			msg = "You ran to <b>" + runToPlace.getName() + "</b>!"; 
+			msg = android.text.Html.fromHtml("You ran to <b>" + runToPlace.getName() + "</b>!"); 
 		}
 		else {
-			msg = "You completed step #" + (completedStepIndex + 1) + " on your way to " + runToPlace.getName() + "!";  
+			msg = android.text.Html.fromHtml("You completed step " + (completedStepIndex + 1) + " on your way to <b>" + runToPlace.getName() + "</b>!");  
 		}
 		
 		legElapsedTime = DroidTime.msToStr(stepEndTime - currentLeg.getStartTime()); 
 		totalElapsedTime = DroidTime.msToStr(stepEndTime - runDirections.get(0).getStartTime()); 	
-		stepTime = DroidTime.msToStr(stepEndTime - completedStep.getStartTime()); 	
 
+		//Distance this leg and total distance overall
+		int legDistance = currentLeg.getDistanceSoFar(); 
+		int totalDistance = 0; 
+		for (GoogleLeg l: runDirections.getLegs()) {
+			totalDistance += l.getDistanceSoFar(); 
+		}
+
+		//Avg. speed in m/s 
+		avgSpeed = DroidTime.getSpeedString(stepEndTime - currentLeg.getStartTime(), legDistance); 
+
+		avgSpeedRun = DroidTime.getSpeedString(stepEndTime - runDirections.get(0).getStartTime(), totalDistance); 
+
+		//Set text views.
 		stepCompleteText.setText(msg); 
-		stepTimeText.setText(stepTime); 
 		elapsedTimeToPlaceText.setText(legElapsedTime); 
 		totalElapsedTimeText.setText(totalElapsedTime);
+		avgSpeedText.setText(avgSpeed); 
+		avgSpeedRunText.setText(avgSpeedRun); 
 	}
 
 	private void setupNextDirectionsButton() {

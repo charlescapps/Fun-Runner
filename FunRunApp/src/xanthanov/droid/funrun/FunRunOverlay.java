@@ -101,7 +101,9 @@ public class FunRunOverlay extends Overlay {
 
 				//Draw place image at end point
 				Bitmap bmp = directions.lastLeg().getLegDestination().getIconBmp(); 
-				canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
+				if (bmp != null) {
+					canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
+				}
 
 				//Draw the directions for the current leg in ROUTE_COLOR
 				drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);

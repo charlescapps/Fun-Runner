@@ -22,6 +22,7 @@ public class GoogleLeg {
 	private long endTime; 
 	boolean doneRunning; 
 	private GooglePlace legDestination; 
+	private int maxStepCompleted; 
 
 	//ACTUAL PATH RAN
 	List<GeoPoint> actualPath; 
@@ -36,8 +37,27 @@ public class GoogleLeg {
 		swBound = neBound = null; 
 		actualPath = new ArrayList<GeoPoint>(); 
 		legDestination = null; 
+		maxStepCompleted = -1; 
 	}
 
+	public int getMaxStepCompleted() {return maxStepCompleted;}
+	public void setMaxStepCompleted(int n) {maxStepCompleted = n;}
+
+	public int getDistanceSoFar(int maxCompletedStep) {
+		int distMeters = 0; 
+		for (int i = 0; i <= maxCompletedStep; i++) {
+			distMeters += steps.get(i).getDistanceMeters(); 
+		}
+		return distMeters; 
+	}
+
+	public int getDistanceSoFar() {
+		int distMeters = 0; 
+		for (int i = 0; i <= maxStepCompleted; i++) {
+			distMeters += steps.get(i).getDistanceMeters(); 
+		}
+		return distMeters; 
+	}
 	//Method to take a list of legs and get back a simple list of points to draw!
 	public List<GeoPoint> getPathPoints() {
 		List<GeoPoint> points = new ArrayList<GeoPoint>(); 
@@ -45,10 +65,10 @@ public class GoogleLeg {
 			return points; 
 		} 
 
-		points.add(steps.get(0).getStart()); 
+		points.add(steps.get(0).getStartGeoPoint()); 
 
 		for (int j = 0; j < steps.size(); j++) {
-			points.add(steps.get(j).getEnd()); //Add end point of step
+			points.add(steps.get(j).getEndGeoPoint()); //Add end point of step
 		}	
 
 		return points; 
@@ -63,8 +83,8 @@ public class GoogleLeg {
 	public void add(GoogleStep gs) {steps.add(gs); }
 	public int size() {return steps.size(); }
 	public GoogleStep get(int i) {return steps.get(i); }
-	public GeoPoint getFirstPoint() {return steps.get(0).getStart(); }
-	public GeoPoint getLastPoint() { return steps.get(steps.size()-1).getEnd(); }
+	public GeoPoint getFirstPoint() {return steps.get(0).getStartGeoPoint(); }
+	public GeoPoint getLastPoint() { return steps.get(steps.size()-1).getEndGeoPoint(); }
 	public List<GoogleStep> getSteps() {return steps; }
 	public long getStartTime() { return startTime;}
 	public long getEndTime() {return endTime;}

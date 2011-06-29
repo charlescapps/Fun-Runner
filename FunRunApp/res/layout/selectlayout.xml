@@ -17,14 +17,11 @@
 		android:shadowDy="1.8"
 		android:text="Choose a Category:"/>
 	<Spinner android:id="@+id/runCategorySpinner"
+		android:background="@drawable/spinner_background"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:background="@drawable/button_style"
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"
-		android:paddingTop="10dp"
-		android:paddingBottom="10dp"
-		android:textSize="20dp"
 		android:prompt="@string/spinner_prompt" />
 	<Button android:id="@+id/nextDestinationButton"
 		style="@style/big_button"

@@ -3,13 +3,15 @@ package xanthanov.droid.gplace;
 import java.util.List;
 import java.util.ArrayList;
 
+import xanthanov.droid.xantools.*; 
+
 import android.app.PendingIntent; 
 
 import com.google.android.maps.GeoPoint; 
 
 public class GoogleStep {
 
-	private	GeoPoint start, end; 
+	private double[] startLatLng, endLatLng; 
 	private int distanceMeters; 
 	private String distanceString; 
 	private String htmlInstructions; 
@@ -18,9 +20,9 @@ public class GoogleStep {
 	private long endTime;
 	private PendingIntent proximityIntent;  
 
-	public GoogleStep(GeoPoint start, GeoPoint end, int distanceMeters, String distanceString, String html) {
-		this.start = start; 
-		this.end = end; 
+	public GoogleStep(double[] start, double[] end, int distanceMeters, String distanceString, String html) {
+		this.startLatLng = start; 
+		this.endLatLng = end; 
 		this.distanceMeters = distanceMeters; 
 		this.distanceString = distanceString; 
 		this.htmlInstructions = html; 
@@ -29,8 +31,10 @@ public class GoogleStep {
 		this.proximityIntent = null; 
 	}
 
-	public GeoPoint getStart() {return start; }
-	public GeoPoint getEnd() {return end; }
+	public GeoPoint getStartGeoPoint() {return DroidLoc.degreesToGeoPoint(startLatLng[0], startLatLng[1]); }
+	public GeoPoint getEndGeoPoint() {return DroidLoc.degreesToGeoPoint(endLatLng[0], endLatLng[1]); }
+	public double[] getStart() {return startLatLng; }
+	public double[] getEnd() {return endLatLng; }
 	public int getDistanceMeters() {return distanceMeters;}
 	public String getDistanceString() {return distanceString;}
 	public String getHtmlInstructions() {return htmlInstructions;}
@@ -53,7 +57,7 @@ public class GoogleStep {
 		}
 		GoogleStep s = (GoogleStep) o; 
 
-		if (start.equals(s.start) && end.equals(s.end) && completed == s.completed && startTime == s.startTime && endTime == s.endTime) {
+		if (startLatLng[0] == s.startLatLng[0] && startLatLng[1] == s.startLatLng[1] && endLatLng[0] == s.endLatLng[0] && endLatLng[1] == s.endLatLng[1] && completed == s.completed && startTime == s.startTime && endTime == s.endTime) {
 			return true; 
 		}
 		return false; 
@@ -61,6 +65,6 @@ public class GoogleStep {
 	}
 
 	public String toString() {
-		return "Start:" + start + ",End:" + end + ",dist:" + distanceMeters + "distStr:"+distanceString; 
+		return "Start:" + startLatLng[0] +"," + startLatLng[1] + ",End:" + endLatLng[0] + "," + endLatLng[1] + ",dist:" + distanceMeters + "distStr:"+distanceString; 
 	}
 }

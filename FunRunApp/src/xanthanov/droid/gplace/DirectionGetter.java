@@ -83,7 +83,7 @@ public class DirectionGetter {
 
 		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
 			while ((aLine = in.readLine()) != null) {
-	//			System.out.println(aLine);
+				System.out.println(aLine);
 				jsonString+=aLine;  
 			}
 		}
@@ -154,7 +154,7 @@ public class DirectionGetter {
 					GeoPoint end = new GeoPoint((int) (endLat*1E6), (int) (endLng*1E6)); 
 					String htmlDirections = currentStep.getString("html_instructions");
 
-					directions.get(directions.size()-1).add(new GoogleStep(start, end, stepDistanceMeters, stepDistanceStr, htmlDirections ));
+					directions.get(directions.size()-1).add(new GoogleStep(new double[] {startLat, startLng}, new double[] {endLat, endLng}, stepDistanceMeters, stepDistanceStr, htmlDirections ));
 				}
 			} 	
 

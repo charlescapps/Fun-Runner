@@ -21,7 +21,7 @@ public class ProgressRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		pd = ProgressDialog.show(activity, title, msg, true, true); 
+		pd = ProgressDialog.show(activity, title, msg, true, false); 
 	}
 
 	public boolean dismissDialog() {
