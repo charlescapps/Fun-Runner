@@ -25,12 +25,10 @@ public class FunRunTitle extends Activity
 		newRunButton= (Button) findViewById(R.id.newRunButton);
 		viewStatsButton = (Button) findViewById(R.id.viewStatsButton); 
 		aboutButton = (Button) findViewById(R.id.aboutButton); 
-	
-	//	System.out.println("newRunButton:" + newRunButton); 
 		//****************End Get Views************************ 
 
-
 		setupButtons(); 
+
     }
 
 	private void setupButtons() {
@@ -43,6 +41,11 @@ public class FunRunTitle extends Activity
 					startActivity(startRunIntent); 
 				}
 			});	
+	}
+
+	@Override
+	protected void onDestroy() {
+
 	}
 
 }

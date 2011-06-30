@@ -116,19 +116,41 @@ public class ChoosePlaceActivity extends MapActivity
 		return true;
 	}
 
-	@Override 
-	protected void onResume() {
-		super.onResume();
+	@Override
+	protected void onStart() {
+		super.onStart(); 
 		checkGps(); 
 		myLocOverlay.enableCompass(); 	
 		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
+		lastKnownLocation = droidLoc.getLastKnownLoc(); 
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop(); 
+		droidLoc.getLocManager().removeUpdates(myLocListener); 
+		myLocOverlay.disableCompass();
+	}
+
+	@Override 
+	protected void onResume() {
+		super.onResume();
 	}
 	
 	@Override 
 	protected void onPause() {
 		super.onPause(); 
-		droidLoc.getLocManager().removeUpdates(myLocListener); 
-		myLocOverlay.disableCompass();
+	}
+
+	@Override 
+	protected void onDestroy() {
+		super.onDestroy(); 
+
+		
+		if (currentDirections != null && currentDirections.getDistanceSoFar() > 0) {
+			FunRunApplication funRunApp = (FunRunApplication) getApplicationContext(); 
+			funRunApp.addDirectionsToState(currentDirections); 		
+		}
 	}
 
 	private void checkGps() {

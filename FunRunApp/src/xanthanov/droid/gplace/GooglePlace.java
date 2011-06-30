@@ -5,7 +5,7 @@ import com.google.android.maps.GeoPoint;
 import java.net.URL;
 import xanthanov.droid.xantools.*;  
 
-public class GooglePlace {
+public class GooglePlace implements java.io.Serializable {
 	private String name; 
 	//private GeoPoint geoPt;
 	private double[] latLng; 

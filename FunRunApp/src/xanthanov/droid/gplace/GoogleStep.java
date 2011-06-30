@@ -9,7 +9,7 @@ import android.app.PendingIntent;
 
 import com.google.android.maps.GeoPoint; 
 
-public class GoogleStep {
+public class GoogleStep implements java.io.Serializable{
 
 	private double[] startLatLng, endLatLng; 
 	private int distanceMeters; 

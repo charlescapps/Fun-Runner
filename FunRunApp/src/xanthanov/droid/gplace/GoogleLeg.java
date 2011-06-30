@@ -8,7 +8,7 @@ import android.content.Context;
 
 import com.google.android.maps.GeoPoint; 
 
-public class GoogleLeg {
+public class GoogleLeg implements java.io.Serializable {
 	//DATA FROM GOOGLE MAPS HTTP QUERY
 	private List<GoogleStep> steps; 
 	private String distanceString; 

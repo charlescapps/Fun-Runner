@@ -5,7 +5,7 @@ import com.google.android.maps.GeoPoint;
 import java.util.List; 
 import java.util.ArrayList; 
 
-public class GoogleDirections {
+public class GoogleDirections implements java.io.Serializable {
 
 	private List<GoogleLeg> legs; 
 	private boolean completed; 
@@ -23,6 +23,13 @@ public class GoogleDirections {
 	public void complete() {this.completed = true;} 
 	public GoogleLeg lastLeg() {return legs.get(legs.size() - 1);}
 
+	public int getDistanceSoFar() {
+		int dist = 0; 
+		for (GoogleLeg l: legs) {
+			dist += l.getDistanceSoFar();  
+		}
+		return dist; 
+	}
 
 
 	public GeoPoint getFirstPoint() {
