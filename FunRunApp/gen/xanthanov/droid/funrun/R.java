@@ -20,20 +20,26 @@ public final class R {
         public static final int button_up=0x7f020003;
         public static final int icon=0x7f020004;
         public static final int journey_start=0x7f020005;
-        public static final int lower_left_info=0x7f020006;
-        public static final int mappin_blue=0x7f020007;
-        public static final int mappin_red=0x7f020008;
-        public static final int spinner_background=0x7f020009;
-        public static final int spinner_down=0x7f02000a;
-        public static final int spinner_focused=0x7f02000b;
-        public static final int spinner_up=0x7f02000c;
-        public static final int stick_guy_bg=0x7f02000d;
-        public static final int stick_guy_run1=0x7f02000e;
-        public static final int stick_guy_run2=0x7f02000f;
-        public static final int table_cell=0x7f020010;
+        public static final int load_button=0x7f020006;
+        public static final int load_button_down=0x7f020007;
+        public static final int load_button_style=0x7f020008;
+        public static final int lower_left_info=0x7f020009;
+        public static final int mappin_blue=0x7f02000a;
+        public static final int mappin_red=0x7f02000b;
+        public static final int new_button=0x7f02000c;
+        public static final int new_button_down=0x7f02000d;
+        public static final int new_button_style=0x7f02000e;
+        public static final int spinner_background=0x7f02000f;
+        public static final int spinner_down=0x7f020010;
+        public static final int spinner_focused=0x7f020011;
+        public static final int spinner_up=0x7f020012;
+        public static final int stick_guy_bg=0x7f020013;
+        public static final int stick_guy_run1=0x7f020014;
+        public static final int stick_guy_run2=0x7f020015;
+        public static final int table_cell=0x7f020016;
+        public static final int title_screen=0x7f020017;
     }
     public static final class id {
-        public static final int aboutButton=0x7f07002b;
         public static final int avgSpeedLayout=0x7f07001e;
         public static final int avgSpeedRunRow=0x7f070021;
         public static final int avgSpeedRunTextView=0x7f07001d;
@@ -75,6 +81,7 @@ public final class R {
         public static final int totalElapsedTimeLayout=0x7f070025;
         public static final int totalElapsedTimeTextView=0x7f070027;
         public static final int totalElapsedTimeTitle=0x7f070026;
+        public static final int viewRunsTitle=0x7f07002b;
         public static final int viewStatsButton=0x7f07002a;
         public static final int zoomButtonsLayout=0x7f070011;
     }
@@ -85,6 +92,7 @@ public final class R {
         public static final int spinner_dropdown=0x7f030003;
         public static final int step_complete=0x7f030004;
         public static final int title=0x7f030005;
+        public static final int view_stats=0x7f030006;
     }
     public static final class string {
         public static final int amusement_park=0x7f060019;

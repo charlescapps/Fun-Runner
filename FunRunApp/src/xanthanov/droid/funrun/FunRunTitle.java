@@ -13,7 +13,7 @@ public class FunRunTitle extends Activity
 {
 	Button newRunButton; 
 	Button viewStatsButton; 
-	Button aboutButton; 
+//	Button aboutButton; 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -24,7 +24,7 @@ public class FunRunTitle extends Activity
 		//****************Get views by ID**********************
 		newRunButton= (Button) findViewById(R.id.newRunButton);
 		viewStatsButton = (Button) findViewById(R.id.viewStatsButton); 
-		aboutButton = (Button) findViewById(R.id.aboutButton); 
+//		aboutButton = (Button) findViewById(R.id.aboutButton); 
 		//****************End Get Views************************ 
 
 		setupButtons(); 
@@ -45,6 +45,7 @@ public class FunRunTitle extends Activity
 
 	@Override
 	protected void onDestroy() {
+		super.onDestroy();
 
 	}
 

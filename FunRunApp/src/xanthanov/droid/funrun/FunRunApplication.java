@@ -29,7 +29,13 @@ public class FunRunApplication extends Application {
 		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
 		fullPath = dataDir + File.pathSeparator + DATA_FILE; 
 
-		state = RunDataSerializer.getFunRunData(fullPath); 
+		try {
+			state = RunDataSerializer.getFunRunData(fullPath); 
+		}
+		catch (Exception e) {
+			e.printStackTrace(); 
+			state = null; 
+		}
 	}
 
 	public FunRunApplication() {

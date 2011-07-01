@@ -4,6 +4,6 @@
 	android:layout_height="fill_parent"
 	android:textSize="20dp"
 	android:textStyle="bold"
-	android:textColor="#2222ff"
+	android:textColor="#003300"
 	android:drawableRight="@android:drawable/ic_menu_more"
 	android:gravity="center_horizontal|center_vertical"/>

@@ -4,15 +4,18 @@ import com.google.android.maps.GeoPoint;
 
 import java.util.List; 
 import java.util.ArrayList; 
+import java.util.Date; 
 
 public class GoogleDirections implements java.io.Serializable {
 
 	private List<GoogleLeg> legs; 
 	private boolean completed; 
+	private Date dateOfRun; 
 
 	public GoogleDirections() {
 		legs = new ArrayList<GoogleLeg>();
 		completed = false; 
+		dateOfRun = new Date(); 
 	}
 
 	public List<GoogleLeg> getLegs() {return legs;}

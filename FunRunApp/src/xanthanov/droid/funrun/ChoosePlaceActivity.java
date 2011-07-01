@@ -303,9 +303,6 @@ public class ChoosePlaceActivity extends MapActivity
 		lastKnownLocation = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 
-		//Start ProgressDialog 
-		
-
 		currentDirections = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
 
 		if (currentDirections != null) {

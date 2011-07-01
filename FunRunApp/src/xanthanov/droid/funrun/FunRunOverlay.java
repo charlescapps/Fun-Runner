@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.DashPathEffect; 
 
 import java.util.List;
 
@@ -20,13 +21,16 @@ import com.google.android.maps.MapView;
 public class FunRunOverlay extends Overlay {
 	
 	//********************CONSTANTS***************************
-	private final static int[] ROUTE_COLOR = new int[] {200, 240, 100, 100};
-	private final static int[] ACTUAL_COLOR = new int[] {200, 120, 180, 250};
-	private final static int[] COMPLETED_COLOR = new int[] {200, 180, 240, 180};
+	private final static int[] ROUTE_COLOR = new int[] {220, 240, 20, 20};
+	private final static int[] ACTUAL_COLOR = new int[] {200, 50, 50, 250};
+	private final static int[] COMPLETED_COLOR = new int[] {200, 50, 240, 50};
 
 	private final static Style ROUTE_STYLE = Style.STROKE; 
 	private final static Style ACTUAL_STYLE = Style.STROKE; 
 	private final static float STROKE_WIDTH = 4.0f; 
+
+	private final static float[] ROUTE_DASHES = new float[] {10.0f, 5.0f, 3.0f, 5.0f};  
+	private final static float[] ACTUAL_DASHES = new float[] {10.0f, 5.0f};  
 
 	private final static Point PIN_OFFSET = new Point(5,29);
 	private final static Point STICK_GUY_OFFSET = new Point(15,27);
@@ -46,7 +50,7 @@ public class FunRunOverlay extends Overlay {
 	private Bitmap STICK_GUY_RUN2 = null; 
 	private Bitmap STICK_GUY_BG = null; 
 	private Bitmap CURRENT_STICK_GUY = null; 
-	
+
 	public FunRunOverlay(MapView map, GoogleDirections directions, boolean drawRoute) {
 		this.theMapView = map;
 		this.directions = directions;
@@ -71,6 +75,7 @@ public class FunRunOverlay extends Overlay {
 		STICK_GUY_RUN2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run2);
 		CURRENT_STICK_GUY = STICK_GUY_RUN1; 
 		STICK_GUY_BG = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_bg);
+
 	}
 
 	public void updateCurrentLocation(GeoPoint loc) { this.currentLoc = loc; }	
@@ -106,16 +111,16 @@ public class FunRunOverlay extends Overlay {
 				}
 
 				//Draw the directions for the current leg in ROUTE_COLOR
-				drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro);
+				drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
 
 			}
 
 			//Draw the current path you've ran for the leg in ACTUAL_COLOR
-			drawAPath(directions.lastLeg().getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro); 
+			drawAPath(directions.lastLeg().getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
 
 			//Draw all your previous actual path's in COMPLETED_COLOR
 			for (int i = 0; i < directions.size() - 1; i++) {
-				drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro); 
+				drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro, ACTUAL_DASHES); 
 			}
 
 			//Draw journey-start sign at initial point
@@ -135,7 +140,7 @@ public class FunRunOverlay extends Overlay {
 
 	}
 
-	private void drawAPath(List<GeoPoint> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro) {
+	private void drawAPath(List<GeoPoint> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro, float[] dashes) {
 
 		if(path == null || path.size() == 0) {
 			return;
@@ -156,6 +161,11 @@ public class FunRunOverlay extends Overlay {
 
 		//Create the path
 		Path thePath = new Path();
+
+		//Create PathDash effect
+		DashPathEffect pathDash = new DashPathEffect(dashes, 0); 
+		pathPaint.setPathEffect(pathDash); 
+
 		thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
 		
 		//Loop through all GeoPoints
