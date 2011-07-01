@@ -57,6 +57,10 @@ public class ViewStatsAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		if (state == null || state.size() <= 0) {
+			return getEmptyView(); 
+		}
+
 		if (galleryViews[position] != null) {
 			return galleryViews[position]; 
 		}
@@ -80,7 +84,14 @@ public class ViewStatsAdapter extends BaseAdapter {
 		TextView avgSpeed;  
 	*/
 
+		galleryViews[position] = galleryView; 
 		return galleryView;
+	}
+
+	private View getEmptyView() {
+		ViewGroup emptyStatsView = (ViewGroup) inflater.inflate(R.id.emptyStats, null); 
+
+		return emptyStatsView;
 	}
 
 	@Override 
