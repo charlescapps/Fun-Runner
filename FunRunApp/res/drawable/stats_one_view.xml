@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/statsGalleryView"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<LinearLayout 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" >
+		<TextView 
+			android:layout_width = "wrap_content" 
+			android:layout_height="wrap_content" 
+			android:textSize = "25dp"
+			android:textColor="#995511"
+			android:text ="Your run on "/>
+		<TextView android:id = "@+id/viewRunsDate"
+			android:layout_width = "wrap_content" 
+			android:layout_height = "wrap_content" />
+	</LinearLayout>
+	<TableLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<TableRow style="@style/table_row"> 
+			<TextView style="@style/row_title"
+				android:text="Total distance: " />
+			<TextView android:id="@+id/totalDistance" 
+				style="@style/row_data" />
+		</TableRow>
+		<TableRow style="@style/table_row"> 
+			<TextView style="@style/row_title"
+				android:text="Total Time: " />
+			<TextView android:id="@+id/totalTime" 
+				style="@style/row_data" />
+		</TableRow>
+		<TableRow style="@style/table_row"> 
+			<TextView style="@style/row_title"
+				android:text="Average Speed: " />
+			<TextView android:id="@+id/avgSpeed" 
+				style="@style/row_data" />
+		</TableRow>
+		<TableRow style="@style/table_row"> 
+			<TextView style="@style/row_title"
+				android:text="Places visited: " />
+			<TextView android:id="@+id/placesVisited" 
+				style="@style/row_data" />
+		</TableRow>
+	</TableLayout>
+</LinearLayout>

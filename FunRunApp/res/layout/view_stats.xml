@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/parentContainer"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-	<TextView android:id="@+id/viewRunsTitle"
-		android:layout_width = "fill_parent" 
-		android:layout_height="wrap_content" 
-		android:textSize = "25dp"
-		android:textColor="#995511"
-		android:text ="Previous Runs"/>
-
-		<!-- 
-	<ListView android:id="@+id/statsListView" 
-			android:divider=""
-		/>
-		-->
-	
-
-</LinearLayout>
+<Gallery xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id = "@+id/statsGalleryView"
+	android:layout_width = "fill_parent" 
+	android:layout_height="fill_parent" />

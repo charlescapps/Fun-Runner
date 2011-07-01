@@ -15,31 +15,31 @@ public final class R {
     }
     public static final class drawable {
         public static final int button_down=0x7f020000;
-        public static final int button_focused=0x7f020001;
-        public static final int button_style=0x7f020002;
-        public static final int button_up=0x7f020003;
-        public static final int icon=0x7f020004;
-        public static final int journey_start=0x7f020005;
-        public static final int load_button=0x7f020006;
-        public static final int load_button_down=0x7f020007;
-        public static final int load_button_style=0x7f020008;
-        public static final int lower_left_info=0x7f020009;
-        public static final int mappin_blue=0x7f02000a;
-        public static final int mappin_red=0x7f02000b;
-        public static final int new_button=0x7f02000c;
-        public static final int new_button_down=0x7f02000d;
-        public static final int new_button_style=0x7f02000e;
-        public static final int spinner_background=0x7f02000f;
-        public static final int spinner_down=0x7f020010;
-        public static final int spinner_focused=0x7f020011;
-        public static final int spinner_up=0x7f020012;
-        public static final int stick_guy_bg=0x7f020013;
-        public static final int stick_guy_run1=0x7f020014;
-        public static final int stick_guy_run2=0x7f020015;
-        public static final int table_cell=0x7f020016;
-        public static final int title_screen=0x7f020017;
+        public static final int button_style=0x7f020001;
+        public static final int button_up=0x7f020002;
+        public static final int icon=0x7f020003;
+        public static final int journey_start=0x7f020004;
+        public static final int load_button=0x7f020005;
+        public static final int load_button_down=0x7f020006;
+        public static final int load_button_style=0x7f020007;
+        public static final int lower_left_info=0x7f020008;
+        public static final int mappin_blue=0x7f020009;
+        public static final int mappin_red=0x7f02000a;
+        public static final int new_button=0x7f02000b;
+        public static final int new_button_down=0x7f02000c;
+        public static final int new_button_style=0x7f02000d;
+        public static final int spinner_background=0x7f02000e;
+        public static final int spinner_down=0x7f02000f;
+        public static final int spinner_up=0x7f020010;
+        public static final int stats_one_view=0x7f020011;
+        public static final int stick_guy_bg=0x7f020012;
+        public static final int stick_guy_run1=0x7f020013;
+        public static final int stick_guy_run2=0x7f020014;
+        public static final int table_cell=0x7f020015;
+        public static final int title_screen=0x7f020016;
     }
     public static final class id {
+        public static final int avgSpeed=0x7f07002f;
         public static final int avgSpeedLayout=0x7f07001e;
         public static final int avgSpeedRunRow=0x7f070021;
         public static final int avgSpeedRunTextView=0x7f07001d;
@@ -62,6 +62,7 @@ public final class R {
         public static final int nextDestinationButton=0x7f07000e;
         public static final int nextDirectionsButton=0x7f070028;
         public static final int parentContainer=0x7f07000b;
+        public static final int placesVisited=0x7f070030;
         public static final int relLayout=0x7f07000f;
         public static final int runCategorySpinner=0x7f07000d;
         public static final int run_buttonCenterOnMe=0x7f07000a;
@@ -74,14 +75,17 @@ public final class R {
         public static final int run_relLayout=0x7f070003;
         public static final int run_zoomButtonsLayout=0x7f070005;
         public static final int spinnerTitle=0x7f07000c;
+        public static final int statsGalleryView=0x7f07002b;
         public static final int stepCompleteTextView=0x7f070016;
         public static final int stepCompleteTitle=0x7f070015;
         public static final int timeTable=0x7f070017;
+        public static final int totalDistance=0x7f07002d;
         public static final int totalDistanceRow=0x7f07001b;
         public static final int totalElapsedTimeLayout=0x7f070025;
         public static final int totalElapsedTimeTextView=0x7f070027;
         public static final int totalElapsedTimeTitle=0x7f070026;
-        public static final int viewRunsTitle=0x7f07002b;
+        public static final int totalTime=0x7f07002e;
+        public static final int viewRunsDate=0x7f07002c;
         public static final int viewStatsButton=0x7f07002a;
         public static final int zoomButtonsLayout=0x7f070011;
     }
@@ -125,5 +129,29 @@ public final class R {
     }
     public static final class style {
         public static final int big_button=0x7f050000;
+        public static final int row_data=0x7f050003;
+        public static final int row_title=0x7f050002;
+        public static final int table_row=0x7f050001;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a StatsGallery.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #StatsGallery_android_galleryItemBackground xanthanov.droid.funrun:android_galleryItemBackground}</code></td><td></td></tr>
+           </table>
+           @see #StatsGallery_android_galleryItemBackground
+         */
+        public static final int[] StatsGallery = {
+            0x0101004c
+        };
+        /**
+          <p>This symbol is the offset where the {@link xanthanov.droid.funrun.R.attr#android_galleryItemBackground}
+          attribute's value can be found in the {@link #StatsGallery} array.
+          @attr name android:android_galleryItemBackground
+        */
+        public static final int StatsGallery_android_galleryItemBackground = 0;
+    };
 }

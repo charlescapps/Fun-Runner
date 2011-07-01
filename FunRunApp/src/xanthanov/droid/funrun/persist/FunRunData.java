@@ -16,9 +16,7 @@ public class FunRunData implements Serializable {
 
 	}
 
-	public GoogleDirections get(int i) {
-		return myRuns.get(i); 
-	}
+	public GoogleDirections get(int i) {return myRuns.get(i); }
 
 	public int size() {return myRuns.size(); } 
 

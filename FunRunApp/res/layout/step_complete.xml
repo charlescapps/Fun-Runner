@@ -27,7 +27,7 @@
 			<TableRow android:id="@+id/legDistanceRow"
 				android:layout_width = "fill_parent"
 				android:layout_height = "wrap_content"
-				android:padding="5sp">
+				android:padding="5dp">
 				<TextView android:id="@+id/legDistanceTitle"	
 					android:background="@drawable/table_cell"
 					android:layout_width = "wrap_content"

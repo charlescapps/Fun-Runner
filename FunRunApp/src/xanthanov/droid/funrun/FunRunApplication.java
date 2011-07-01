@@ -36,13 +36,18 @@ public class FunRunApplication extends Application {
 			e.printStackTrace(); 
 			state = null; 
 		}
+
+		if (state == null) {
+			state = new FunRunData(); 
+		}
 	}
 
 	public FunRunApplication() {
 		super(); 
 		runDirections = new GoogleDirections(); 
-
 	}
+
+	public FunRunData getState() {return state; }
 
 	public void setRunDirections(GoogleDirections d) {runDirections = d;}
 	
@@ -52,9 +57,7 @@ public class FunRunApplication extends Application {
 
 	public void setCurrentStep(GoogleStep s) {currentStep=s;} 
 
-	//Called 
-	public void addDirectionsToState(GoogleDirections gd) {
-		state.add(gd); 
-	}
+	//Called when the ChoosePlacesActivity activity is destroyed to add runner's progress to the data
+	public void addDirectionsToState(GoogleDirections gd) {state.add(gd); }
 
 }

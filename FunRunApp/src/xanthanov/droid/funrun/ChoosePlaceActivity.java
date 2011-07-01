@@ -2,7 +2,6 @@ package xanthanov.droid.funrun;
 
 import xanthanov.droid.xantools.*; 
 import xanthanov.droid.gplace.*;
-import xanthanov.droid.funrun.threads.*;
 
 import android.app.Activity;
 import android.app.AlertDialog;

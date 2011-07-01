@@ -41,6 +41,14 @@ public class FunRunTitle extends Activity
 					startActivity(startRunIntent); 
 				}
 			});	
+
+		final Intent viewStatsIntent = new Intent(this, ViewStatsActivity.class); 
+		viewStatsButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(viewStatsIntent); 				
+			}
+		}); 
 	}
 
 	@Override

@@ -14,4 +14,26 @@
 		<item name="android:textColor">#222299</item>
 		<item name="android:textStyle">bold|italic</item>
     </style>
+	<style name="table_row"> 
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:padding">5dp</item>
+	</style>
+	<style name="row_title"> 
+		<item name="android:background">@drawable/table_cell</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textSize">15dp</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">#2244ff</item>
+		<item name="android:gravity">right</item>
+	</style>
+	<style name="row_data"> 
+		<item name="android:background">@drawable/table_cell</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:gravity">left</item>
+		<item name="android:textSize">15dp</item>
+		<item name="android:textColor">#ff2222</item>
+	</style>
 </resources>
