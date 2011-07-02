@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.content.Intent; 
 import android.content.Context; 
 import android.view.View;
+import android.view.MotionEvent;
 
 public class FunRunTitle extends Activity
 {
@@ -31,6 +32,13 @@ public class FunRunTitle extends Activity
 
     }
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy(); 
+		FunRunApplication app = (FunRunApplication)getApplicationContext();
+		app.writeState(); 
+	}
+
 	private void setupButtons() {
 		
 		final Intent startRunIntent = new Intent(this, ChoosePlaceActivity.class); 
@@ -49,12 +57,6 @@ public class FunRunTitle extends Activity
 				startActivity(viewStatsIntent); 				
 			}
 		}); 
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
 
 	}
-
 }

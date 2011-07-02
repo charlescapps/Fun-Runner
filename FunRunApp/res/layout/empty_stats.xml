@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id = "@+id/emptyStats"
+	android:layout_width = "fill_parent" 
+	android:layout_height = "fill_parent" >
+
+	<TextView android:id="@+id/emptyStatsMsg" 
+		android:layout_width = "fill_parent" 
+		android:layout_height = "fill_parent" 
+		android:textSize = "25dp"
+		android:textStyle="bold" 
+		android:textColor="#001000"
+		android:text = "No runs found!\n\nGo running and your stats will be automatically tracked!"/>
+
+</LinearLayout>

@@ -27,7 +27,7 @@ public class FunRunApplication extends Application {
 		super.onCreate(); 
 
 		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
-		fullPath = dataDir + File.pathSeparator + DATA_FILE; 
+		fullPath = dataDir + File.separator + DATA_FILE; 
 
 		try {
 			state = RunDataSerializer.getFunRunData(fullPath); 
@@ -42,12 +42,19 @@ public class FunRunApplication extends Application {
 		}
 	}
 
+
 	public FunRunApplication() {
 		super(); 
 		runDirections = new GoogleDirections(); 
 	}
 
 	public FunRunData getState() {return state; }
+
+	public void writeState() {
+		if (state != null) {
+			RunDataSerializer.writeFunRunData(fullPath, state); 
+		}
+	}
 
 	public void setRunDirections(GoogleDirections d) {runDirections = d;}
 	

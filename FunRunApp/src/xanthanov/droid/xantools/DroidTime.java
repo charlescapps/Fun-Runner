@@ -17,7 +17,7 @@ public class DroidTime {
 
 	public static Spanned getSpeedString(long ms, int distanceMeters) {
 		DecimalFormat df = new DecimalFormat("#.##"); 
-		double mPerS = (double)distanceMeters / ((double)ms/1000); 
+		double mPerS = ((double)distanceMeters) / (((double)ms)/1000); 
 
 		String html = df.format(mPerS) + " <b>m/s</b>"; 
 

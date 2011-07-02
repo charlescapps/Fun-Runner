@@ -139,15 +139,15 @@ public class FunRunActivity extends MapActivity
 	}
 
 	@Override 
-	protected void onResume() {
-		super.onResume();
+	protected void onStart() {
+		super.onStart();
 		//See if current step was updated by StepCompleteActivity
 		currentStep = ((FunRunApplication)getApplication()).getCurrentStep(); 
 		if (currentStep != null) {
-			myLocOverlay.enableCompass(); 	
-			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
 			updateDirectionsTextView(); 
+			myLocOverlay.enableCompass(); 	
+			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 
 			lastKnownLocation = droidLoc.getLastKnownLoc(); 
 			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
@@ -161,8 +161,8 @@ public class FunRunActivity extends MapActivity
 	}
 	
 	@Override 
-	protected void onPause() {
-		super.onPause(); 
+	protected void onStop() {
+		super.onStop(); 
 		droidLoc.getLocManager().removeUpdates(myLocListener); 
 		myLocOverlay.disableCompass();
 	}

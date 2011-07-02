@@ -43,6 +43,8 @@ public class GoogleLeg implements java.io.Serializable {
 	public int getMaxStepCompleted() {return maxStepCompleted;}
 	public void setMaxStepCompleted(int n) {maxStepCompleted = n;}
 
+	public GoogleStep lastStepDone() {return steps.get(maxStepCompleted); }
+
 	public int getDistanceSoFar(int maxCompletedStep) {
 		int distMeters = 0; 
 		for (int i = 0; i <= maxCompletedStep; i++) {

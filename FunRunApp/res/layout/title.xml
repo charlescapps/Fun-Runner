@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<ImageView android:src="@drawable/title_screen"
+	<ImageView android:src="@drawable/title_alice"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 	/>
@@ -25,20 +25,21 @@
 				android:layout_gravity="center_horizontal"
 				android:text="The Fun Run App"/>
 		-->
-			<Button android:id="@+id/newRunButton"
-				android:layout_width = "wrap_content" 
-				android:layout_height = "wrap_content" 
-				android:background="@drawable/new_button_style"
-				android:layout_marginTop="300dp"
-				android:layout_marginLeft="40dp"
-				android:layout_marginRight="40dp"/>
-			<Button android:id="@+id/viewStatsButton"
-				android:layout_width = "wrap_content" 
-				android:layout_height = "wrap_content" 
-				android:background="@drawable/load_button_style"
-				android:layout_marginTop="5dp"
-				android:layout_marginLeft="40dp"
-				android:layout_marginRight="40dp"
-				/>
+			<LinearLayout
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:gravity="center_horizontal"
+				android:layout_marginTop = "400dp">
+				
+				<Button android:id="@+id/newRunButton"
+					android:layout_width = "wrap_content" 
+					android:layout_height = "wrap_content" 
+					android:background="@drawable/new_button_style"
+					android:layout_marginRight="30dp"/>
+				<Button android:id="@+id/viewStatsButton"
+					android:layout_width = "wrap_content" 
+					android:layout_height = "wrap_content" 
+					android:background="@drawable/load_button_style"/>
+			</LinearLayout>
 	</LinearLayout>
 </RelativeLayout>

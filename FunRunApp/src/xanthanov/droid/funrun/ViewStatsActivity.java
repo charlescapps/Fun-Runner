@@ -6,6 +6,10 @@ import xanthanov.droid.funrun.persist.*;
 import android.app.Activity; 
 import android.os.Bundle; 
 import android.widget.Gallery; 
+import android.widget.AdapterView.OnItemClickListener; 
+import android.widget.AdapterView; 
+import android.widget.Toast; 
+import android.view.View; 
 
 public class ViewStatsActivity extends Activity {
 
@@ -19,10 +23,15 @@ public class ViewStatsActivity extends Activity {
 		setContentView(R.layout.view_stats); 
 
 		//Get the gallery from the layout 
-		statsGallery = (Gallery) findViewById(R.id.statsGalleryView);
+		statsGallery = (Gallery) findViewById(R.id.statsGallery);
 		state = ((FunRunApplication) getApplicationContext()).getState(); 
 
-		myAdapter = new ViewStatsAdapter(this, state); 
+		myAdapter = new ViewStatsAdapter(this, state, statsGallery); 
 		statsGallery.setAdapter(myAdapter); 
+		statsGallery.setOnItemClickListener(new OnItemClickListener() {
+				public void onItemClick(AdapterView parent, View v, int position, long id) {
+					Toast.makeText(ViewStatsActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+				}
+			});
 	}
 }

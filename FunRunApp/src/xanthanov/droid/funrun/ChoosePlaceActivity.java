@@ -145,11 +145,8 @@ public class ChoosePlaceActivity extends MapActivity
 	protected void onDestroy() {
 		super.onDestroy(); 
 
-		
-		if (currentDirections != null && currentDirections.getDistanceSoFar() > 0) {
-			FunRunApplication funRunApp = (FunRunApplication) getApplicationContext(); 
-			funRunApp.addDirectionsToState(currentDirections); 		
-		}
+		FunRunApplication funRunApp = (FunRunApplication) getApplicationContext(); 
+		funRunApp.writeState(); 		
 	}
 
 	private void checkGps() {

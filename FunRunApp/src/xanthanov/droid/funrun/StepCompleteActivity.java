@@ -25,6 +25,8 @@ public class StepCompleteActivity extends Activity {
 
 	private TextView stepCompleteTitle;
 	private TextView stepCompleteText; 
+	private TextView legDistanceText; 
+	private TextView totalDistanceText; 
 	private TextView avgSpeedText; 
 	private TextView avgSpeedRunText; 
 	private TextView elapsedTimeToPlaceText; 
@@ -64,10 +66,14 @@ public class StepCompleteActivity extends Activity {
 
 		stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
+
+		legDistanceText = (TextView) findViewById(R.id.legDistanceTextView); 
+		totalDistanceText = (TextView) findViewById(R.id.totalDistanceTextView); 
 		avgSpeedText = (TextView) findViewById(R.id.avgSpeedTextView); 
 		avgSpeedRunText = (TextView) findViewById(R.id.avgSpeedRunTextView); 
 		elapsedTimeToPlaceText = (TextView) findViewById(R.id.elapsedTimeToPlaceTextView); 
 		totalElapsedTimeText = (TextView) findViewById(R.id.totalElapsedTimeTextView); 
+
 
 		nextDirectionsButton = (Button) findViewById(R.id.nextDirectionsButton); 
 
@@ -88,9 +94,7 @@ public class StepCompleteActivity extends Activity {
 
 	private void setStopTime(long endTime) {
 		completedStep.setEndTime(endTime); 
-		if (completedStepIndex >= currentLeg.size() - 1) {
-			currentLeg.setEndTime(endTime); 
-		}
+		currentLeg.setEndTime(endTime); 
 	}
 
 	private void setNextStep() {
@@ -105,7 +109,13 @@ public class StepCompleteActivity extends Activity {
 	}
 
 	private void displayMsg(long stepEndTime) {
-		Spanned msg = null, avgSpeed= null, avgSpeedRun = null, legElapsedTime = null, totalElapsedTime = null;
+		Spanned msg = null,
+			legDistanceText = null, 
+			totalDistanceText = null, 
+			avgSpeed= null, 
+			avgSpeedRun = null, 
+			legElapsedTime = null, 
+			totalElapsedTime = null;
 
 		if (completedStepIndex>=currentLeg.size() - 1) {
 			msg = android.text.Html.fromHtml("You ran to <b>" + runToPlace.getName() + "</b>!"); 
@@ -113,20 +123,20 @@ public class StepCompleteActivity extends Activity {
 		else {
 			msg = android.text.Html.fromHtml("You completed step " + (completedStepIndex + 1) + " on your way to <b>" + runToPlace.getName() + "</b>!");  
 		}
+
+		//Distance this leg and total distance overall
+		int legDistance = currentLeg.getDistanceSoFar(); 
+		int totalDistance = runDirections.getDistanceSoFar(); 
+
+		legDistanceText = DroidTime.getDistanceString(legDistance); 
+		totalDistanceText = DroidTime.getDistanceString(totalDistance); 
 		
 		legElapsedTime = DroidTime.msToStr(stepEndTime - currentLeg.getStartTime()); 
 		totalElapsedTime = DroidTime.msToStr(stepEndTime - runDirections.get(0).getStartTime()); 	
 
-		//Distance this leg and total distance overall
-		int legDistance = currentLeg.getDistanceSoFar(); 
-		int totalDistance = 0; 
-		for (GoogleLeg l: runDirections.getLegs()) {
-			totalDistance += l.getDistanceSoFar(); 
-		}
 
 		//Avg. speed in m/s 
 		avgSpeed = DroidTime.getSpeedString(stepEndTime - currentLeg.getStartTime(), legDistance); 
-
 		avgSpeedRun = DroidTime.getSpeedString(stepEndTime - runDirections.get(0).getStartTime(), totalDistance); 
 
 		//Set text views.

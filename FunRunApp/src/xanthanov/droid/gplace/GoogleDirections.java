@@ -25,6 +25,7 @@ public class GoogleDirections implements java.io.Serializable {
 	public boolean isCompleted() {return completed;}
 	public void complete() {this.completed = true;} 
 	public GoogleLeg lastLeg() {return legs.get(legs.size() - 1);}
+	public Date getDate() {return dateOfRun;}
 
 	public int getDistanceSoFar() {
 		int dist = 0; 
@@ -34,6 +35,10 @@ public class GoogleDirections implements java.io.Serializable {
 		return dist; 
 	}
 
+
+	public long totalTime() {
+		return lastLeg().getEndTime() - legs.get(0).getStartTime(); 
+	}
 
 	public GeoPoint getFirstPoint() {
 		return legs.get(0).getFirstPoint(); 
