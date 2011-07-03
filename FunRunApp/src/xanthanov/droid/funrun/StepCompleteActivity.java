@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.content.Intent;
 import android.text.Spanned;
 
+import android.speech.tts.TextToSpeech; 
+
 public class StepCompleteActivity extends Activity {
 
 	private GoogleStep completedStep = null; 
@@ -32,6 +34,8 @@ public class StepCompleteActivity extends Activity {
 	private TextView elapsedTimeToPlaceText; 
 	private TextView totalElapsedTimeText; 
 	private Button nextDirectionsButton; 
+
+	private TextToSpeech myTts; 
 
 	private Vibrator vibe; 
 	private final static long[] VIB_PATTERN = new long[] {500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 1000, 100, 1000, 100, 1000, 100}; 
@@ -82,6 +86,7 @@ public class StepCompleteActivity extends Activity {
 
 		if (completedStepIndex >= currentLeg.size() - 1) {
 			stepCompleteTitle.setText("Congratulations!"); 
+			currentLeg.setGotToDestination(true); 
 		}
 		completedStep.completeStep(); 
 		setStopTime(stepEndTime); 
@@ -90,6 +95,20 @@ public class StepCompleteActivity extends Activity {
 		vibrate(vibe);  
 		setupNextDirectionsButton(); 
 
+		myTts = funRunApp.getTextToSpeech(); 
+
+		if (funRunApp.isTtsReady()) {
+			String toSpeak = null; 
+
+			if (completedStepIndex >= currentLeg.size() - 1) {
+				toSpeak = "Congratulations! You ran to " + currentLeg.getLegDestination().getName() + "!"; 
+			}
+			else {
+				toSpeak = "Step complete!"; 
+			}			
+			myTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null); 
+
+		}
 	}
 
 	private void setStopTime(long endTime) {
@@ -110,8 +129,8 @@ public class StepCompleteActivity extends Activity {
 
 	private void displayMsg(long stepEndTime) {
 		Spanned msg = null,
-			legDistanceText = null, 
-			totalDistanceText = null, 
+			legDistance = null, 
+			totalDistance = null, 
 			avgSpeed= null, 
 			avgSpeedRun = null, 
 			legElapsedTime = null, 
@@ -125,21 +144,23 @@ public class StepCompleteActivity extends Activity {
 		}
 
 		//Distance this leg and total distance overall
-		int legDistance = currentLeg.getDistanceSoFar(); 
-		int totalDistance = runDirections.getDistanceSoFar(); 
+		int legDistanceMeters = currentLeg.getDistanceSoFar(); 
+		int totalDistanceMeters = runDirections.getDistanceSoFar(); 
 
-		legDistanceText = DroidTime.getDistanceString(legDistance); 
-		totalDistanceText = DroidTime.getDistanceString(totalDistance); 
+		legDistance = DroidTime.getDistanceString(legDistanceMeters); 
+		totalDistance = DroidTime.getDistanceString(totalDistanceMeters); 
 		
 		legElapsedTime = DroidTime.msToStr(stepEndTime - currentLeg.getStartTime()); 
 		totalElapsedTime = DroidTime.msToStr(stepEndTime - runDirections.get(0).getStartTime()); 	
 
 
 		//Avg. speed in m/s 
-		avgSpeed = DroidTime.getSpeedString(stepEndTime - currentLeg.getStartTime(), legDistance); 
-		avgSpeedRun = DroidTime.getSpeedString(stepEndTime - runDirections.get(0).getStartTime(), totalDistance); 
+		avgSpeed = DroidTime.getSpeedString(stepEndTime - currentLeg.getStartTime(), legDistanceMeters); 
+		avgSpeedRun = DroidTime.getSpeedString(stepEndTime - runDirections.get(0).getStartTime(), totalDistanceMeters); 
 
 		//Set text views.
+		legDistanceText.setText(legDistance); 
+		totalDistanceText.setText(totalDistance); 
 		stepCompleteText.setText(msg); 
 		elapsedTimeToPlaceText.setText(legElapsedTime); 
 		totalElapsedTimeText.setText(totalElapsedTime);

@@ -3,10 +3,13 @@ package xanthanov.droid.funrun.adapters;
 import xanthanov.droid.funrun.persist.FunRunData; 
 import xanthanov.droid.funrun.R; 
 import xanthanov.droid.xantools.DroidTime; 
+import xanthanov.droid.gplace.GooglePlace; 
 
 import java.util.Date; 
 import java.text.SimpleDateFormat; 
 import java.text.DateFormat; 
+import java.util.List; 
+import java.util.ArrayList; 
 
 import android.widget.BaseAdapter; 
 import android.widget.TextView; 
@@ -89,6 +92,21 @@ public class ViewStatsAdapter extends BaseAdapter {
 		runDateText.setText(dateSpanned); 
 		totalDistance.setText(DroidTime.getDistanceString(state.get(position).getDistanceSoFar())); 
 		totalTime.setText(DroidTime.msToStr(state.get(position).totalTime())) ; 
+		avgSpeed.setText(DroidTime.getSpeedString(state.get(position).totalTime(), state.get(position).getDistanceSoFar())); 
+
+		String placesStr = ""; 
+
+		List<GooglePlace> places = state.get(position).getPlacesVisited(); 
+
+		int numPlaces = places.size(); 
+		for (int i = 0; i < numPlaces; i++) {
+			GooglePlace p = places.get(i); 
+			placesStr += (p.getName() + "<b>" + (p.gotToDestination() ? "(Got there)" : "(Attempted)" )  + "</b>" + (i < numPlaces - 1 ? "<br>" : "")); 
+		}
+
+		Spanned placesHtml = android.text.Html.fromHtml(placesStr); 
+
+		placesVisited.setText(placesHtml); 
 
 		//galleryView.setLayoutParams(new Gallery.LayoutParams(150, 100));
         galleryView.setBackgroundResource(galleryItemBackground);

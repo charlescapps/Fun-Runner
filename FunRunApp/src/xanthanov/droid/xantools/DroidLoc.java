@@ -29,12 +29,15 @@ public class DroidLoc {
 			l = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		}
 		catch (Exception e) {
-			System.out.println("Failure getting last known location.");
+			System.out.println("Exception raised while getting last known location from GPS provider.");
 			return null;
 		}
 
 		if (l!= null) {
-			g = new GeoPoint((int) (l.getLatitude()*1E6), (int) (l.getLongitude()*1E6));
+			g = degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
+		}
+		else {
+			System.out.println("Null location returned from GPS provider"); 
 		}
 
 		return g;

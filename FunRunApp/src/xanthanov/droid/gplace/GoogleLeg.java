@@ -23,6 +23,7 @@ public class GoogleLeg implements java.io.Serializable {
 	boolean doneRunning; 
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
+	private boolean gotToDestination; 
 
 	//ACTUAL PATH RAN
 	List<GeoPoint> actualPath; 
@@ -38,10 +39,14 @@ public class GoogleLeg implements java.io.Serializable {
 		actualPath = new ArrayList<GeoPoint>(); 
 		legDestination = null; 
 		maxStepCompleted = -1; 
+		gotToDestination = false; 
 	}
 
 	public int getMaxStepCompleted() {return maxStepCompleted;}
 	public void setMaxStepCompleted(int n) {maxStepCompleted = n;}
+
+	public boolean gotToDestination() {return gotToDestination; }
+	public void setGotToDestination(boolean b) {gotToDestination = b; }
 
 	public GoogleStep lastStepDone() {return steps.get(maxStepCompleted); }
 
@@ -137,5 +142,18 @@ public class GoogleLeg implements java.io.Serializable {
 		for (int i = 0; i <= index; i++) {
 			dLoc.getLocManager().removeProximityAlert(steps.get(i).getProximityIntent()); 
 		}
+	}
+
+	@Override
+	public boolean equals(Object o ) {
+		if (this == o) {
+			return true; 
+		}
+
+		if (!GoogleLeg.class.isInstance(o) ) {
+			return false; 
+		}
+
+		return super.equals(o) ;
 	}
 }

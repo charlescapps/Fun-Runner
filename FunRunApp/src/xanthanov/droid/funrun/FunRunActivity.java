@@ -15,6 +15,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.LinearLayout;
+import android.widget.Toast; 
 import android.content.Context; 
 import android.location.Location;
 import android.location.LocationListener;
@@ -23,6 +24,8 @@ import android.content.Intent;
 import android.app.PendingIntent;
 import android.text.Html; 
 import android.text.Spanned; 
+
+import android.speech.tts.TextToSpeech; 
 
 import java.util.List;
 import java.util.ArrayList;
@@ -68,6 +71,8 @@ public class FunRunActivity extends MapActivity
 	private Spanned htmlInstructions; 
 	private DroidLoc droidLoc; 
 	private int maxStepFinished = -1; 
+
+	private TextToSpeech myTts; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -132,6 +137,9 @@ public class FunRunActivity extends MapActivity
 
 		zoomToRoute(); 
 
+		myTts = funRunApp.getTextToSpeech(); 
+
+		
     }
 	
 	public boolean isRouteDisplayed() {
@@ -146,12 +154,23 @@ public class FunRunActivity extends MapActivity
 		if (currentStep != null) {
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
 			updateDirectionsTextView(); 
+
+			if (funRunApp.isTtsReady()) {
+				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
+				myTts.speak(htmlInstructions.toString(), TextToSpeech.QUEUE_ADD, null); 
+				myTts.playSilence(1000, TextToSpeech.QUEUE_ADD, null); 
+				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, null); 
+			}
+
+			//Start up compass and location updates
 			myLocOverlay.enableCompass(); 	
 			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 
+			//Force update of lastKnownLocation
 			lastKnownLocation = droidLoc.getLastKnownLoc(); 
+
+			//Update visuals so it doesn't show you in the wrong place
 			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-			myFunRunOverlay.updateCurrentDirections(runDirections); 
 			myMap.postInvalidate(); 
 		}
 		else {
@@ -165,6 +184,21 @@ public class FunRunActivity extends MapActivity
 		super.onStop(); 
 		droidLoc.getLocManager().removeUpdates(myLocListener); 
 		myLocOverlay.disableCompass();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy(); 
+
+		//Remove this leg if the runner didn't go any distance. 
+		if (currentLeg.getDistanceSoFar() <= 0 ) {
+			runDirections.remove(currentLeg); 
+			(Toast.makeText(this, "No steps completed.\nProgress not saved.", 5)).show(); 
+			
+		}
+		else {
+			(Toast.makeText(this, "Progress saved", 5)).show(); 
+		}
 	}
 
 	private void updateDirectionsTextView() {
@@ -259,9 +293,10 @@ public class FunRunActivity extends MapActivity
 
 	private void setupMap() {
 		myFunRunOverlay = new FunRunOverlay(myMap, null, true);
+		myFunRunOverlay.updateCurrentDirections(runDirections); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
-		myLocOverlay.enableCompass(); 	
+		
 		myMap.postInvalidate(); 
 	}
 

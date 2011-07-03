@@ -4,7 +4,9 @@ import xanthanov.droid.gplace.*;
 import xanthanov.droid.funrun.persist.*; 
 import android.app.Application; 
 import android.os.Bundle; 
-import android.content.Context; 
+import android.content.Context;
+
+import android.speech.tts.TextToSpeech;  
 
 import java.io.File; 
 
@@ -14,6 +16,11 @@ public class FunRunApplication extends Application {
 	private GoogleDirections runDirections; 
 	private GoogleStep currentStep; 
 	private FunRunData state; 
+
+	//Shared TTS object
+	private TextToSpeech myTextToSpeech; 
+	private TextToSpeech.OnInitListener ttsListener; 
+	private boolean ttsReady; 
 
 	private File dataDir; 
 	private String fullPath; 
@@ -33,13 +40,33 @@ public class FunRunApplication extends Application {
 			state = RunDataSerializer.getFunRunData(fullPath); 
 		}
 		catch (Exception e) {
-			e.printStackTrace(); 
+			System.err.println("No FunRunData file found, creating new FunRunData"); 
 			state = null; 
 		}
 
 		if (state == null) {
 			state = new FunRunData(); 
 		}
+
+		ttsReady = false; 
+		myTextToSpeech = null; 
+
+		//Callback for initializing the text-to-speech engine. 
+		ttsListener = new TextToSpeech.OnInitListener() {
+			@Override
+			public void onInit(int status) {
+				if (status == TextToSpeech.SUCCESS) {
+					ttsReady = true; 
+				}	
+				else {
+					ttsReady = false; 
+				}
+			}
+		};
+
+		myTextToSpeech = new TextToSpeech(this, ttsListener); 
+		myTextToSpeech.setSpeechRate(0.75f); 
+		myTextToSpeech.setPitch(1.25f); 
 	}
 
 
@@ -47,6 +74,10 @@ public class FunRunApplication extends Application {
 		super(); 
 		runDirections = new GoogleDirections(); 
 	}
+
+	public TextToSpeech getTextToSpeech() {return myTextToSpeech; }
+
+	public boolean isTtsReady() {return ttsReady; }
 
 	public FunRunData getState() {return state; }
 
