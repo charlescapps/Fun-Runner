@@ -2,7 +2,7 @@
 <h4> An Android App by Xanthanov </h4>
 
 Copyright &copy; 2011 Charles L. Capps <br/>
-Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>)</br>
+Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php)</br>
 </br>
 
 Programming by Charles L. Capps AKA Xanthanov (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
