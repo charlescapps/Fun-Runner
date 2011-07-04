@@ -15,6 +15,7 @@ public class GoogleLeg implements java.io.Serializable {
 	private int distanceMeters; 
 	private GeoPoint swBound;
 	private GeoPoint neBound;  
+	private String overviewPolyline; 
 
 	//CUSTOM DATA
 	private int actualDistanceRan; 
@@ -36,11 +37,16 @@ public class GoogleLeg implements java.io.Serializable {
 		actualDistanceRan = 0;  
 		doneRunning = false; 
 		swBound = neBound = null; 
+		overviewPolyline = null; 
 		actualPath = new ArrayList<GeoPoint>(); 
 		legDestination = null; 
 		maxStepCompleted = -1; 
 		gotToDestination = false; 
 	}
+
+	public String getOverviewPolyline() {return overviewPolyline; }
+	public void setOverviewPolyline(String line) {overviewPolyline = line; }
+
 
 	public int getMaxStepCompleted() {return maxStepCompleted;}
 	public void setMaxStepCompleted(int n) {maxStepCompleted = n;}
@@ -65,8 +71,11 @@ public class GoogleLeg implements java.io.Serializable {
 		}
 		return distMeters; 
 	}
-	//Method to take a list of legs and get back a simple list of points to draw!
+
+	//Method to decode the overview_polyline data from Google Directions API into a list of GeoPoint's
+	//
 	public List<GeoPoint> getPathPoints() {
+		/*
 		List<GeoPoint> points = new ArrayList<GeoPoint>(); 
 		if (steps.size() == 0) {
 			return points; 
@@ -78,7 +87,9 @@ public class GoogleLeg implements java.io.Serializable {
 			points.add(steps.get(j).getEndGeoPoint()); //Add end point of step
 		}	
 
-		return points; 
+		return points;*/
+
+		return decodePoly(overviewPolyline); 
 	}
 
 	public boolean isDone() {return doneRunning; }
@@ -155,5 +166,39 @@ public class GoogleLeg implements java.io.Serializable {
 		}
 
 		return super.equals(o) ;
+	}
+	
+	private List<GeoPoint> decodePoly(String encoded) {
+
+	  List<GeoPoint> poly = new ArrayList<GeoPoint>();
+	  int index = 0, len = encoded.length();
+	  int lat = 0, lng = 0;
+
+	  while (index < len) {
+		  int b, shift = 0, result = 0;
+		  do {
+			  b = encoded.charAt(index++) - 63;
+			  result |= (b & 0x1f) << shift;
+			  shift += 5;
+		  } while (b >= 0x20);
+		  int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+		  lat += dlat;
+
+		  shift = 0;
+		  result = 0;
+		  do {
+			  b = encoded.charAt(index++) - 63;
+			  result |= (b & 0x1f) << shift;
+			  shift += 5;
+		  } while (b >= 0x20);
+		  int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+		  lng += dlng;
+
+		  GeoPoint p = new GeoPoint((int) (((double) lat / 1E5) * 1E6),
+			   (int) (((double) lng / 1E5) * 1E6));
+		  poly.add(p);
+	  }
+
+	  return poly;
 	}
 }

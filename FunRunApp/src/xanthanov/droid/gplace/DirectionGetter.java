@@ -40,8 +40,9 @@ public class DirectionGetter {
 								+ "&destination=" + buildLatlngString(destination) 
 								+ "&mode=walking"
 								+ "&avoid=highways"
-								+ "&sensor=true");
-			//					+ "&key=" + apiKey);	
+								+ "&sensor=true"
+								+ "&alternatives=false");
+			//					+ "&key=" + apiKey);	//Key only for places search afaik
 
 			conn = (HttpURLConnection) url.openConnection(); 	
 
@@ -122,6 +123,8 @@ public class DirectionGetter {
 			double endLat = 0.0; 
 			double endLng = 0.0;  
 
+			String overviewPolyline = theRoute.getJSONObject("overview_polyline").getString("points"); 
+
 			swLat = theRoute.getJSONObject("bounds").getJSONObject("southwest").getDouble("lat"); 
 			swLng = theRoute.getJSONObject("bounds").getJSONObject("southwest").getDouble("lng"); 
 			neLat = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lat"); 
@@ -130,6 +133,7 @@ public class DirectionGetter {
 			System.out.println("Southwest bound: " + swLat + "," + swLng); 	
 			System.out.println("Northeast bound: " + neLat + "," + neLng); 	
 		
+			
 
 			for (int i = 0; i < legs.length(); i++) {
 				currentLeg = legs.getJSONObject(i);  //Get the current leg, the steps it contains, and the aggregate distance info for the leg
@@ -139,6 +143,7 @@ public class DirectionGetter {
 				legDistanceMeters = legDistance.getInt("value"); 
 
 				directions.add(new GoogleLeg(legDistanceStr, legDistanceMeters));	//Add the leg to our List<GoogleLeg> of directions				
+				directions.get(i).setOverviewPolyline(overviewPolyline); //Should only have 1 entry--add the polyline info to the google leg
 
 				for (int j = 0; j < currentStepsArray.length(); j++) {
 					//Process each step in the leg

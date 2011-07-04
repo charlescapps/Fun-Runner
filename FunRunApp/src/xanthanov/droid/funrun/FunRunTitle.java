@@ -37,6 +37,7 @@ public class FunRunTitle extends Activity
 		super.onDestroy(); 
 		FunRunApplication app = (FunRunApplication)getApplicationContext();
 		app.writeState(); 
+		app.getTextToSpeech().shutdown(); 
 	}
 
 	private void setupButtons() {

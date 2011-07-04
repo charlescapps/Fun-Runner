@@ -12,6 +12,10 @@ Programming and Project Lead, Charles L. Capps AKA Xanthanov (<a href="https://w
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
 
+<h2>Credit for code samples</h2>
+The Google Directions API doesn&apos;t provide information on how to decode the "overview_polyline" string to draw more accurate directions. 
+I found code to do so on Jeffrey Sambell&apos;s blog here: <a>http://jeffreysambells.com/posts/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java/</a>
+
 <h2>Description of the app</h2>
 
 <p><dd>
