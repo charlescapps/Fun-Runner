@@ -94,7 +94,7 @@ public class FunRunOverlay extends Overlay {
 		Point currentCoords = new Point();
 
 		//If directions isn't null, draw the directions in red
-		if (directions != null) {
+		if (directions != null && directions.size() > 0) {
 
 			//If drawRoute==true, draw the directions given by google in red
 			if (drawRoute) {

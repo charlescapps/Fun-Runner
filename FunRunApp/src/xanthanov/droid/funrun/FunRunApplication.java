@@ -25,9 +25,9 @@ public class FunRunApplication extends Application {
 	private File dataDir; 
 	private String fullPath; 
 
-	public static final long MIN_GPS_UPDATE_TIME_MS = 3000; //3 second update time
+	public static final long MIN_GPS_UPDATE_TIME_MS = 1000; //1 second update time
 	public static final String DATA_DIR = "funrun_data";
-	public static final String DATA_FILE = "MY_FUNRUN_DATA.ser";
+	public static final String DATA_FILE = "my_funrun_data.ser";
 
 	@Override
 	public void onCreate() {

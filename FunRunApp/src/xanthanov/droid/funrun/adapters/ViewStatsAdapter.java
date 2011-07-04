@@ -101,7 +101,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 		int numPlaces = places.size(); 
 		for (int i = 0; i < numPlaces; i++) {
 			GooglePlace p = places.get(i); 
-			placesStr += (p.getName() + "<b>" + (state.get(position).get(i).gotToDestination() ? "(Got there)" : "(Attempted)" )  + "</b>" + (i < numPlaces - 1 ? "<br>" : "")); 
+			placesStr += (p.getName() + "<br/><b>" + (state.get(position).get(i).gotToDestination() ? "(Got there)" : "(Attempted)" )  + "</b>" + (i < numPlaces - 1 ? "<br>" : "")); 
 		}
 
 		Spanned placesHtml = android.text.Html.fromHtml(placesStr); 

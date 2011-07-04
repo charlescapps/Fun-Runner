@@ -16,10 +16,12 @@ public class RunDataSerializer {
 	//Returns a FunRunData from the given filename, or null if it fails
 	public static FunRunData getFunRunData(String filename) {
 		FunRunData data = null; 
+		ObjectInputStream ois = null; 
 		
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
+			ois = new ObjectInputStream(new FileInputStream(filename));
 			data = (FunRunData) ois.readObject(); 
+			ois.close(); 
 		}
 		catch (Exception e) {
 			e.printStackTrace(); 
@@ -32,7 +34,7 @@ public class RunDataSerializer {
 	//Return true/false if the write was success/failure
 	public static boolean writeFunRunData(String filename, FunRunData data) {
 
-		ObjectOutputStream oos; 
+		ObjectOutputStream oos = null; 
 		try {
 			oos = new ObjectOutputStream(new FileOutputStream(filename));
 			oos.writeObject(data);

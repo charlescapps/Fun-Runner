@@ -66,6 +66,8 @@ public class ChoosePlaceActivity extends MapActivity
 	private List<GooglePlace> remainingPlaces; 
 	private GoogleDirections currentDirections; 
 	private GooglePlace currentRunToPlace;  
+	private GoogleLeg tempLeg; 
+	private FunRunApplication funRunApp; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -97,10 +99,12 @@ public class ChoosePlaceActivity extends MapActivity
 		myDirectionGetter = new DirectionGetter(); 
 		lastKnownLocation = droidLoc.getLastKnownLoc();
 		System.out.println("Last location: " + lastKnownLocation);
-		currentDirections = null; 
+		funRunApp = (FunRunApplication) getApplicationContext();
+		currentDirections = funRunApp.getRunDirections();  
 		currentRunToPlace = null; 
 		nearbyPlaces = null; 
 		remainingPlaces = null; 
+		tempLeg = null; 
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
 		setupSpinner(); 
@@ -123,6 +127,8 @@ public class ChoosePlaceActivity extends MapActivity
 		myLocOverlay.enableCompass(); 	
 		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 		lastKnownLocation = droidLoc.getLastKnownLoc(); 
+		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		myMap.postInvalidate(); 
 	}
 
 	@Override
@@ -157,6 +163,7 @@ public class ChoosePlaceActivity extends MapActivity
 		if (currentDirections != null && currentDirections.getDistanceSoFar() > 0) {
 			funRunApp.addDirectionsToState(currentDirections); 
 		}
+		funRunApp.writeState(); 
 
 	}
 
@@ -213,10 +220,10 @@ public class ChoosePlaceActivity extends MapActivity
 	private void setupMap() {
 		myFunRunOverlay = new FunRunOverlay(myMap, null, false);
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		myFunRunOverlay.updateCurrentDirections(currentDirections); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
 		myMapController.setZoom(DEFAULT_ZOOM); 
-		myLocOverlay.enableCompass(); 	
 		myMap.postInvalidate(); 
 	}
 
@@ -310,15 +317,15 @@ public class ChoosePlaceActivity extends MapActivity
 		lastKnownLocation = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 
-		currentDirections = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
+		tempLeg = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
 
-		if (currentDirections != null) {
+		if (tempLeg != null) {
+
+			tempLeg.setLegDestination(currentRunToPlace); 
 			
-			myFunRunOverlay.updateCurrentDirections(currentDirections); 
-
 			showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
 				"Place: " + currentRunToPlace.getName() + "\n" +
-				"Distance: " + currentDirections.get(0).getDistanceString() + " / " + currentDirections.get(0).getDistanceMeters() + "m" );	
+				"Distance: " + tempLeg.getDistanceString() + " / " + tempLeg.getDistanceMeters() + "m" );	
 		}
 		else {
 			DroidDialogs.showPopup(this, "Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
@@ -354,8 +361,6 @@ public class ChoosePlaceActivity extends MapActivity
 		myBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				myFunRunOverlay.updateCurrentDirections(currentDirections); 
-				myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 				startRunning(); 
            }
        }); 
@@ -391,17 +396,16 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void startRunning() {
 		final Intent i = new Intent(this, FunRunActivity.class); 
-		final FunRunApplication funRunApp = ((FunRunApplication)this.getApplicationContext());
 		final Activity a = this; 
 
-		if (currentDirections == null || currentRunToPlace == null) {
+		if (tempLeg == null || currentDirections == null || currentRunToPlace == null) {
 			DroidDialogs.showPopup(a, "No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
 			return; 
 		}
-		//If the user presses "Start Running" then add this "leg" to the global directions object
-		GoogleLeg legToAdd = currentDirections.get(0); 
-		legToAdd.setLegDestination(currentRunToPlace);
-		funRunApp.getRunDirections().add(legToAdd); 
+		
+		//Add tempLeg to the global directions
+		//Will be removed if the runner doesn't complete any steps
+		currentDirections.add(tempLeg); 
 
 		//Download image for new leg in a thread
 		Thread downloadImageThread = new Thread(new Runnable() {
@@ -478,10 +482,10 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 		
 		public void onClick(View v) {
-			if (firstGpsFix == null) {
-				DroidDialogs.showPopup(a, "No GPS location found", "A fix on your current location hasn't been found since the app started.\nMake sure you are outside and your GPS is turned on, then try again.");
+			/*if (firstGpsFix == null) {
+				DroidDialogs.showPopup(a, "No GPS location found", "A fix on your current location hasn't been found.\n\tGo outside, turn on GPS, then try again.");
 				return;
-			}
+			}*/
 
 			String search = (runCategorySpinner.getSelectedItem()).toString();
 			new PlacesQueryTask(a).execute(search); 	

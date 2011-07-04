@@ -73,6 +73,7 @@ public class FunRunActivity extends MapActivity
 	private int maxStepFinished = -1; 
 
 	private TextToSpeech myTts; 
+	private DroidTTS ttsTools; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -138,7 +139,7 @@ public class FunRunActivity extends MapActivity
 		zoomToRoute(); 
 
 		myTts = funRunApp.getTextToSpeech(); 
-
+		ttsTools = new DroidTTS(); 
 		
     }
 	
@@ -157,7 +158,8 @@ public class FunRunActivity extends MapActivity
 
 			if (funRunApp.isTtsReady()) {
 				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
-				myTts.speak(htmlInstructions.toString(), TextToSpeech.QUEUE_ADD, null); 
+				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
+				myTts.speak(fullString, TextToSpeech.QUEUE_ADD, null); 
 				myTts.playSilence(1000, TextToSpeech.QUEUE_ADD, null); 
 				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, null); 
 			}

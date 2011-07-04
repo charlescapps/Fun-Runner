@@ -31,7 +31,7 @@ public class DirectionGetter {
 		//Meh?
 	}
 
-	public GoogleDirections getDirections(GeoPoint currentLocation, GeoPoint destination) {
+	public GoogleLeg getDirections(GeoPoint currentLocation, GeoPoint destination) {
 		URL url= null; 
 		HttpURLConnection conn= null; 
 
@@ -69,11 +69,11 @@ public class DirectionGetter {
 		return locStr;
 	}
 	
-	private GoogleDirections parseJsonResult(BufferedReader in) throws GmapException {
+	private GoogleLeg parseJsonResult(BufferedReader in) throws GmapException {
 		
 		String jsonString = new String(); 
 		String aLine = null; 
-		GoogleDirections directions = new GoogleDirections(); 
+		GoogleLeg directions = null; 
 		String status = null; 
 		JSONObject jObj = null; 
 		//The bounds returned by Google for the route
@@ -84,7 +84,7 @@ public class DirectionGetter {
 
 		try {//Try block for reading JSON String from HTTP Request. IOException likely means something went awry with your connection
 			while ((aLine = in.readLine()) != null) {
-				System.out.println(aLine);
+			//	System.out.println(aLine);
 				jsonString+=aLine;  
 			}
 		}
@@ -135,15 +135,16 @@ public class DirectionGetter {
 		
 			
 
-			for (int i = 0; i < legs.length(); i++) {
+			int i = 0; //Should only have 1 leg, no waypoints specified
+			//For-loop removed. Google Directions API returns 1 leg if no waypoints are specified. Also makes for sense for the structure of my app to return a GoogleLeg
 				currentLeg = legs.getJSONObject(i);  //Get the current leg, the steps it contains, and the aggregate distance info for the leg
 				currentStepsArray = currentLeg.getJSONArray("steps"); 
 				legDistance = currentLeg.getJSONObject("distance"); 
 				legDistanceStr = legDistance.getString("text"); 
 				legDistanceMeters = legDistance.getInt("value"); 
 
-				directions.add(new GoogleLeg(legDistanceStr, legDistanceMeters));	//Add the leg to our List<GoogleLeg> of directions				
-				directions.get(i).setOverviewPolyline(overviewPolyline); //Should only have 1 entry--add the polyline info to the google leg
+				directions = new GoogleLeg(legDistanceStr, legDistanceMeters);	//Add the leg to our List<GoogleLeg> of directions				
+				directions.setOverviewPolyline(overviewPolyline); //Should only have 1 entry--add the polyline info to the google leg
 
 				for (int j = 0; j < currentStepsArray.length(); j++) {
 					//Process each step in the leg
@@ -159,9 +160,9 @@ public class DirectionGetter {
 					GeoPoint end = new GeoPoint((int) (endLat*1E6), (int) (endLng*1E6)); 
 					String htmlDirections = currentStep.getString("html_instructions");
 
-					directions.get(directions.size()-1).add(new GoogleStep(new double[] {startLat, startLng}, new double[] {endLat, endLng}, stepDistanceMeters, stepDistanceStr, htmlDirections ));
+					directions.add(new GoogleStep(new double[] {startLat, startLng}, new double[] {endLat, endLng}, stepDistanceMeters, stepDistanceStr, htmlDirections ));
 				}
-			} 	
+			 	
 
 		}
 		catch (JSONException e) {
@@ -169,8 +170,8 @@ public class DirectionGetter {
 			e.printStackTrace(); 
 			return null; 
 		}
-		directions.get(0).setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
-		directions.get(0).setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
+		directions.setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
+		directions.setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
 
 		return directions; 
 	} 
