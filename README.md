@@ -1,14 +1,17 @@
 <h1> Fun Runner </h1>
 <h4> An Android App by Xanthanov </h4>
 
-Copyright &copy; 2011 Charles L. Capps
-Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>)
+Copyright &copy; 2011 Charles L. Capps <br/>
+Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>)</br>
+</br>
 
-Programming by Charles L. Capps (<a href="https://www.github.com/Xanthanov">Github page</a>)
-	<b>charles.l.capps@gmail.com</b>
+Programming by Charles L. Capps (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
+	<pre><b>charles.l.capps@gmail.com</b></br></pre>
+</br>
 
-Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) 
-	<b>alicebessoni@gmail.com</b>
+Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
+	<pre><b>alicebessoni@gmail.com</b><br/></pre>
+<br/>
 
 <h2>Description of the app</h2>
 
