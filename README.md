@@ -5,22 +5,21 @@ Copyright &copy; 2011 Charles L. Capps <br/>
 Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>)</br>
 </br>
 
-Programming by Charles L. Capps (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
+Programming by Charles L. Capps AKA Xanthanov (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>charles.l.capps@gmail.com</b></br>
 </br>
 
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
-<br/>
 
 <h2>Description of the app</h2>
 
-<p>
+<p><dd>
 	This app helps runners plot a route through a city, passing by various places of interest. 
 <b><i>It makes running into a game to help you get into shape!</b></i> You choose a place-category from a list, 
-then choose the place you want to run to. It gets Google walking directions, speaks them aloud, and draws them on a map. 
-Note you can press the "up volume" button to repeat the directions. <b><i>And it also draws the route you actually ran!</b></i>
-</p>
+then choose the place you want to run to. It downloads Google walking directions, speaks them aloud, and draws them on a map. 
+Note you can press the "volume up" button to repeat the directions. <b><i>And it also draws the route you actually ran!</b></i>
+</dd></p>
 
 <p>
 	After completing a run, you will be able to view your previous runs in the stats gallery (<b>Press the Load button from the title screen</b>). 
