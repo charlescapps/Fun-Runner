@@ -6,11 +6,11 @@ Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-
 </br>
 
 Programming by Charles L. Capps (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
-	<pre><b>charles.l.capps@gmail.com</b></br></pre>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>charles.l.capps@gmail.com</b></br>
 </br>
 
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
-	<pre><b>alicebessoni@gmail.com</b><br/></pre>
+	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
 <br/>
 
 <h2>Description of the app</h2>
