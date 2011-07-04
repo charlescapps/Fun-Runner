@@ -3,7 +3,7 @@
 
 Copyright &copy; 2011 Charles L. Capps
 
-Programming by Charles L. Capps (<a href="www.github.com/Xanthanov">Github page</a>)
+Programming by Charles L. Capps (<a href="https://www.github.com/Xanthanov">Github page</a>)
 	<b>charles.l.capps@gmail.com</b>
 
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) 
