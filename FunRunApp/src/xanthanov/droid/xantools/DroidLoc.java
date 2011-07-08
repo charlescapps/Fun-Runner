@@ -12,6 +12,9 @@ public class DroidLoc {
 
 	private LocationManager locManager; 
 	private Context theContext; 
+	private final static String MOCK_PROVIDER = "gps_mock_provider"; 
+	private final static double PDX_LAT = 45.517413; 
+	private final static double PDX_LNG = -122.677459; 
 
 	public DroidLoc(Context c) {
 		theContext = c; 
@@ -52,6 +55,27 @@ public class DroidLoc {
 		latLng[0] = ((double)g.getLatitudeE6())*1E-6;
 		latLng[1] = ((double)g.getLongitudeE6())*1E-6;
 		return latLng; 
+	}
+
+	public GeoPoint getMockLocation() {
+		/*
+		if (locManager.getProvider(MOCK_PROVIDER) == null) {
+			locManager.addTestProvider (MOCK_PROVIDER, false, false, false, false, false, false, false, 0, 20); 
+		}
+		Location testLoc = new Location(MOCK_PROVIDER); 
+		testLoc.setLatitude(PDX_LAT); 
+		testLoc.setLongitude(PDX_LNG); 
+		locManager.setTestProviderLocation(MOCK_PROVIDER, testLoc); 
+		locManager.setTestProviderEnabled(MOCK_PROVIDER, true); 
+
+		Location mockLoc = locManager.getLastKnownLocation(MOCK_PROVIDER); 	
+		return degreesToGeoPoint(mockLoc.getLatitude(), mockLoc.getLongitude());
+		*/
+		Location testLoc = new Location(MOCK_PROVIDER); 
+		testLoc.setLatitude(PDX_LAT); 
+		testLoc.setLongitude(PDX_LNG); 
+		return degreesToGeoPoint(testLoc.getLatitude(), testLoc.getLongitude());
+	
 	}
 
 }

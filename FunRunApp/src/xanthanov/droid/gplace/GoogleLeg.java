@@ -13,8 +13,8 @@ public class GoogleLeg implements java.io.Serializable {
 	private List<GoogleStep> steps; 
 	private String distanceString; 
 	private int distanceMeters; 
-	private GeoPoint swBound;
-	private GeoPoint neBound;  
+	private double[] swBound;
+	private double[] neBound;  
 	private String overviewPolyline; 
 
 	//CUSTOM DATA
@@ -46,7 +46,6 @@ public class GoogleLeg implements java.io.Serializable {
 
 	public String getOverviewPolyline() {return overviewPolyline; }
 	public void setOverviewPolyline(String line) {overviewPolyline = line; }
-
 
 	public int getMaxStepCompleted() {return maxStepCompleted;}
 	public void setMaxStepCompleted(int n) {maxStepCompleted = n;}
@@ -94,10 +93,10 @@ public class GoogleLeg implements java.io.Serializable {
 
 	public boolean isDone() {return doneRunning; }
 	public void finishLeg() {doneRunning = true; }
-	public void setNeBound(GeoPoint b0) {neBound = b0;}
-	public void setSwBound(GeoPoint b1) {swBound = b1;}
-	public GeoPoint getSwBound() {return swBound;}
-	public GeoPoint getNeBound() {return neBound;}
+	public void setNeBound(GeoPoint b0) {neBound = DroidLoc.geoPointToDegrees(b0);}
+	public void setSwBound(GeoPoint b1) {swBound = DroidLoc.geoPointToDegrees(b1);}
+	public GeoPoint getSwBound() {return DroidLoc.degreesToGeoPoint(swBound[0], swBound[1]);}
+	public GeoPoint getNeBound() {return DroidLoc.degreesToGeoPoint(neBound[0], neBound[1]);}
 	public void add(GoogleStep gs) {steps.add(gs); }
 	public int size() {return steps.size(); }
 	public GoogleStep get(int i) {return steps.get(i); }
@@ -135,7 +134,8 @@ public class GoogleLeg implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		String s = "Total Distance:" + distanceMeters + "," + distanceString + "\n"; 
+		String s = "(GoogleLeg String) Google Distance:" + distanceMeters + "," + distanceString + "\n"; 
+		s+="\tStart:" + startTime + ",End:" + endTime + ",numSteps:" + steps.size() + ",maxStepComplete:" + maxStepCompleted + "\n";
 
 		for (int i = 0; i < steps.size(); i++) {
 			s += "\tStep #" + i + ": " + steps.get(i).toString() + "\n"; 

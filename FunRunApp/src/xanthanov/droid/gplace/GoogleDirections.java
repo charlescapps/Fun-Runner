@@ -5,6 +5,7 @@ import com.google.android.maps.GeoPoint;
 import java.util.List; 
 import java.util.ArrayList; 
 import java.util.Date; 
+import java.text.DateFormat; 
 
 public class GoogleDirections implements java.io.Serializable {
 
@@ -35,6 +36,17 @@ public class GoogleDirections implements java.io.Serializable {
 		}
 
 		return places; 
+	}
+
+	@Override
+	public String toString() {
+		String s = "(GoogleDirections) dateOfRun:" + DateFormat.getDateInstance().format(dateOfRun) + ",num legs:" + legs.size() + "\n"; 
+
+ 		for (int i = 0; i < legs.size(); i++) {
+			s += "Leg #" + i + "\n" + legs.get(i).toString(); 	
+		}
+
+		return s; 
 	}
 
 	public int getDistanceSoFar() {

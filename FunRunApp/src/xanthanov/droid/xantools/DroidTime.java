@@ -31,5 +31,12 @@ public class DroidTime {
 		String html = distanceMeters + " <b>meters</b>, " + df.format(distanceMiles) + " <b>miles</b>"; 
 		return android.text.Html.fromHtml(html); 
 	}
+
+	public static Spanned getDistanceStringV2(int distanceMeters) {
+		double distanceMiles = ((double)distanceMeters) / metersPerMile; 
+		DecimalFormat df = new DecimalFormat("#.##"); 
+		String html = distanceMeters + " <b>meters</b>,<br/>" + df.format(distanceMiles) + " <b>miles</b>"; 
+		return android.text.Html.fromHtml(html); 
+	}
 }
 

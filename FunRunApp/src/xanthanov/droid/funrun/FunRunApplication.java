@@ -5,6 +5,8 @@ import xanthanov.droid.funrun.persist.*;
 import android.app.Application; 
 import android.os.Bundle; 
 import android.content.Context;
+import xanthanov.droid.xantools.DroidLoc; 
+import com.google.android.maps.GeoPoint;
 
 import android.speech.tts.TextToSpeech;  
 
@@ -33,20 +35,31 @@ public class FunRunApplication extends Application {
 	public void onCreate() {
 		super.onCreate(); 
 
+
+		runDirections = new GoogleDirections(); 
+
 		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
 		fullPath = dataDir + File.separator + DATA_FILE; 
+
+		System.out.println("Full path:" + fullPath); 
+		state = null; 
 
 		try {
 			state = RunDataSerializer.getFunRunData(fullPath); 
 		}
 		catch (Exception e) {
 			System.err.println("No FunRunData file found, creating new FunRunData"); 
-			state = null; 
 		}
-
 		if (state == null) {
 			state = new FunRunData(); 
+			//**************Test persistent data saving*********************
+
+			addTestDirections(); 	
+			writeState(); 
 		}
+
+
+		//***************END TEST**********************************
 
 		ttsReady = false; 
 		myTextToSpeech = null; 
@@ -69,11 +82,27 @@ public class FunRunApplication extends Application {
 		myTextToSpeech.setPitch(1.25f); 
 	}
 
+	private void addTestDirections() {
 
-	public FunRunApplication() {
-		super(); 
-		runDirections = new GoogleDirections(); 
+		final int arbitraryRadius = 1000; 
+		final int numMockRuns = 2;
+
+		MockFactory mockery = new MockFactory(this); 
+		String[] placeSearches = new String[] {"Cafe", "Smoothie Joint", "Shopping Mall"  }; 
+		DroidLoc myDloc = new DroidLoc(this); 
+		GeoPoint locPt = myDloc.getMockLocation(); 
+
+		for (int i = 0; i < numMockRuns; i++) {
+			GoogleDirections testDirs = mockery.getMockDirections(placeSearches, locPt, arbitraryRadius); 
+
+			System.out.println("****************MOCK RUN BEFORE WRITING*******************"); 
+			System.out.println(testDirs.toString()); 
+
+			state.add(testDirs); 
+
+		}
 	}
+
 
 	public TextToSpeech getTextToSpeech() {return myTextToSpeech; }
 
