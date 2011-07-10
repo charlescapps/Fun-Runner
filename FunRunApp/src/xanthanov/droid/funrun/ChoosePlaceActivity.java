@@ -298,11 +298,11 @@ public class ChoosePlaceActivity extends MapActivity
 			//There *should* be a dialog alerting the user if no places were found!
 			return; 
 		}
+
 		//check if no places are remaining
 		if (remainingPlaces.size() == 0) {
 			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
 			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Place' to see your options again.");
-			currentDirections = null; 
 			currentRunToPlace = null; 
 			return; 
 		}
@@ -317,6 +317,7 @@ public class ChoosePlaceActivity extends MapActivity
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 
 		tempLeg = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
+		System.out.println("Temp leg: " + tempLeg); 
 
 		if (tempLeg != null) {
 

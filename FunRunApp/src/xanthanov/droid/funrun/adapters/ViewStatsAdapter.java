@@ -2,7 +2,7 @@ package xanthanov.droid.funrun.adapters;
 
 import xanthanov.droid.funrun.persist.FunRunData; 
 import xanthanov.droid.funrun.R; 
-import xanthanov.droid.xantools.DroidTime; 
+import xanthanov.droid.xantools.DroidUnits; 
 import xanthanov.droid.gplace.GooglePlace; 
 
 import java.util.Date; 
@@ -92,9 +92,9 @@ public class ViewStatsAdapter extends BaseAdapter {
 
 		runDateText.setText(dateSpanned); 
 		int totalDistMeters = state.get(position).getDistanceSoFar(); 
-		totalDistance.setText(DroidTime.getDistanceStringV2(totalDistMeters));
-		totalTime.setText(DroidTime.msToStr(state.get(position).totalTime())) ; 
-		avgSpeed.setText(DroidTime.getSpeedString(state.get(position).totalTime(), state.get(position).getDistanceSoFar())); 
+		totalDistance.setText(DroidUnits.getDistanceStringV3(totalDistMeters));
+		totalTime.setText(DroidUnits.msToStrV2(state.get(position).totalTime())) ; 
+		avgSpeed.setText(DroidUnits.getSpeedStringV2(state.get(position).totalTime(), state.get(position).getDistanceSoFar())); 
 
 		String placesStr = ""; 
 

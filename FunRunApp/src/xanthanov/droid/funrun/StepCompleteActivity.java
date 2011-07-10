@@ -28,14 +28,23 @@ public class StepCompleteActivity extends Activity {
 	private FunRunApplication funRunApp; 
 	private int completedStepIndex = -1; 
 
-	private TextView stepCompleteTitle;
+	//private TextView stepCompleteTitle;
 	private TextView stepCompleteText; 
+
+	private TextView legDistanceTitle; 
+	private TextView totalDistanceTitle; 
+	private TextView avgSpeedTitle; 
+	private TextView avgSpeedRunTitle; 
+	private TextView elapsedTimeToPlaceTitle; 
+	private TextView totalElapsedTimeTitle; 
+
 	private TextView legDistanceText; 
 	private TextView totalDistanceText; 
 	private TextView avgSpeedText; 
 	private TextView avgSpeedRunText; 
 	private TextView elapsedTimeToPlaceText; 
 	private TextView totalElapsedTimeText; 
+
 	private Button nextDirectionsButton; 
 	private LinearLayout rootLayout; 
 
@@ -73,8 +82,15 @@ public class StepCompleteActivity extends Activity {
 		currentLeg.removeProximityAlerts(completedStep, getApplicationContext()); 
 
 		rootLayout = (LinearLayout) findViewById(R.id.stepCompleteLayout); 
-		stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
+		//stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
+
+		legDistanceTitle = (TextView) findViewById(R.id.legDistanceTitle); 
+		totalDistanceTitle = (TextView) findViewById(R.id.totalDistanceTitle); 
+		avgSpeedTitle = (TextView) findViewById(R.id.avgSpeedTitle); 
+		avgSpeedRunTitle = (TextView) findViewById(R.id.avgSpeedRunTitle); 
+		elapsedTimeToPlaceTitle = (TextView) findViewById(R.id.elapsedTimeToPlaceTitle); 
+		totalElapsedTimeTitle = (TextView) findViewById(R.id.totalElapsedTimeTitle); 
 
 		legDistanceText = (TextView) findViewById(R.id.legDistanceTextView); 
 		totalDistanceText = (TextView) findViewById(R.id.totalDistanceTextView); 
@@ -88,12 +104,12 @@ public class StepCompleteActivity extends Activity {
 		vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
 		if (completedStepIndex >= currentLeg.size() - 1) {
-			stepCompleteTitle.setText("Congratulations!"); 
-			rootLayout.setBackgroundResource(R.drawable.congratulations); 
+			//stepCompleteTitle.setText("Congratulations!"); 
+			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
 			currentLeg.setGotToDestination(true); 
 		}
 		else {
-			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
+			rootLayout.setBackgroundResource(R.drawable.congratulations); 
 		}
 
 		completedStep.completeStep(); 
@@ -122,15 +138,20 @@ public class StepCompleteActivity extends Activity {
 	private void setTransparency() {
 		Animation animation = new AlphaAnimation(1.0f, 0.7f);
 		animation.setFillAfter(true);
-		rootLayout.startAnimation(animation);
-		stepCompleteTitle.startAnimation(animation);
-		stepCompleteText.startAnimation(animation); 
-		legDistanceText.startAnimation(animation); 
-		totalDistanceText.startAnimation(animation); 
-		avgSpeedText.startAnimation(animation); 
-		avgSpeedRunText.startAnimation(animation); 
-		elapsedTimeToPlaceText.startAnimation(animation); 
-		totalElapsedTimeText.startAnimation(animation); 
+
+		legDistanceTitle.getBackground().setAlpha(100);
+		totalDistanceTitle.getBackground().setAlpha(100);
+		avgSpeedTitle.getBackground().setAlpha(100);
+		avgSpeedRunTitle.getBackground().setAlpha(100);
+		elapsedTimeToPlaceTitle.getBackground().setAlpha(100);
+		totalElapsedTimeTitle.getBackground().setAlpha(100);
+
+		legDistanceText.getBackground().setAlpha(100);
+		totalDistanceText.getBackground().setAlpha(100);
+		avgSpeedText.getBackground().setAlpha(100);
+		avgSpeedRunText.getBackground().setAlpha(100);
+		elapsedTimeToPlaceText.getBackground().setAlpha(100);
+		totalElapsedTimeText.getBackground().setAlpha(100);
 	}
 
 
@@ -155,26 +176,26 @@ public class StepCompleteActivity extends Activity {
 			totalElapsedTime = null;
 
 		if (completedStepIndex>=currentLeg.size() - 1) {
-			msg = android.text.Html.fromHtml("You ran to <b>" + runToPlace.getName() + "</b>!"); 
+			msg = android.text.Html.fromHtml("<b>" + runToPlace.getName() + "</b>"); 
 		}
 		else {
-			msg = android.text.Html.fromHtml("You completed step " + (completedStepIndex + 1) + " on your way to <b>" + runToPlace.getName() + "</b>!");  
+			msg = android.text.Html.fromHtml("You completed step " + (completedStepIndex + 1) + " on the way to <b>" + runToPlace.getName() + "</b>!");  
 		}
 
 		//Distance this leg and total distance overall
 		int legDistanceMeters = currentLeg.getDistanceSoFar(); 
 		int totalDistanceMeters = runDirections.getDistanceSoFar(); 
 
-		legDistance = DroidTime.getDistanceString(legDistanceMeters); 
-		totalDistance = DroidTime.getDistanceString(totalDistanceMeters); 
+		legDistance = DroidUnits.getDistanceStringV3(legDistanceMeters); 
+		totalDistance = DroidUnits.getDistanceStringV3(totalDistanceMeters); 
 		
-		legElapsedTime = DroidTime.msToStr(currentLeg.getEndTime() - currentLeg.getStartTime()); 
-		totalElapsedTime = DroidTime.msToStr(currentLeg.getEndTime() - runDirections.get(0).getStartTime()); 	
+		legElapsedTime = DroidUnits.msToStr(currentLeg.getEndTime() - currentLeg.getStartTime()); 
+		totalElapsedTime = DroidUnits.msToStr(currentLeg.getEndTime() - runDirections.get(0).getStartTime()); 	
 
 
 		//Avg. speed in m/s 
-		avgSpeed = DroidTime.getSpeedString(completedStep.getEndTime() - currentLeg.getStartTime(), legDistanceMeters); 
-		avgSpeedRun = DroidTime.getSpeedString(completedStep.getEndTime() - runDirections.get(0).getStartTime(), totalDistanceMeters); 
+		avgSpeed = DroidUnits.getSpeedStringV2(completedStep.getEndTime() - currentLeg.getStartTime(), legDistanceMeters); 
+		avgSpeedRun = DroidUnits.getSpeedStringV2(completedStep.getEndTime() - runDirections.get(0).getStartTime(), totalDistanceMeters); 
 
 		//Set text views.
 		legDistanceText.setText(legDistance); 

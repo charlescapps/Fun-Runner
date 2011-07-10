@@ -25,6 +25,7 @@ public class ViewStatsActivity extends Activity {
 	private DroidLayout droidLay; 
 	private Button returnButton; 
 	private Button loadOnMapButton; 
+	private Toast toastRunNumber; 
 
 	@Override
 	public void onCreate(Bundle b) {
@@ -42,8 +43,10 @@ public class ViewStatsActivity extends Activity {
 		statsGallery = (Gallery) findViewById(R.id.statsGallery);
 		state = ((FunRunApplication) getApplicationContext()).getState(); 
 
-		final Context theContext = this; 
 		myAdapter = new ViewStatsAdapter(this, state, statsGallery); 
+
+		toastRunNumber = Toast.makeText(this, "Run " + (1)  + " of " + myAdapter.getCount(), Toast.LENGTH_SHORT); 
+
 		statsGallery.setAdapter(myAdapter); 
 		statsGallery.setOnItemClickListener(new OnItemClickListener() {
 				public void onItemClick(AdapterView parent, View v, int position, long id) {
@@ -53,8 +56,9 @@ public class ViewStatsActivity extends Activity {
 					tv.setText("Run " + (position + 1)  + " of " + myAdapter.getCount() + "\nScroll <-->"); 
 					tmp.show(); 
 		*/
-					Toast t = Toast.makeText(theContext, "Run " + (position + 1)  + " of " + myAdapter.getCount(), Toast.LENGTH_SHORT); 
-					t.show(); 
+					
+					toastRunNumber.setText("Run " + (position + 1)  + " of " + myAdapter.getCount()); 
+					toastRunNumber.show(); 
 				}
 			});
 	}

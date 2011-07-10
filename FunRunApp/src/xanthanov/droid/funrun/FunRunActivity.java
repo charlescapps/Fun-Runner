@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.app.PendingIntent;
 import android.text.Html; 
 import android.text.Spanned; 
+import android.media.AudioManager;
 
 import android.speech.tts.TextToSpeech; 
 
@@ -74,6 +75,7 @@ public class FunRunActivity extends MapActivity
 
 	private TextToSpeech myTts; 
 	private DroidTTS ttsTools; 
+	private AudioManager audioMan;  
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -93,6 +95,7 @@ public class FunRunActivity extends MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.runlayout);
 
+		audioMan = (AudioManager)getSystemService(Context.AUDIO_SERVICE); 
 		//***************GET VIEWS DEFINED IN XML***********************
 		myMap = (MapView) findViewById(R.id.run_myMap); 
 		centerOnMeButton = (Button) findViewById(R.id.run_buttonCenterOnMe); 
@@ -152,7 +155,16 @@ public class FunRunActivity extends MapActivity
 		super.onKeyDown(keycode, e); 
 
 		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
-			speakDirections(); 	
+			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); 
+			if (!myTts.isSpeaking()) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
+				speakDirections(); 	
+			}
+		}
+		else if (keycode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE); 
+			if (funRunApp.isTtsReady()) { //Stop anything playing when you press volume down
+				myTts.playSilence(100, TextToSpeech.QUEUE_FLUSH, null); 
+			}
 		}
 
 		return true; 
@@ -222,7 +234,7 @@ public class FunRunActivity extends MapActivity
 		//Remove this leg if the runner didn't go any distance. 
 		if (currentLeg.getDistanceSoFar() <= 0 ) {
 			runDirections.remove(currentLeg); 
-			(Toast.makeText(this, "No steps completed.\nProgress not saved.", 5)).show(); 
+			(Toast.makeText(this, "No steps complete. Progress not saved.", 5)).show(); 
 			
 		}
 		else {

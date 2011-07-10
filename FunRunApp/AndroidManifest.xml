@@ -27,6 +27,6 @@
 		<activity android:name=".ChoosePlaceActivity" android:screenOrientation="portrait" android:label="Find a destination" />
 		<activity android:name=".FunRunActivity" android:screenOrientation="portrait" android:label="RUNNING...>>>...>>>...RUNNING...>>>...>>>..." />
 		<activity android:name=".StepCompleteActivity" android:screenOrientation="portrait" android:label="Time for new directions." />
-		<activity android:name=".ViewStatsActivity" android:screenOrientation="portrait" android:label="Previous Fun Runs" />
+		<activity android:name=".ViewStatsActivity" android:screenOrientation="portrait" android:label="My Fun Runs" />
     </application>
 </manifest> 

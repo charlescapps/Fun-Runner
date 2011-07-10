@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+	<!--
 		<TextView android:id="@+id/stepCompleteTitle" 
 			android:textSize="30dp"
 			android:textStyle="bold"
@@ -16,51 +17,60 @@
 			android:layout_height="wrap_content" 
 			android:layout_gravity="center_horizontal"
 			android:text="Step Complete!"/>
+	-->
 		<TextView android:id="@+id/stepCompleteTextView"	
 			android:textSize="24dp"
-			android:textColor="#ee8888"
+			android:textColor="#ff6600"
+			android:gravity="center_horizontal"
 			android:layout_width = "fill_parent"
-			android:layout_height = "wrap_content"/>
+			android:layout_height = "wrap_content"
+			android:layout_marginTop = "70dp"/>
 		<TableLayout 
 			android:layout_gravity="center_horizontal"
 			android:layout_width = "fill_parent"
 			android:layout_height = "wrap_content">
 			<TableRow style="@style/table_row">
-				<TextView style="@style/row_title"
-					android:text="Distance this leg:"/>
+				<TextView android:id="@+id/legDistanceTitle" 
+					style="@style/row_title"
+					android:text="Dist. to place"/>
 				<TextView android:id="@+id/legDistanceTextView"	
-					style="@style/row_data"/>
+					style="@style/row_title"/>
 			</TableRow>
 			<TableRow style="@style/table_row">
-				<TextView style="@style/row_title"
-					android:text="Total distance:"/>
+				<TextView android:id="@+id/totalDistanceTitle" 
+					style="@style/row_title"
+					android:text="Dist. overall"/>
 				<TextView android:id="@+id/totalDistanceTextView"	
-					style="@style/row_data"/>
+					style="@style/row_title"/>
 			</TableRow>
 			<TableRow style="@style/table_row" >
-				<TextView style="@style/row_title"
-					android:text="Avg speed this leg:"/>
+				<TextView android:id="@+id/avgSpeedTitle" 
+					style="@style/row_title"
+					android:text="Speed to place"/>
 				<TextView android:id="@+id/avgSpeedTextView"	
-					style="@style/row_data"
+					style="@style/row_title"
 					/>
 			</TableRow>
 			<TableRow style="@style/table_row" >
-				<TextView style="@style/row_title"
-					android:text="Avg speed on run:"/>
+				<TextView android:id="@+id/avgSpeedRunTitle" 
+					style="@style/row_title"
+					android:text="Speed overall"/>
 				<TextView android:id="@+id/avgSpeedRunTextView"	
-					style="@style/row_data" />
+					style="@style/row_title" />
 			</TableRow>
 			<TableRow style="@style/table_row" >
-				<TextView style="@style/row_title"
-					android:text="Elapsed time this leg:"/>
+				<TextView android:id="@+id/elapsedTimeToPlaceTitle"	
+					style="@style/row_title"
+					android:text="Time to place"/>
 				<TextView android:id="@+id/elapsedTimeToPlaceTextView"	
-					style="@style/row_data" />
+					style="@style/row_title" />
 			</TableRow>
 			<TableRow style="@style/table_row" >
-				<TextView style="@style/row_title"
-					android:text="Elapsed time on run:"/>
+				<TextView android:id="@+id/totalElapsedTimeTitle"	
+					style="@style/row_title"
+					android:text="Time overall"/>
 				<TextView android:id="@+id/totalElapsedTimeTextView"	
-					style="@style/row_data" />
+					style="@style/row_title" />
 			</TableRow>
 		</TableLayout>
 		<Button android:id="@+id/nextDirectionsButton"
