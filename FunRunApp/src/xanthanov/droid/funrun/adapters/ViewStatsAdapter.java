@@ -31,7 +31,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 	private Gallery theGallery; 
 	private int galleryItemBackground; 
 
-	private final DateFormat dateFormat = DateFormat.getDateInstance(); 
+	private final DateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy h:mm aa"); 
 
 	private final static int VIEW_TYPE = 0; 
 

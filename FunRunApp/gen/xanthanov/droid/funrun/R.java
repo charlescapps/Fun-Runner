@@ -47,23 +47,23 @@ public final class R {
     }
     public static final class id {
         public static final int avgSpeed=0x7f07001b;
-        public static final int avgSpeedRunTextView=0x7f070022;
-        public static final int avgSpeedTextView=0x7f070021;
-        public static final int backToTitle=0x7f07002b;
+        public static final int avgSpeedRunTextView=0x7f070023;
+        public static final int avgSpeedTextView=0x7f070022;
+        public static final int backToTitle=0x7f07002c;
         public static final int buttonZoomIn=0x7f070015;
         public static final int buttonZoomOut=0x7f070014;
         public static final int chosenPlaceTextView=0x7f070003;
         public static final int directionsTextView=0x7f070004;
-        public static final int elapsedTimeToPlaceTextView=0x7f070023;
+        public static final int elapsedTimeToPlaceTextView=0x7f070024;
         public static final int emptyStats=0x7f070000;
         public static final int emptyStatsMsg=0x7f070001;
         public static final int gpsButton=0x7f070016;
-        public static final int legDistanceTextView=0x7f07001f;
-        public static final int loadRunOnMap=0x7f07002a;
+        public static final int legDistanceTextView=0x7f070020;
+        public static final int loadRunOnMap=0x7f07002b;
         public static final int myMap=0x7f070012;
-        public static final int newRunButton=0x7f070026;
+        public static final int newRunButton=0x7f070027;
         public static final int nextDestinationButton=0x7f070010;
-        public static final int nextDirectionsButton=0x7f070025;
+        public static final int nextDirectionsButton=0x7f070026;
         public static final int parentContainer=0x7f07000d;
         public static final int placesVisited=0x7f07001c;
         public static final int relLayout=0x7f070011;
@@ -78,17 +78,18 @@ public final class R {
         public static final int run_relLayout=0x7f070005;
         public static final int run_zoomButtonsLayout=0x7f070007;
         public static final int spinnerTitle=0x7f07000e;
-        public static final int statsGallery=0x7f070029;
+        public static final int statsGallery=0x7f07002a;
         public static final int statsGalleryView=0x7f070017;
-        public static final int stepCompleteTextView=0x7f07001e;
-        public static final int stepCompleteTitle=0x7f07001d;
-        public static final int toastView=0x7f070028;
+        public static final int stepCompleteLayout=0x7f07001d;
+        public static final int stepCompleteTextView=0x7f07001f;
+        public static final int stepCompleteTitle=0x7f07001e;
+        public static final int toastView=0x7f070029;
         public static final int totalDistance=0x7f070019;
-        public static final int totalDistanceTextView=0x7f070020;
-        public static final int totalElapsedTimeTextView=0x7f070024;
+        public static final int totalDistanceTextView=0x7f070021;
+        public static final int totalElapsedTimeTextView=0x7f070025;
         public static final int totalTime=0x7f07001a;
         public static final int viewRunsDate=0x7f070018;
-        public static final int viewStatsButton=0x7f070027;
+        public static final int viewStatsButton=0x7f070028;
         public static final int zoomButtonsLayout=0x7f070013;
     }
     public static final class layout {

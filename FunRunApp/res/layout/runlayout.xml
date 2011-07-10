@@ -10,17 +10,16 @@
 		android:layout_height="wrap_content"
 		android:gravity="center_horizontal"
 		android:textSize="24dp"
-		android:textColor="#ee5555"/>
+		android:textColor="#ffa824"/>
 	<TextView android:id="@+id/directionsTextView" 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"	
 		android:textSize="20dp"
-		android:text=""/>
+		android:textColor="#aaaaff"/>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		>
+		android:layout_height="wrap_content">
 		<view class="com.google.android.maps.MapView"
 			android:id="@+id/run_myMap"
 			android:layout_width="wrap_content"

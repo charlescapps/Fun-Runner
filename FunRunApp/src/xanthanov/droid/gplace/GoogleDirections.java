@@ -28,6 +28,13 @@ public class GoogleDirections implements java.io.Serializable {
 	public GoogleLeg lastLeg() {return (legs.size() > 0 ? legs.get(legs.size() - 1) : null);}
 	public Date getDate() {return dateOfRun;}
 
+	public void nullBitmapsForSerialization() {
+		for (GoogleLeg leg: legs) {
+			GooglePlace pl = leg.getLegDestination(); 
+			pl.setIconBmp(null); 
+		}
+	}
+
 	public List<GooglePlace> getPlacesVisited() {
 		List<GooglePlace> places = new ArrayList<GooglePlace>(); 
 

@@ -71,7 +71,6 @@ public class FunRunActivity extends MapActivity
 	private GooglePlace runPlace;  
 	private Spanned htmlInstructions; 
 	private DroidLoc droidLoc; 
-	private int maxStepFinished = -1; 
 
 	private TextToSpeech myTts; 
 	private DroidTTS ttsTools; 
@@ -281,12 +280,14 @@ public class FunRunActivity extends MapActivity
 		float distance[] = new float[1]; 
 		GoogleStep step = null;
 		double latLng[] = DroidLoc.geoPointToDegrees(lastKnownLocation); 
-		for (int i = maxStepFinished + 1; i < currentLeg.size(); i++) {
+		for (int i = currentLeg.getMaxStepCompleted() + 1; i < currentLeg.size(); i++) {
 			step = currentLeg.get(i); 
 			Location.distanceBetween(step.getEnd()[0], step.getEnd()[1], latLng[0], latLng[1], distance); 
 			if (distance[0] <= ACCEPT_RADIUS_METERS) {
-				maxStepFinished = i; 
 				currentLeg.setMaxStepCompleted(i); 
+				long time = System.currentTimeMillis(); 
+				currentLeg.setEndTime(time); 
+				currentLeg.get(i).setEndTime(time); 
 				Intent completeStepIntent = new Intent(this, StepCompleteActivity.class); 
 				completeStepIntent.putExtra(STEP_EXTRA, i); 
 				startActivity(completeStepIntent);

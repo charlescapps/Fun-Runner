@@ -57,14 +57,6 @@ public class GoogleLeg implements java.io.Serializable {
 
 	public GoogleStep lastStepDone() {return steps.get(maxStepCompleted); }
 
-	public int getDistanceSoFar(int maxCompletedStep) {
-		int distMeters = 0; 
-		for (int i = 0; i <= maxCompletedStep; i++) {
-			distMeters += steps.get(i).getDistanceMeters(); 
-		}
-		return distMeters; 
-	}
-
 	public int getDistanceSoFar() {
 		if (maxStepUponGetDistance == maxStepCompleted) {
 			return actualDistanceRan; 
@@ -79,7 +71,8 @@ public class GoogleLeg implements java.io.Serializable {
 		}
 
 		maxStepUponGetDistance = maxStepCompleted; //Update ths record of how many steps were complete when this calculation was done to cache result 
-		return (int)cumDist; 
+		actualDistanceRan = (int)cumDist;
+		return actualDistanceRan; 
 	}
 
 	//Method to decode the overview_polyline data from Google Directions API into a list of GeoPoint's

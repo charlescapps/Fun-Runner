@@ -3,19 +3,25 @@
 	android:id="@+id/statsGalleryView"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+	android:layout_marginLeft="12dp"
+	android:layout_marginRight="12dp">
 	<LinearLayout 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content" >
+	<!--
 		<TextView 
 			android:layout_width = "wrap_content" 
 			android:layout_height="wrap_content" 
 			android:textSize = "25dp"
-			android:textColor="#ffaaaa"
+			android:textColor="#ffa824"
 			android:text ="Your run on "/>
+	-->
 		<TextView android:id = "@+id/viewRunsDate"
 			android:textSize = "25dp"
-			android:textColor="#ffaaaa"
+			android:textColor="#ee7600"
+			android:layout_marginLeft="12dp"
+			android:layout_marginRight="12dp"
 			android:layout_width = "wrap_content" 
 			android:layout_height = "wrap_content" />
 	</LinearLayout>
@@ -24,33 +30,43 @@
 		android:layout_height="wrap_content">
 		<TableRow style="@style/table_row"> 
 			<TextView style="@style/row_title"
-				android:text="Total distance: " />
+				android:textColor="#010101"
+				android:text="Total distance" />
 			<TextView android:id="@+id/totalDistance" 
-				style="@style/row_data" />
+				style="@style/row_data" 
+				android:textColor="#010101"/>
 		</TableRow>
 		<TableRow style="@style/table_row"> 
 			<TextView style="@style/row_title"
-				android:text="Total Time: " />
+				android:textColor="#010101"
+				android:text="Total Time" />
 			<TextView android:id="@+id/totalTime" 
-				style="@style/row_data" />
+				style="@style/row_data" 
+				android:textColor="#010101"/>
 		</TableRow>
 		<TableRow style="@style/table_row"> 
 			<TextView style="@style/row_title"
-				android:text="Average Speed: " />
+				android:textColor="#010101"
+				android:text="Average Speed" />
 			<TextView android:id="@+id/avgSpeed" 
-				style="@style/row_data" />
+				style="@style/row_data" 
+				android:textColor="#010101"/>
 		</TableRow>
 	</TableLayout>
 	<TextView style="@style/row_title"
 		android:layout_width="fill_parent"
-		android:text="Places visited: " 
-		android:gravity="left"
+		android:text="Places visited" 
+		android:textColor="#010101"
+		android:textStyle="bold"
+		android:gravity="center_horizontal"
 		android:layout_marginLeft="5dp"
-		android:layout_marginRight="5dp"/>
+		android:layout_marginRight="5dp"
+		android:layout_marginBottom="5dp"/>
 	<TextView android:id="@+id/placesVisited" 
 		style="@style/row_data" 
 		android:layout_width="fill_parent"
 		android:gravity="left"
+		android:textColor="#010101"
 		android:layout_marginLeft="5dp"
 		android:layout_marginRight="5dp"/>
 

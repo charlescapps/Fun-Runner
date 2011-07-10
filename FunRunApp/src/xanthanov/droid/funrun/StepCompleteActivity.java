@@ -11,8 +11,11 @@ import android.app.Application;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Button; 
+import android.widget.LinearLayout; 
 import android.content.Intent;
 import android.text.Spanned;
+import android.view.animation.Animation; 
+import android.view.animation.AlphaAnimation;
 
 import android.speech.tts.TextToSpeech; 
 
@@ -34,6 +37,7 @@ public class StepCompleteActivity extends Activity {
 	private TextView elapsedTimeToPlaceText; 
 	private TextView totalElapsedTimeText; 
 	private Button nextDirectionsButton; 
+	private LinearLayout rootLayout; 
 
 	private TextToSpeech myTts; 
 
@@ -68,6 +72,7 @@ public class StepCompleteActivity extends Activity {
 		//If everything goes well, remove all the proximity listeners for this step and prior
 		currentLeg.removeProximityAlerts(completedStep, getApplicationContext()); 
 
+		rootLayout = (LinearLayout) findViewById(R.id.stepCompleteLayout); 
 		stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
 
@@ -78,22 +83,25 @@ public class StepCompleteActivity extends Activity {
 		elapsedTimeToPlaceText = (TextView) findViewById(R.id.elapsedTimeToPlaceTextView); 
 		totalElapsedTimeText = (TextView) findViewById(R.id.totalElapsedTimeTextView); 
 
-
 		nextDirectionsButton = (Button) findViewById(R.id.nextDirectionsButton); 
 
 		vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-		long stepEndTime = System.currentTimeMillis(); 
 
 		if (completedStepIndex >= currentLeg.size() - 1) {
 			stepCompleteTitle.setText("Congratulations!"); 
+			rootLayout.setBackgroundResource(R.drawable.congratulations); 
 			currentLeg.setGotToDestination(true); 
 		}
+		else {
+			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
+		}
+
 		completedStep.completeStep(); 
-		setStopTime(stepEndTime); 
 		setNextStep(); 
-		displayMsg(stepEndTime);
+		displayMsg();
 		vibrate(vibe);  
 		setupNextDirectionsButton(); 
+		setTransparency(); 
 
 		myTts = funRunApp.getTextToSpeech(); 
 
@@ -111,10 +119,20 @@ public class StepCompleteActivity extends Activity {
 		}
 	}
 
-	private void setStopTime(long endTime) {
-		completedStep.setEndTime(endTime); 
-		currentLeg.setEndTime(endTime); 
+	private void setTransparency() {
+		Animation animation = new AlphaAnimation(1.0f, 0.7f);
+		animation.setFillAfter(true);
+		rootLayout.startAnimation(animation);
+		stepCompleteTitle.startAnimation(animation);
+		stepCompleteText.startAnimation(animation); 
+		legDistanceText.startAnimation(animation); 
+		totalDistanceText.startAnimation(animation); 
+		avgSpeedText.startAnimation(animation); 
+		avgSpeedRunText.startAnimation(animation); 
+		elapsedTimeToPlaceText.startAnimation(animation); 
+		totalElapsedTimeText.startAnimation(animation); 
 	}
+
 
 	private void setNextStep() {
 		//If we've finished the leg, set current step to null
@@ -127,7 +145,7 @@ public class StepCompleteActivity extends Activity {
 		}
 	}
 
-	private void displayMsg(long stepEndTime) {
+	private void displayMsg() {
 		Spanned msg = null,
 			legDistance = null, 
 			totalDistance = null, 
@@ -150,13 +168,13 @@ public class StepCompleteActivity extends Activity {
 		legDistance = DroidTime.getDistanceString(legDistanceMeters); 
 		totalDistance = DroidTime.getDistanceString(totalDistanceMeters); 
 		
-		legElapsedTime = DroidTime.msToStr(stepEndTime - currentLeg.getStartTime()); 
-		totalElapsedTime = DroidTime.msToStr(stepEndTime - runDirections.get(0).getStartTime()); 	
+		legElapsedTime = DroidTime.msToStr(currentLeg.getEndTime() - currentLeg.getStartTime()); 
+		totalElapsedTime = DroidTime.msToStr(currentLeg.getEndTime() - runDirections.get(0).getStartTime()); 	
 
 
 		//Avg. speed in m/s 
-		avgSpeed = DroidTime.getSpeedString(stepEndTime - currentLeg.getStartTime(), legDistanceMeters); 
-		avgSpeedRun = DroidTime.getSpeedString(stepEndTime - runDirections.get(0).getStartTime(), totalDistanceMeters); 
+		avgSpeed = DroidTime.getSpeedString(completedStep.getEndTime() - currentLeg.getStartTime(), legDistanceMeters); 
+		avgSpeedRun = DroidTime.getSpeedString(completedStep.getEndTime() - runDirections.get(0).getStartTime(), totalDistanceMeters); 
 
 		//Set text views.
 		legDistanceText.setText(legDistance); 

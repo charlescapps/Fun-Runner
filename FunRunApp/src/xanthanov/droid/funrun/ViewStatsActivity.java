@@ -53,7 +53,7 @@ public class ViewStatsActivity extends Activity {
 					tv.setText("Run " + (position + 1)  + " of " + myAdapter.getCount() + "\nScroll <-->"); 
 					tmp.show(); 
 		*/
-					Toast t = Toast.makeText(theContext, "Run " + (position + 1)  + " of " + myAdapter.getCount() + ". Scroll <-->", Toast.LENGTH_LONG); 
+					Toast t = Toast.makeText(theContext, "Run " + (position + 1)  + " of " + myAdapter.getCount(), Toast.LENGTH_SHORT); 
 					t.show(); 
 				}
 			});

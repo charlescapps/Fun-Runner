@@ -42,6 +42,11 @@ public class RunDataSerializer {
 	public static boolean writeFunRunData(String filename, FunRunData data) {
 		data.trim(); 
 
+		for (int i = 0; i < data.size(); i++) { //Bitmap is not serializable. Must remove images, besides it saves space
+			GoogleDirections dir = data.get(i); 
+			dir.nullBitmapsForSerialization(); 
+		}
+
 		ObjectOutputStream oos = null; 
 		try {
 			oos = new ObjectOutputStream(new FileOutputStream(filename));
