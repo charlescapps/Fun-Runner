@@ -170,8 +170,8 @@ public class DirectionGetter {
 			e.printStackTrace(); 
 			return null; 
 		}
-		directions.setSwBound(new GeoPoint((int) (swLat*1E6), (int) (swLng*1E6))); 
-		directions.setNeBound(new GeoPoint((int) (neLat*1E6), (int) (neLng*1E6))); 
+		directions.setSwBound(new double[]{swLat, swLng}); 
+		directions.setNeBound(new double[]{neLat, neLng}); 
 
 		return directions; 
 	} 

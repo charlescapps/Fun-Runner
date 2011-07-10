@@ -136,6 +136,7 @@ public class ChoosePlaceActivity extends MapActivity
 		super.onStop(); 
 		droidLoc.getLocManager().removeUpdates(myLocListener); 
 		myLocOverlay.disableCompass();
+		funRunApp.writeState(); 
 	}
 
 	@Override 
@@ -160,9 +161,7 @@ public class ChoosePlaceActivity extends MapActivity
 		else {
 			System.out.println("Directions null upon leaving ChoosePlaceActivity."); 
 		}
-		if (currentDirections != null && currentDirections.getDistanceSoFar() > 0) {
-			funRunApp.addDirectionsToState(currentDirections); 
-		}
+
 		funRunApp.writeState(); 
 
 	}

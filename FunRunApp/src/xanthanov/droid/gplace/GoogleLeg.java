@@ -24,10 +24,11 @@ public class GoogleLeg implements java.io.Serializable {
 	boolean doneRunning; 
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
+	private int maxStepUponGetDistance; 
 	private boolean gotToDestination; 
 
 	//ACTUAL PATH RAN
-	List<GeoPoint> actualPath; 
+	List<LatLng> actualPath; 
 
 	public GoogleLeg(String distanceStr, int distMeters) {
 		steps = new ArrayList<GoogleStep>(); 
@@ -38,9 +39,10 @@ public class GoogleLeg implements java.io.Serializable {
 		doneRunning = false; 
 		swBound = neBound = null; 
 		overviewPolyline = null; 
-		actualPath = new ArrayList<GeoPoint>(); 
+		actualPath = new ArrayList<LatLng>(); 
 		legDestination = null; 
 		maxStepCompleted = -1; 
+		maxStepUponGetDistance = -2; 
 		gotToDestination = false; 
 	}
 
@@ -64,16 +66,25 @@ public class GoogleLeg implements java.io.Serializable {
 	}
 
 	public int getDistanceSoFar() {
-		int distMeters = 0; 
-		for (int i = 0; i <= maxStepCompleted; i++) {
-			distMeters += steps.get(i).getDistanceMeters(); 
+		if (maxStepUponGetDistance == maxStepCompleted) {
+			return actualDistanceRan; 
 		}
-		return distMeters; 
+		float tmpDist[] = new float[1]; 
+		float cumDist = 0.0f; 
+		for (int i = 0; i < actualPath.size() - 1; i++) {
+			double[] latLngStart = actualPath.get(i).getArray(); 
+			double[] latLngEnd = actualPath.get(i+1).getArray(); 
+			android.location.Location.distanceBetween(latLngStart[0], latLngStart[1], latLngEnd[0], latLngEnd[1], tmpDist); 
+			cumDist+=tmpDist[0]; 
+		}
+
+		maxStepUponGetDistance = maxStepCompleted; //Update ths record of how many steps were complete when this calculation was done to cache result 
+		return (int)cumDist; 
 	}
 
 	//Method to decode the overview_polyline data from Google Directions API into a list of GeoPoint's
 	//
-	public List<GeoPoint> getPathPoints() {
+	public List<LatLng> getPathPoints() {
 		/*
 		List<GeoPoint> points = new ArrayList<GeoPoint>(); 
 		if (steps.size() == 0) {
@@ -95,6 +106,8 @@ public class GoogleLeg implements java.io.Serializable {
 	public void finishLeg() {doneRunning = true; }
 	public void setNeBound(GeoPoint b0) {neBound = DroidLoc.geoPointToDegrees(b0);}
 	public void setSwBound(GeoPoint b1) {swBound = DroidLoc.geoPointToDegrees(b1);}
+	public void setNeBound(double[] latLng) {neBound = latLng;}
+	public void setSwBound(double[] latLng) {swBound = latLng;}
 	public GeoPoint getSwBound() {return DroidLoc.degreesToGeoPoint(swBound[0], swBound[1]);}
 	public GeoPoint getNeBound() {return DroidLoc.degreesToGeoPoint(neBound[0], neBound[1]);}
 	public void add(GoogleStep gs) {steps.add(gs); }
@@ -111,7 +124,7 @@ public class GoogleLeg implements java.io.Serializable {
 	public int getDistanceMeters() {return distanceMeters; }
 	public GoogleStep finalStep() {return steps.get(steps.size() - 1); }
 	public GoogleStep firstStep() {return steps.get(0); }
-	public List<GeoPoint> getActualPath() {return actualPath;}
+	public List<LatLng> getActualPath() {return actualPath;}
 	public void setLegDestination(GooglePlace gp) {this.legDestination = gp; }
 	public GooglePlace getLegDestination() {return legDestination; }
 
@@ -168,9 +181,9 @@ public class GoogleLeg implements java.io.Serializable {
 		return super.equals(o) ;
 	}
 	
-	private List<GeoPoint> decodePoly(String encoded) {
+	private List<LatLng> decodePoly(String encoded) {
 
-	  List<GeoPoint> poly = new ArrayList<GeoPoint>();
+	  List<LatLng> poly = new ArrayList<LatLng>();
 	  int index = 0, len = encoded.length();
 	  int lat = 0, lng = 0;
 
@@ -196,7 +209,7 @@ public class GoogleLeg implements java.io.Serializable {
 
 		  GeoPoint p = new GeoPoint((int) (((double) lat / 1E5) * 1E6),
 			   (int) (((double) lng / 1E5) * 1E6));
-		  poly.add(p);
+		  poly.add(new LatLng(DroidLoc.geoPointToDegrees(p)));
 	  }
 
 	  return poly;

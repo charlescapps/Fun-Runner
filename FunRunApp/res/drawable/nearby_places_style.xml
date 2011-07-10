@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:constantSize="false"
+    android:dither="true"
+    android:variablePadding="true" >
+    <item
+        android:drawable="@drawable/find_places"
+        android:state_pressed="false"/>
+    <item
+        android:drawable="@drawable/find_places_press"
+        android:state_pressed="true"/>
+</selector>

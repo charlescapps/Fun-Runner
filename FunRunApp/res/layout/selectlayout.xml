@@ -5,17 +5,10 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<TextView android:id="@+id/spinnerTitle"
+		android:background="@drawable/choose_category" 
 		android:layout_width ="wrap_content"
 		android:layout_height = "wrap_content"
-		android:layout_gravity="center_horizontal"
-		android:textSize = "25dp"
-		android:textStyle="bold"
-		android:textColor="#6688ff"
-		android:shadowColor="#2222ff"
-		android:shadowRadius="1.5"
-		android:shadowDx="1.8"
-		android:shadowDy="1.8"
-		android:text="Choose a Category:"/>
+		android:layout_gravity="center_horizontal"/>
 	<Spinner android:id="@+id/runCategorySpinner"
 		android:background="@drawable/spinner_background"
 		android:layout_width="fill_parent"
@@ -24,8 +17,9 @@
 		android:layout_marginRight="10dp"
 		android:prompt="@string/spinner_prompt" />
 	<Button android:id="@+id/nextDestinationButton"
-		style="@style/big_button"
-		android:text="Find Nearby Places"/>
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:background="@drawable/nearby_places_style"/>
 	<RelativeLayout
 		android:id="@+id/relLayout"
 		android:layout_width="fill_parent"
@@ -36,8 +30,7 @@
 			android:layout_height="wrap_content" 
 			android:enabled="true"
 			android:clickable="true"
-			android:apiKey="0qcLJ4NCw2oBfdBl0B8Z3pRZkLzoFICh-1KsJdQ"
-			/>
+			android:apiKey="0qcLJ4NCw2oBuHqV1ULWIxkq043Y6fnxYPrXfjA"/>
 		<LinearLayout android:id="@+id/zoomButtonsLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

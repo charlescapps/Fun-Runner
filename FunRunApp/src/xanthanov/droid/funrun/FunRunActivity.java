@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation; 
 import android.view.animation.AlphaAnimation;
+import android.view.KeyEvent; 
 import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.LinearLayout;
@@ -147,6 +148,17 @@ public class FunRunActivity extends MapActivity
 		return true;
 	}
 
+	@Override
+	public boolean onKeyDown( int keycode, KeyEvent e) {		
+		super.onKeyDown(keycode, e); 
+
+		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
+			speakDirections(); 	
+		}
+
+		return true; 
+	}
+
 	@Override 
 	protected void onStart() {
 		super.onStart();
@@ -159,9 +171,12 @@ public class FunRunActivity extends MapActivity
 			if (funRunApp.isTtsReady()) {
 				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
 				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
-				myTts.speak(fullString, TextToSpeech.QUEUE_ADD, null); 
+				myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
 				myTts.playSilence(1000, TextToSpeech.QUEUE_ADD, null); 
 				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, null); 
+			}
+			else {
+				System.err.println("TTS NOT READY! OWNED!"); 
 			}
 
 			//Start up compass and location updates
@@ -178,6 +193,19 @@ public class FunRunActivity extends MapActivity
 		else {
 			//Go choose another place	
 			finish(); 
+		}
+	}
+
+	private void speakDirections() {
+
+		if (currentStep != null) {
+			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
+
+			if (funRunApp.isTtsReady()) {
+				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
+				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
+				myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
+			}
 		}
 	}
 	
@@ -200,6 +228,8 @@ public class FunRunActivity extends MapActivity
 		}
 		else {
 			(Toast.makeText(this, "Progress saved", 5)).show(); 
+			funRunApp.addDirectionsToState(); 
+			funRunApp.writeState(); 
 		}
 	}
 
@@ -229,6 +259,7 @@ public class FunRunActivity extends MapActivity
 		}
 		//Update the local variable with the last known location
 		lastKnownLocation = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
+		double[] latLng = new double[] {l.getLatitude(), l.getLongitude()}; 
 
 		//Check if we've finished a step
 		checkForCompleteSteps(); 
@@ -243,7 +274,7 @@ public class FunRunActivity extends MapActivity
 
 		//Add a GeoPoint to the actualPath in the currentLeg, provided the previous point is far enough away from the current point. 
 		//This obviously is intended to prevent 
-		addToActualPath(lastKnownLocation); 
+		addToActualPath(latLng); 
 	}
 
 	private void checkForCompleteSteps() {
@@ -264,22 +295,20 @@ public class FunRunActivity extends MapActivity
 		}
 	} 
 
-	private void addToActualPath(GeoPoint g) {
-		List<GeoPoint> actualPath = currentLeg.getActualPath();
+	private void addToActualPath(double[] latLng) {
+		List<LatLng> actualPath = currentLeg.getActualPath();
 		int size = actualPath.size(); 
 		if (size == 0) {
-			actualPath.add(g); 
+			actualPath.add(new LatLng(latLng)); 
 			return; 
 		}
-		GeoPoint lastPathPoint = actualPath.get(size - 1); 
-		double[] lastPathPtDeg = DroidLoc.geoPointToDegrees(lastPathPoint); 
-		double[] lastKnownDeg = DroidLoc.geoPointToDegrees(g); 
+		LatLng lastPathPoint = actualPath.get(size - 1); 
 		float[] distance = new float[1]; 
 
-		android.location.Location.distanceBetween(lastPathPtDeg[0], lastPathPtDeg[1], lastKnownDeg[0], lastKnownDeg[1], distance);
+		android.location.Location.distanceBetween(lastPathPoint.lat, lastPathPoint.lng, latLng[0], latLng[1], distance);
 
 		if (distance[0] >= PATH_INCREMENT_METERS) {
-			actualPath.add(g); 
+			actualPath.add(new LatLng(latLng)); 
 		}
 	}
 

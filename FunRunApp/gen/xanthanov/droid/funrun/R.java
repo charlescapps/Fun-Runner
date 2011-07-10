@@ -17,27 +17,33 @@ public final class R {
         public static final int button_down=0x7f020000;
         public static final int button_style=0x7f020001;
         public static final int button_up=0x7f020002;
-        public static final int icon=0x7f020003;
-        public static final int journey_start=0x7f020004;
-        public static final int load_button=0x7f020005;
-        public static final int load_button_down=0x7f020006;
-        public static final int load_button_style=0x7f020007;
-        public static final int load_normal=0x7f020008;
-        public static final int load_press=0x7f020009;
-        public static final int lower_left_info=0x7f02000a;
-        public static final int mappin_blue=0x7f02000b;
-        public static final int mappin_red=0x7f02000c;
-        public static final int new_button_style=0x7f02000d;
-        public static final int new_normal=0x7f02000e;
-        public static final int new_press=0x7f02000f;
-        public static final int spinner_background=0x7f020010;
-        public static final int spinner_down=0x7f020011;
-        public static final int spinner_up=0x7f020012;
-        public static final int stick_guy_bg=0x7f020013;
-        public static final int stick_guy_run1=0x7f020014;
-        public static final int stick_guy_run2=0x7f020015;
-        public static final int table_cell=0x7f020016;
-        public static final int title_alice=0x7f020017;
+        public static final int choose_category=0x7f020003;
+        public static final int congratulations=0x7f020004;
+        public static final int congratulations2=0x7f020005;
+        public static final int find_places=0x7f020006;
+        public static final int find_places_press=0x7f020007;
+        public static final int icon=0x7f020008;
+        public static final int journey_start=0x7f020009;
+        public static final int load_button=0x7f02000a;
+        public static final int load_button_down=0x7f02000b;
+        public static final int load_button_style=0x7f02000c;
+        public static final int load_normal=0x7f02000d;
+        public static final int load_press=0x7f02000e;
+        public static final int lower_left_info=0x7f02000f;
+        public static final int mappin_blue=0x7f020010;
+        public static final int mappin_red=0x7f020011;
+        public static final int nearby_places_style=0x7f020012;
+        public static final int new_button_style=0x7f020013;
+        public static final int new_normal=0x7f020014;
+        public static final int new_press=0x7f020015;
+        public static final int spinner_background=0x7f020016;
+        public static final int spinner_down=0x7f020017;
+        public static final int spinner_up=0x7f020018;
+        public static final int stick_guy_bg=0x7f020019;
+        public static final int stick_guy_run1=0x7f02001a;
+        public static final int stick_guy_run2=0x7f02001b;
+        public static final int table_cell=0x7f02001c;
+        public static final int title_alice=0x7f02001d;
     }
     public static final class id {
         public static final int avgSpeed=0x7f07001b;
@@ -72,10 +78,11 @@ public final class R {
         public static final int run_relLayout=0x7f070005;
         public static final int run_zoomButtonsLayout=0x7f070007;
         public static final int spinnerTitle=0x7f07000e;
-        public static final int statsGallery=0x7f07002a;
+        public static final int statsGallery=0x7f07002b;
         public static final int statsGalleryView=0x7f070017;
         public static final int stepCompleteTextView=0x7f070020;
         public static final int stepCompleteTitle=0x7f07001f;
+        public static final int toastView=0x7f07002a;
         public static final int totalDistance=0x7f070019;
         public static final int totalDistanceTextView=0x7f070022;
         public static final int totalElapsedTimeTextView=0x7f070026;
@@ -93,7 +100,8 @@ public final class R {
         public static final int stats_one_view=0x7f030005;
         public static final int step_complete=0x7f030006;
         public static final int title=0x7f030007;
-        public static final int view_stats=0x7f030008;
+        public static final int toast_view=0x7f030008;
+        public static final int view_stats=0x7f030009;
     }
     public static final class string {
         public static final int amusement_park=0x7f060019;

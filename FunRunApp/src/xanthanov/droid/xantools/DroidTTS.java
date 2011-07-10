@@ -21,6 +21,32 @@ public class DroidTTS {
 		abbrevToFull.put("St", "Street"); 	
 		abbrevToFull.put("Ct", "Court"); 	
 		abbrevToFull.put("Blvd", "Boulevard"); 	
+		abbrevToFull.put("Pl", "Place"); 	
+		abbrevToFull.put("Hwy", "Highway"); 	
+		abbrevToFull.put("Rd", "Road"); 	
+		abbrevToFull.put("Aly", "Alley"); 	
+		abbrevToFull.put("Dr", "Drive"); 	
+		abbrevToFull.put("Gdns", "Gardens"); 	
+		abbrevToFull.put("Trl", "Trail"); 	
+		abbrevToFull.put("Pthwy", "Pathway"); 	
+		abbrevToFull.put("Vw", "View"); 	
+		abbrevToFull.put("Circ", "Circle"); 	
+		abbrevToFull.put("Hts", "Heights"); 	
+		abbrevToFull.put("Pkwy", "Parkway"); 	
+		abbrevToFull.put("Plz", "Plaza"); 	
+		abbrevToFull.put("Byp", "Bypass"); 	
+		abbrevToFull.put("Hl", "Hill"); 	
+		abbrevToFull.put("Mt", "Mountain"); 	
+		abbrevToFull.put("Knl", "Knoll"); 	
+		abbrevToFull.put("Stra", "Stravenue"); 	
+		abbrevToFull.put("Cswy", "Causeway"); 	
+		abbrevToFull.put("Grv", "Grove"); 	
+		abbrevToFull.put("Cyn", "Canyon"); 	
+		abbrevToFull.put("Cv", "Cove"); 	
+		abbrevToFull.put("Sq", "Square"); 	
+		abbrevToFull.put("Grn", "Green"); 	
+		abbrevToFull.put("Mnr", "Manor"); 	
+		abbrevToFull.put("Psge", "Passage"); 	
 	}
 
 
@@ -28,10 +54,10 @@ public class DroidTTS {
 		
 		String[] tokens = dir.split(" "); 
 
-		System.out.println("Directions tokens:"); 
-		for (String tok: tokens) {
+		//System.out.println("Directions tokens:"); 
+		/*for (String tok: tokens) {
 			System.out.println(tok); 
-		}
+		}*/
 
 		for (int i = 0; i < tokens.length; i++) {
 			String fullWord = abbrevToFull.get(tokens[i]); 
@@ -47,7 +73,7 @@ public class DroidTTS {
 			result += (s + " "); 
 		}
 
-		System.out.println("Result of expanding abbreviations; " + result); 
+		//System.out.println("Result of expanding abbreviations; " + result); 
 
 		return result; 
 	}

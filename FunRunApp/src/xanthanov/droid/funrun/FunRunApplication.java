@@ -27,6 +27,8 @@ public class FunRunApplication extends Application {
 	private File dataDir; 
 	private String fullPath; 
 
+	private boolean addedDirections; 
+
 	public static final long MIN_GPS_UPDATE_TIME_MS = 1000; //1 second update time
 	public static final String DATA_DIR = "funrun_data";
 	public static final String DATA_FILE = "my_funrun_data.ser";
@@ -37,6 +39,7 @@ public class FunRunApplication extends Application {
 
 
 		runDirections = new GoogleDirections(); 
+		addedDirections = false; 
 
 		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
 		fullPath = dataDir + File.separator + DATA_FILE; 
@@ -50,14 +53,22 @@ public class FunRunApplication extends Application {
 		catch (Exception e) {
 			System.err.println("No FunRunData file found, creating new FunRunData"); 
 		}
-		if (state == null) {
+		if (state == null || state.size() <= 0) {
 			state = new FunRunData(); 
 			//**************Test persistent data saving*********************
 
 			addTestDirections(); 	
-			writeState(); 
+		}
+	
+		state.trim(); 
+		System.out.println("NUMBER OF RUNS FOUND: " + state.size()); 
+
+		for (int i = 0; i < state.size(); i++) {
+			System.out.println(state.get(i).toString()); 
 		}
 
+		writeState(); 
+	
 
 		//***************END TEST**********************************
 
@@ -124,7 +135,12 @@ public class FunRunApplication extends Application {
 
 	public void setCurrentStep(GoogleStep s) {currentStep=s;} 
 
-	//Called when the ChoosePlacesActivity activity is destroyed to add runner's progress to the data
-	public void addDirectionsToState(GoogleDirections gd) {state.add(gd); }
+	public void addDirectionsToState() {
+		if (!addedDirections) {
+			state.add(runDirections); 
+			addedDirections = true; 
+		}
+	}
+
 
 }

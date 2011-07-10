@@ -8,6 +8,8 @@ import android.content.Context;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 
+import xanthanov.droid.gplace.LatLng; 
+
 public class DroidLoc {
 
 	private LocationManager locManager; 
@@ -22,6 +24,10 @@ public class DroidLoc {
 	} 
 
 	public LocationManager getLocManager() {return locManager;}
+
+	public static GeoPoint latLngToGeoPoint(LatLng ll) {
+		return degreesToGeoPoint(ll.lat, ll.lng); 
+	}
 
     public GeoPoint getLastKnownLoc() {
 

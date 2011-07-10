@@ -27,3 +27,10 @@ TODO:
 		*Must delete the leg if a step isn't completed. 
 
 	-Persist to disk
+
+TODO: 
+	Test on real runs. 
+	Integrate artwork. 
+	Make buttons on ViewStats work. 
+	Make Map View. 
+	Put on App Store. 

@@ -52,7 +52,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return Math.max(state.size(), 1); 
+		return state.size() >= 1 ? state.size() : 1; 
 	}
 
 	@Override
@@ -76,9 +76,10 @@ public class ViewStatsAdapter extends BaseAdapter {
 			return getEmptyView(); 
 		}
 
+		/*
 		if (galleryViews[position] != null) {
 			return galleryViews[position]; 
-		}
+		}*/
 		ViewGroup galleryView = (ViewGroup) inflater.inflate(R.layout.stats_one_view, null); 
 		TextView runDateText = (TextView) galleryView.findViewById(R.id.viewRunsDate); 
 		TextView totalDistance = (TextView) galleryView.findViewById(R.id.totalDistance); 

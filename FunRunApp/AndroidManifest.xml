@@ -17,7 +17,7 @@
     <application android:name=".FunRunApplication" android:label="@string/app_name">
 		<uses-library android:name="com.google.android.maps" />
         <activity android:name=".FunRunTitle"
-                  android:label="The Fun Run App"
+                  android:label="Fun Runner"
 					android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

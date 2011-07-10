@@ -18,6 +18,8 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import com.google.android.maps.MapView;
 
+import xanthanov.droid.xantools.DroidLoc; 
+
 public class FunRunOverlay extends Overlay {
 	
 	//********************CONSTANTS***************************
@@ -140,7 +142,7 @@ public class FunRunOverlay extends Overlay {
 
 	}
 
-	private void drawAPath(List<GeoPoint> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro, float[] dashes) {
+	private void drawAPath(List<LatLng> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro, float[] dashes) {
 
 		if(path == null || path.size() == 0) {
 			return;
@@ -156,7 +158,7 @@ public class FunRunOverlay extends Overlay {
 		Point screenCoords = new Point();
 
 		//**********************SET UP PATH***************************
-		GeoPoint startPoint = path.get(0); 
+		GeoPoint startPoint = DroidLoc.latLngToGeoPoint(path.get(0)); 
 		pro.toPixels(startPoint, screenCoords); 
 
 		//Create the path
@@ -169,10 +171,10 @@ public class FunRunOverlay extends Overlay {
 		thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
 		
 		//Loop through all GeoPoints
-		for (GeoPoint current : path) {
+		for (LatLng current : path) {
 			//Convert GeoPoint to pixels and add to path
 			if(current != null){
-				pro.toPixels(current, screenCoords); 
+				pro.toPixels(DroidLoc.latLngToGeoPoint(current), screenCoords); 
 				thePath.lineTo((float)screenCoords.x, (float)screenCoords.y);
 			}
 		}

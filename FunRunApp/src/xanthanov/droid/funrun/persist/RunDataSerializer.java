@@ -27,12 +27,20 @@ public class RunDataSerializer {
 			e.printStackTrace(); 
 			return null; 
 		}
+
+		if (data != null) {
+			data.trim(); 
+		}
+
+		if (data.size() == 0  || (data.size() == 1 && data.get(0).size() == 0)) return null; 
+
 		return data; 
 	}
 
 
 	//Return true/false if the write was success/failure
 	public static boolean writeFunRunData(String filename, FunRunData data) {
+		data.trim(); 
 
 		ObjectOutputStream oos = null; 
 		try {
