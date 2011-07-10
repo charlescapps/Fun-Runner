@@ -11,6 +11,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView; 
 import android.widget.Toast; 
 import android.widget.TextView; 
+import android.widget.Button; 
 import android.widget.LinearLayout; 
 import android.view.View; 
 import android.content.Context; 
@@ -22,6 +23,8 @@ public class ViewStatsActivity extends Activity {
 	private ViewStatsAdapter myAdapter; 
 	private FunRunData state; 
 	private DroidLayout droidLay; 
+	private Button returnButton; 
+	private Button loadOnMapButton; 
 
 	@Override
 	public void onCreate(Bundle b) {
@@ -29,6 +32,11 @@ public class ViewStatsActivity extends Activity {
 		setContentView(R.layout.view_stats); 
 
 		droidLay = new DroidLayout(this); 
+
+		returnButton = (Button)findViewById(R.id.backToTitle); 
+		loadOnMapButton = (Button)findViewById(R.id.loadRunOnMap); 
+
+		setupButtons(); 
 
 		//Get the gallery from the layout 
 		statsGallery = (Gallery) findViewById(R.id.statsGallery);
@@ -49,6 +57,11 @@ public class ViewStatsActivity extends Activity {
 					t.show(); 
 				}
 			});
+	}
+
+	private void setupButtons() {
+		returnButton.setOnClickListener(new ClickReturn()); 
+		loadOnMapButton.setOnClickListener(new ClickLoadOnMap()); 
 	}
 
 	//Nested classes for buttons

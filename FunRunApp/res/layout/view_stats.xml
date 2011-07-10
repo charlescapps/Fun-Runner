@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Gallery xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id = "@+id/statsGallery"
-	android:layout_width = "fill_parent" 
-	android:layout_height="wrap_content" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_height="wrap_content" 
+	android:layout_width="fill_parent" 
+	android:gravity="center_horizontal">
+	<Gallery 
+		android:id = "@+id/statsGallery"
+		android:layout_width = "fill_parent" 
+		android:layout_height="wrap_content" />
+	<LinearLayout
+		android:layout_height="wrap_content" 
+		android:layout_width="fill_parent" 
+		android:gravity="center_horizontal">
+
+		<Button android:id = "@+id/loadRunOnMap"
+			style="@style/big_button"
+			android:layout_width="wrap_content"
+			android:text="Load on Map"/>
+
+		<Button android:id = "@+id/backToTitle"
+			style="@style/big_button"
+			android:layout_width="wrap_content"
+			android:text="Back to menu"/>
+
+	</LinearLayout>
+</LinearLayout>
