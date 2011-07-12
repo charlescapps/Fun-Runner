@@ -27,7 +27,6 @@ public class ViewOldRunActivity extends MapActivity {
 
 	private Button prevLegButton; 
 	private Button nextLegButton;
-	private Button centerOnMeButton;
 	private Button zoomToRouteButton;
 	private Button zoomInButton;
 	private Button zoomOutButton;
@@ -65,6 +64,7 @@ public class ViewOldRunActivity extends MapActivity {
 
 		setupMap();  
 		setupText(); 
+			
 	}
 
 	@Override
@@ -76,7 +76,6 @@ public class ViewOldRunActivity extends MapActivity {
 		placeTextView = (TextView) findViewById(R.id.placeTextView); 
 		prevLegButton = (Button) findViewById(R.id.prevLegButton); 
 		nextLegButton = (Button) findViewById(R.id.nextLegButton); 
-		centerOnMeButton = (Button) findViewById(R.id.run_buttonCenterOnMe); 
 		zoomToRouteButton = (Button) findViewById(R.id.run_buttonZoomToRoute); 
 		zoomInButton = (Button) findViewById(R.id.run_buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.run_buttonZoomOut); 
@@ -95,7 +94,14 @@ public class ViewOldRunActivity extends MapActivity {
 		prevLegButton.setOnClickListener( new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				legIndex = (legIndex - 1 < 0 ? run.size() - 1 : legIndex - 1);
+				legIndex = (legIndex - 1 < 0 ? 0 : legIndex - 1);
+
+				if (legIndex == 0) {
+					((Button) v).setEnabled(false); 
+				}
+				if (legIndex == run.size() - 2) {
+					nextLegButton.setEnabled(true); 
+				}
 				
 				centerOnLeg(legIndex);  
 				setupText(); 
@@ -106,13 +112,24 @@ public class ViewOldRunActivity extends MapActivity {
 		nextLegButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				legIndex = (legIndex + 1 >= run.size() ? 0 : legIndex + 1);
+				legIndex = (legIndex + 1 >= run.size() ? run.size() - 1 : legIndex + 1);
+				if (legIndex >= run.size() - 1) {
+					((Button) v).setEnabled(false); 
+				}
+				if (legIndex == 1) {
+					prevLegButton.setEnabled(true); 
+				}
+
 				centerOnLeg(legIndex);  
 				setupText(); 
 				myFunRunOverlay.setSpecificLeg(run.get(legIndex)); 
 			}
    		}); 
 
+		prevLegButton.setEnabled(false); 
+		if (run.size() <= 1) {
+			nextLegButton.setEnabled(false); 
+		}
 		setupZoomButtons(); 
 		setupZoomToRouteButton(); 
 	}

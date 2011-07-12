@@ -36,7 +36,7 @@ public class FunRunOverlay extends Overlay {
 
 	private final static Point PIN_OFFSET = new Point(5,29);
 	private final static Point STICK_GUY_OFFSET = new Point(15,27);
-	private final static Point JOURNEY_START_OFFSET = new Point(35,0);
+	private final static Point START_OFFSET = new Point(35,0);
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
@@ -46,10 +46,9 @@ public class FunRunOverlay extends Overlay {
 	private boolean drawRoute = false; 
 	private boolean drawSpecificRoute = false; 
 	
-	private Bitmap JOURNEY_START = null; 
-	private Bitmap PIN_START = null;
-	private Bitmap PIN_END = null;
-	private Bitmap INFO_LOWER_LEFT = null;
+	private Bitmap START = null; 
+	private Bitmap DESTINATION1 = null; 
+	private Bitmap DESTINATION2 = null; 
 	private Bitmap STICK_GUY_RUN1 = null; 
 	private Bitmap STICK_GUY_RUN2 = null; 
 	private Bitmap STICK_GUY_BG = null; 
@@ -72,10 +71,9 @@ public class FunRunOverlay extends Overlay {
 		//Paint settings
 		this.pathPaint.setAntiAlias(true);
 		
-		JOURNEY_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.journey_start); 
-		PIN_START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_blue);
-		PIN_END = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.mappin_red);
-		INFO_LOWER_LEFT = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.lower_left_info);
+		START = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.start); 
+		DESTINATION1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.destination_icon1); 
+		DESTINATION2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.destination_icon2); 
 
 		STICK_GUY_RUN1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run1);
 		STICK_GUY_RUN2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run2);
@@ -104,79 +102,48 @@ public class FunRunOverlay extends Overlay {
 		//If directions isn't null, draw the directions in red
 		if (directions != null && directions.size() > 0) {
 
-			if (drawSpecificRoute && (specificLeg != null )) {
-
-					GeoPoint startPoint = specificLeg.getFirstPoint(); //First point of the last leg
-					GeoPoint endPoint = specificLeg.getLastPoint();  //Last point of the last leg
-
-					pro.toPixels(startPoint, startCoords); 
-					pro.toPixels(endPoint, endCoords);
-
-					//Draw place image at end point
-					Bitmap bmp = specificLeg.getLegDestination().getIconBmp(); 
-					if (bmp != null) {
-						canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
-					}
-
-					//Draw the directions for the current leg in ROUTE_COLOR
-					drawAPath(specificLeg.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
-
+			GoogleLeg legToDraw = null; 
+			if (drawSpecificRoute && (specificLeg != null )) { //Either draw a specific leg, or the last leg by default
+				legToDraw = specificLeg; 
 			}
-			//If drawRoute==true, draw the directions given by google in red
-			else if (drawRoute) {
-				GeoPoint startPoint = directions.lastLeg().getFirstPoint(); //First point of the last leg
-				GeoPoint endPoint = directions.lastLeg().getLastPoint();  //Last point of the last leg
-
-				pro.toPixels(startPoint, startCoords); 
-				pro.toPixels(endPoint, endCoords);
-
-				//Draw place image at end point
-				Bitmap bmp = directions.lastLeg().getLegDestination().getIconBmp(); 
-				if (bmp != null) {
-					canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
-				}
-
-				//Draw the directions for the current leg in ROUTE_COLOR
-				drawAPath(directions.lastLeg().getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
-
+			else if (drawRoute) { //default = last leg
+				legToDraw = directions.lastLeg(); 
 			}
 
-			if (drawSpecificRoute) {
-				//Draw the current path you've ran for the leg in ACTUAL_COLOR
-				drawAPath(specificLeg.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
+			int indexOfLeg = directions.getLegs().indexOf(specificLeg); //Get index of the currently selected leg
 
-				int indexOfLeg = directions.getLegs().indexOf(specificLeg); 
+			GeoPoint startPoint = legToDraw.getFirstPoint(); //First point of the last leg
+			GeoPoint endPoint = legToDraw.getLastPoint();  //Last point of the last leg
 
-				//Draw all your previous actual path's in COMPLETED_COLOR
-				for (int i = 0; i < directions.size() - 1; i++) {
-					if (i != indexOfLeg) {
-						drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro, ACTUAL_DASHES); 
-					}
-				}
+			pro.toPixels(startPoint, startCoords); 
+			pro.toPixels(endPoint, endCoords);
 
-				//Draw journey-start sign at initial point
-				Point journeyStartPoint = new Point(); 
-				pro.toPixels(directions.getFirstPoint(), journeyStartPoint); 
-				canvas.drawBitmap(JOURNEY_START, journeyStartPoint.x - JOURNEY_START_OFFSET.x, journeyStartPoint.y - JOURNEY_START_OFFSET.y, pathPaint); 
-			}
-			else {
-				//Draw the current path you've ran for the leg in ACTUAL_COLOR
-				drawAPath(directions.lastLeg().getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
+			//Draw the directions for the current leg in ROUTE_COLOR
+			drawAPath(legToDraw.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
 
-				//Draw all your previous actual path's in COMPLETED_COLOR
-				for (int i = 0; i < directions.size() - 1; i++) {
+			//Draw the current path you've ran for the leg in ACTUAL_COLOR
+			drawAPath(legToDraw.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
+
+			//Draw all your previous actual path's other than the current one in COMPLETED_COLOR
+			for (int i = 0; i < directions.size() - 1; i++) {
+				if (i != indexOfLeg) {
 					drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro, ACTUAL_DASHES); 
 				}
-
-				//Draw journey-start sign at initial point
-				Point journeyStartPoint = new Point(); 
-				pro.toPixels(directions.getFirstPoint(), journeyStartPoint); 
-				canvas.drawBitmap(JOURNEY_START, journeyStartPoint.x - JOURNEY_START_OFFSET.x, journeyStartPoint.y - JOURNEY_START_OFFSET.y, pathPaint); 
-			
 			}
+
+			//Draw start graphic at initial point
+			Point journeyStartPoint = new Point(); 
+			pro.toPixels(directions.getFirstPoint(), journeyStartPoint); 
+			Bitmap bmp = START; 
+			canvas.drawBitmap(bmp, journeyStartPoint.x - bmp.getWidth() / 2, journeyStartPoint.y - bmp.getHeight() / 2, pathPaint); 
+
+			//Draw destination image at end point
+			//Bitmap bmp = legToDraw.getLegDestination().getIconBmp(); 
+			bmp = (indexOfLeg == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
+			canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
 		}
 
-		//Draw stick guy at current location
+		//Draw stick guy at current location even if no directions exist
 		if (currentLoc != null) {
 			pro.toPixels(currentLoc, currentCoords);
 		
