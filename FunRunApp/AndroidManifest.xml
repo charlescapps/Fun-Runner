@@ -28,5 +28,6 @@
 		<activity android:name=".FunRunActivity" android:screenOrientation="portrait" android:label="RUNNING...>>>...>>>...RUNNING...>>>...>>>..." />
 		<activity android:name=".StepCompleteActivity" android:screenOrientation="portrait" android:label="Time for new directions." />
 		<activity android:name=".ViewStatsActivity" android:screenOrientation="portrait" android:label="My Fun Runs" />
+		<activity android:name=".ViewOldRunActivity" android:screenOrientation="portrait" android:label="Viewing previous runs" />
     </application>
 </manifest> 

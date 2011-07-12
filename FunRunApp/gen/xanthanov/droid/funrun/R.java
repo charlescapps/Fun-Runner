@@ -51,7 +51,7 @@ public final class R {
         public static final int avgSpeedRunTitle=0x7f070025;
         public static final int avgSpeedTextView=0x7f070024;
         public static final int avgSpeedTitle=0x7f070023;
-        public static final int backToTitle=0x7f070031;
+        public static final int backToTitle=0x7f070035;
         public static final int buttonZoomIn=0x7f070015;
         public static final int buttonZoomOut=0x7f070014;
         public static final int chosenPlaceTextView=0x7f070003;
@@ -63,13 +63,17 @@ public final class R {
         public static final int gpsButton=0x7f070016;
         public static final int legDistanceTextView=0x7f070020;
         public static final int legDistanceTitle=0x7f07001f;
-        public static final int loadRunOnMap=0x7f070030;
+        public static final int loadRunOnMap=0x7f070034;
         public static final int myMap=0x7f070012;
         public static final int newRunButton=0x7f07002c;
         public static final int nextDestinationButton=0x7f070010;
         public static final int nextDirectionsButton=0x7f07002b;
+        public static final int nextLegButton=0x7f070031;
+        public static final int oldRunMap=0x7f070032;
         public static final int parentContainer=0x7f07000d;
+        public static final int placeTextView=0x7f07002f;
         public static final int placesVisited=0x7f07001c;
+        public static final int prevLegButton=0x7f070030;
         public static final int relLayout=0x7f070011;
         public static final int runCategorySpinner=0x7f07000f;
         public static final int run_buttonCenterOnMe=0x7f07000c;
@@ -82,7 +86,7 @@ public final class R {
         public static final int run_relLayout=0x7f070005;
         public static final int run_zoomButtonsLayout=0x7f070007;
         public static final int spinnerTitle=0x7f07000e;
-        public static final int statsGallery=0x7f07002f;
+        public static final int statsGallery=0x7f070033;
         public static final int statsGalleryView=0x7f070017;
         public static final int stepCompleteLayout=0x7f07001d;
         public static final int stepCompleteTextView=0x7f07001e;
@@ -107,7 +111,8 @@ public final class R {
         public static final int step_complete=0x7f030006;
         public static final int title=0x7f030007;
         public static final int toast_view=0x7f030008;
-        public static final int view_stats=0x7f030009;
+        public static final int view_old_run=0x7f030009;
+        public static final int view_stats=0x7f03000a;
     }
     public static final class string {
         public static final int amusement_park=0x7f060019;

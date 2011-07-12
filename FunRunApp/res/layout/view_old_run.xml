@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/run_parentContainer"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<TextView android:id="@+id/placeTextView"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:textSize="24dp"
+		android:textColor="#ffa824"/>
+	<!-- Next / Previous buttons-->
+	<LinearLayout 
+		android:layout_width = "fill_parent"
+		android:layout_height = "wrap_content" 
+		android:gravity="center_horizontal">
+		<Button android:id="@+id/prevLegButton" 
+			android:layout_width = "wrap_content"
+			android:layout_height="wrap_content" 
+			android:textStyle="bold"
+			android:text="Prev Place"/>
+		<Button android:id="@+id/nextLegButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:textStyle="bold"
+			android:text = "Next Place"/>
+	</LinearLayout>
+	<RelativeLayout
+		android:id="@+id/run_relLayout"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<view class="com.google.android.maps.MapView"
+			android:id="@+id/oldRunMap"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:enabled="true"
+			android:clickable="true"
+			android:apiKey="0qcLJ4NCw2oBuHqV1ULWIxkq043Y6fnxYPrXfjA"/>
+		<LinearLayout android:id="@+id/run_zoomButtonsLayout"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true">
+		<Button android:id="@+id/run_buttonZoomOut" 
+			style="?android:attr/buttonStyleSmall" 
+			android:background="@drawable/button_style"
+			android:text="Zoom (-)" 
+			android:textStyle="bold" 
+			android:paddingLeft="3dp"
+			android:paddingRight="3dp"
+			android:paddingTop="3dp"
+			android:paddingBottom="3dp"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonZoomIn" 
+			style="?android:attr/buttonStyleSmall" 
+			android:background="@drawable/button_style"
+			android:text="Zoom (+)" 
+			android:textStyle="bold" 
+			android:paddingLeft="3dp"
+			android:paddingRight="3dp"
+			android:paddingTop="3dp"
+			android:paddingBottom="3dp"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"/>
+		</LinearLayout>
+		<LinearLayout android:id="@+id/run_centerButtons"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			>
+		<Button android:id="@+id/run_buttonZoomToRoute" 
+			style="?android:attr/buttonStyleSmall" 
+			android:background="@drawable/button_style"
+			android:text="Zoom to route" 
+			android:textStyle="bold" 
+			android:paddingLeft="3dp"
+			android:paddingRight="3dp"
+			android:paddingTop="3dp"
+			android:paddingBottom="3dp"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"/>
+		<Button android:id="@+id/run_buttonCenterOnMe" 
+			style="?android:attr/buttonStyleSmall" 
+			android:background="@drawable/button_style"
+			android:text="Center on me" 
+			android:textStyle="bold" 
+			android:paddingLeft="3dp"
+			android:paddingRight="3dp"
+			android:paddingTop="3dp"
+			android:paddingBottom="3dp"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"/>
+		</LinearLayout>
+	</RelativeLayout>
+</LinearLayout>

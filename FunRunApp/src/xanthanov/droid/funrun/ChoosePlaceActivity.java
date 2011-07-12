@@ -217,7 +217,7 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, false);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, false, false);
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		myFunRunOverlay.updateCurrentDirections(currentDirections); 
 		myMap.getOverlays().add(myLocOverlay); 

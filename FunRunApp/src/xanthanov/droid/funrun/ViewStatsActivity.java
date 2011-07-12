@@ -27,6 +27,8 @@ public class ViewStatsActivity extends Activity {
 	private Button loadOnMapButton; 
 	private Toast toastRunNumber; 
 
+	public static final String RUN_INDEX_EXTRA = "RUN_INDEX_EXTRA"; 
+
 	@Override
 	public void onCreate(Bundle b) {
 		super.onCreate(b); 
@@ -80,6 +82,7 @@ public class ViewStatsActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			Intent showMap = new Intent(ViewStatsActivity.this, ViewOldRunActivity.class); 
+			showMap.putExtra(RUN_INDEX_EXTRA, statsGallery.getLastVisiblePosition()); 
 			ViewStatsActivity.this.startActivity(showMap); 
 
 		}

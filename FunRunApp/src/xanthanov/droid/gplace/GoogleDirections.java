@@ -27,6 +27,8 @@ public class GoogleDirections implements java.io.Serializable {
 	public void complete() {this.completed = true;} 
 	public GoogleLeg lastLeg() {return (legs.size() > 0 ? legs.get(legs.size() - 1) : null);}
 	public Date getDate() {return dateOfRun;}
+	public long getEndTime() {return (lastLeg() == null ? -1 : lastLeg().getEndTime()); }
+	public long getStartTime() {return (legs.get(0) == null ? -1 : legs.get(0).getStartTime()); }
 
 	public void nullBitmapsForSerialization() {
 		for (GoogleLeg leg: legs) {
@@ -48,6 +50,7 @@ public class GoogleDirections implements java.io.Serializable {
 	@Override
 	public String toString() {
 		String s = "(GoogleDirections) dateOfRun:" + DateFormat.getDateInstance().format(dateOfRun) + ",num legs:" + legs.size() + "\n"; 
+		s += "\tStart time: " + getStartTime() + ", End time: " + getEndTime() + "\n";
 
  		for (int i = 0; i < legs.size(); i++) {
 			s += "Leg #" + i + "\n" + legs.get(i).toString(); 	

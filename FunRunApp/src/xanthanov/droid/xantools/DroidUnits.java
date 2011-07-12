@@ -16,6 +16,10 @@ public class DroidUnits {
 	}
 
 	public static Spanned msToStrV2(long ms) {
+		if (ms <= 0 ) {
+			if (ms < 0 ) System.err.println("Error: time was < 0"); 
+			return android.text.Html.fromHtml("0 <b>mins</b>, 0 <b>secs</b>"); 
+		}
 		long secs = (ms / 1000) % 60; 
 		long mins = (ms / 60000); 
 		//long hours = (ms / (60000*60)); 
@@ -38,7 +42,9 @@ public class DroidUnits {
 	}
 
 	public static Spanned getSpeedStringV2(long ms, int distanceMeters) {
-		if (ms == 0 || distanceMeters == 0) {
+		if (ms <= 0 || distanceMeters <= 0) {
+			if (ms < 0) System.err.println("Time in ms = " + ms + " was < 0 in getSpeedStringV2"); 
+			if (distanceMeters < 0) System.err.println("distanceMeters = " + distanceMeters + " was < 0 in getSpeedStringV2"); 
 			return android.text.Html.fromHtml("<b>n/a</b>"); 
 		}
 

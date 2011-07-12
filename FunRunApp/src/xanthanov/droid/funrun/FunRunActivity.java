@@ -85,7 +85,6 @@ public class FunRunActivity extends MapActivity
 	public final static float ACCEPT_RADIUS_METERS = 30.0f; 
 	public final static float PATH_INCREMENT_METERS = 10.0f; 
 
-	public final String PROXIMITY_ACTION = "xanthanov.droid.funrun.PROXIMITY_ALERT";
 	public final static String STEP_EXTRA = "step_no";
 	//************************************************************
     /** Called when the activity is first created. */
@@ -232,7 +231,7 @@ public class FunRunActivity extends MapActivity
 		super.onDestroy(); 
 
 		//Remove this leg if the runner didn't go any distance. 
-		if (currentLeg.getDistanceSoFar() <= 0 ) {
+		if (currentLeg.getDistanceSoFar() <= 0 || currentLeg.getMaxStepCompleted() < 0) {
 			runDirections.remove(currentLeg); 
 			(Toast.makeText(this, "No steps complete. Progress not saved.", 5)).show(); 
 			
@@ -336,7 +335,7 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, true);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, true, false);
 		myFunRunOverlay.updateCurrentDirections(runDirections); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
