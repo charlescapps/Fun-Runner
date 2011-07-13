@@ -9,6 +9,8 @@ import java.text.DateFormat;
 
 public class GoogleDirections implements java.io.Serializable {
 
+	static final long serialVersionUID = 86320041051816900L;
+
 	private List<GoogleLeg> legs; 
 	private Date dateOfRun; 
 
@@ -73,11 +75,11 @@ public class GoogleDirections implements java.io.Serializable {
 		return (lastLeg() != null ? lastLeg().getEndTime() - legs.get(0).getStartTime() : 0); 
 	}
 
-	public GeoPoint getFirstPoint() {
+	public double[] getFirstPoint() {
 		return legs.get(0).getFirstPoint(); 
 	}
 
-	public GeoPoint getLastPoint() {
+	public double[] getLastPoint() {
 		return legs.get(legs.size() - 1).getLastPoint(); 
 	}
 }

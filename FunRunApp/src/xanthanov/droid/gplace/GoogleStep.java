@@ -7,9 +7,9 @@ import xanthanov.droid.xantools.*;
 
 import android.app.PendingIntent; 
 
-import com.google.android.maps.GeoPoint; 
-
 public class GoogleStep implements java.io.Serializable{
+	
+	static final long serialVersionUID = 5475289992693869917L;
 
 	//Data from Google Directions API query
 	private double[] startLatLng, endLatLng; 
@@ -30,10 +30,8 @@ public class GoogleStep implements java.io.Serializable{
 		this.startTime = this.endTime = 0; 
 	}
 
-	public GeoPoint getStartGeoPoint() {return DroidLoc.degreesToGeoPoint(startLatLng[0], startLatLng[1]); }
-	public GeoPoint getEndGeoPoint() {return DroidLoc.degreesToGeoPoint(endLatLng[0], endLatLng[1]); }
-	public double[] getStart() {return startLatLng; }
-	public double[] getEnd() {return endLatLng; }
+	public double[] getStartPoint() {return startLatLng; }
+	public double[] getEndPoint() {return endLatLng; }
 	public int getDistanceMeters() {return distanceMeters;}
 	public String getDistanceString() {return distanceString;}
 	public String getHtmlInstructions() {return htmlInstructions;}

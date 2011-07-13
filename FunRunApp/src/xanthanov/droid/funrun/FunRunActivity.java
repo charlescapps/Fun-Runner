@@ -293,7 +293,7 @@ public class FunRunActivity extends MapActivity
 		double latLng[] = DroidLoc.geoPointToDegrees(lastKnownLocation); 
 		for (int i = currentLeg.getMaxStepCompleted() + 1; i < currentLeg.size(); i++) {
 			step = currentLeg.get(i); 
-			Location.distanceBetween(step.getEnd()[0], step.getEnd()[1], latLng[0], latLng[1], distance); 
+			Location.distanceBetween(step.getEndPoint()[0], step.getEndPoint()[1], latLng[0], latLng[1], distance); 
 			if (distance[0] <= ACCEPT_RADIUS_METERS) {
 				currentLeg.setMaxStepCompleted(i); 
 				long time = System.currentTimeMillis(); 
@@ -404,8 +404,8 @@ public class FunRunActivity extends MapActivity
 	} 
 
 	private void zoomToRoute() {
-		final GeoPoint neBound = currentLeg.getNeBound(); 
-		final GeoPoint swBound = currentLeg.getSwBound(); 
+		final GeoPoint neBound = DroidLoc.degreesToGeoPoint(currentLeg.getNeBound()); 
+		final GeoPoint swBound = DroidLoc.degreesToGeoPoint(currentLeg.getSwBound()); 
 		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
 		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
 		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 

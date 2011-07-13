@@ -62,7 +62,7 @@ public class FunRunOverlay extends Overlay {
 		this.pathPaint = new Paint();
 
 		if (directions != null) {
-			this.currentLoc = directions.getFirstPoint();
+			this.currentLoc = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); 
 		}
 		else {
 			this.currentLoc = null; 
@@ -112,8 +112,8 @@ public class FunRunOverlay extends Overlay {
 
 			int indexOfLeg = directions.getLegs().indexOf(specificLeg); //Get index of the currently selected leg
 
-			GeoPoint startPoint = legToDraw.getFirstPoint(); //First point of the last leg
-			GeoPoint endPoint = legToDraw.getLastPoint();  //Last point of the last leg
+			GeoPoint startPoint = DroidLoc.degreesToGeoPoint(legToDraw.getFirstPoint()); //First point of the last leg
+			GeoPoint endPoint = DroidLoc.degreesToGeoPoint(legToDraw.getLastPoint());  //Last point of the last leg
 
 			pro.toPixels(startPoint, startCoords); 
 			pro.toPixels(endPoint, endCoords);
@@ -133,7 +133,7 @@ public class FunRunOverlay extends Overlay {
 
 			//Draw start graphic at initial point
 			Point journeyStartPoint = new Point(); 
-			pro.toPixels(directions.getFirstPoint(), journeyStartPoint); 
+			pro.toPixels(DroidLoc.degreesToGeoPoint(directions.getFirstPoint()), journeyStartPoint); 
 			Bitmap bmp = START; 
 			canvas.drawBitmap(bmp, journeyStartPoint.x - bmp.getWidth() / 2, journeyStartPoint.y - bmp.getHeight() / 2, pathPaint); 
 

@@ -7,6 +7,8 @@ import xanthanov.droid.gplace.*;
 
 public class FunRunData implements Serializable {
 
+	static final long serialVersionUID = 3598332711128154459L;
+
 	private List<GoogleDirections> myRuns; 
 	//To add: settings? 
 

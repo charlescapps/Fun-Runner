@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import xanthanov.droid.xantools.DroidLoc; 
 import android.content.Context; 
 
-import com.google.android.maps.GeoPoint; 
-
 public class GoogleLeg implements java.io.Serializable {
+
+	static final long serialVersionUID = 8152718132267205755L;
+
 	//DATA FROM GOOGLE MAPS HTTP QUERY
 	private List<GoogleStep> steps; 
 	private String distanceString; 
@@ -64,14 +65,14 @@ public class GoogleLeg implements java.io.Serializable {
 	public void setNeBound(double[] latLng) {neBound = latLng;}
 	public void setSwBound(double[] latLng) {swBound = latLng;}
 
-	public GeoPoint getSwBound() {return DroidLoc.degreesToGeoPoint(swBound[0], swBound[1]);}
-	public GeoPoint getNeBound() {return DroidLoc.degreesToGeoPoint(neBound[0], neBound[1]);}
+	public double[] getSwBound() {return swBound;}
+	public double[] getNeBound() {return neBound;}
 
 	public void add(GoogleStep gs) {steps.add(gs); }
 	public int size() {return steps.size(); }
 	public GoogleStep get(int i) {return steps.get(i); }
-	public GeoPoint getFirstPoint() {return steps.get(0).getStartGeoPoint(); }
-	public GeoPoint getLastPoint() { return steps.get(steps.size()-1).getEndGeoPoint(); }
+	public double[] getFirstPoint() {return steps.get(0).getStartPoint(); }
+	public double[] getLastPoint() { return steps.get(steps.size()-1).getEndPoint(); }
 	public List<GoogleStep> getSteps() {return steps; }
 	public long getStartTime() { return startTime;}
 	public long getEndTime() {return endTime;}
@@ -156,9 +157,9 @@ public class GoogleLeg implements java.io.Serializable {
 		  int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 		  lng += dlng;
 
-		  GeoPoint p = new GeoPoint((int) (((double) lat / 1E5) * 1E6),
-			   (int) (((double) lng / 1E5) * 1E6));
-		  poly.add(new LatLng(DroidLoc.geoPointToDegrees(p)));
+		  int latE6 = (int) (((double) lat / 1E5) * 1E6);
+		  int lngE6 = (int) (((double) lng / 1E5) * 1E6);
+		  poly.add(new LatLng(DroidLoc.latLngE6ToDegrees(latE6, lngE6)));
 	  }
 
 	  return poly;
