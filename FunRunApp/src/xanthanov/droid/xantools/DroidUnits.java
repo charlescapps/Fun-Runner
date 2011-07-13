@@ -27,29 +27,30 @@ public class DroidUnits {
 		return android.text.Html.fromHtml(mins + " <b>mins</b>, " + secs + " <b>secs</b>");
 	}
 
-	public static Spanned getSpeedString(long ms, int distanceMeters) {
+	public static Spanned getSpeedString(long ms, double distanceMeters) {
 
-		if (ms == 0 || distanceMeters == 0) {
+		if (ms <= 0 || distanceMeters <= 0.0) {
 			return android.text.Html.fromHtml("<b>n/a</b>"); 
 		}
 
 		DecimalFormat df = new DecimalFormat("#.##"); 
-		double mPerS = ((double)distanceMeters) / (((double)ms)/1000); 
+		double mPerS = distanceMeters / (((double)ms)/1000.0); 
 
 		String html = df.format(mPerS) + " <b>m/s</b>"; 
 
 		return android.text.Html.fromHtml(html); 
 	}
 
-	public static Spanned getSpeedStringV2(long ms, int distanceMeters) {
-		if (ms <= 0 || distanceMeters <= 0) {
+	public static Spanned getSpeedStringV2(long ms, double distanceMeters) {
+		if (ms <= 0 || distanceMeters <= 0.0) {
 			if (ms < 0) System.err.println("Time in ms = " + ms + " was < 0 in getSpeedStringV2"); 
-			if (distanceMeters < 0) System.err.println("distanceMeters = " + distanceMeters + " was < 0 in getSpeedStringV2"); 
+
+			if (distanceMeters < 0.0) System.err.println("distanceMeters = " + distanceMeters + " was < 0 in getSpeedStringV2"); 
 			return android.text.Html.fromHtml("<b>n/a</b>"); 
 		}
 
 		DecimalFormat df = new DecimalFormat("#.##"); 
-		double mPerS = ((double)distanceMeters) / (((double)ms)/1000); 
+		double mPerS = distanceMeters / (((double)ms)/1000.0); 
 		double minPerMile = (1/mPerS)*(1.0/60.0)*metersPerMile; 
 		int mins = (int) minPerMile; 
 		int secs = (int) (( minPerMile - (double) mins ) * 60.0) % 60; 
@@ -75,10 +76,14 @@ public class DroidUnits {
 		return android.text.Html.fromHtml(html); 
 	}
 
-	public static Spanned getDistanceStringV3(int distanceMeters) {
-		double distanceMiles = ((double)distanceMeters) / metersPerMile; 
+	public static Spanned getDistanceStringV3(double distanceMeters) {
+		if (distanceMeters < 0.0) {
+			System.err.println("Negative distanceMeters in getDistanceStringV3: " + distanceMeters); 
+			return android.text.Html.fromHtml("<b>n/a</b>"); 
+		}
+		double distanceMiles = distanceMeters / metersPerMile; 
 		DecimalFormat df = new DecimalFormat("#.##"); 
-		String html = distanceMeters + " <b>m</b>, " + df.format(distanceMiles) + " <b>mi</b>"; 
+		String html = df.format(distanceMeters) + " <b>m</b>, " + df.format(distanceMiles) + " <b>mi</b>"; 
 		return android.text.Html.fromHtml(html); 
 	}
 }

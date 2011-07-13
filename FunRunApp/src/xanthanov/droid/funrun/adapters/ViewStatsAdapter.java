@@ -91,7 +91,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 		Spanned dateSpanned = android.text.Html.fromHtml("<b>" + dateFormat.format(runDate)  + "</b>");
 
 		runDateText.setText(dateSpanned); 
-		int totalDistMeters = state.get(position).getDistanceSoFar(); 
+		double totalDistMeters = state.get(position).getDistanceSoFar(); 
 		totalDistance.setText(DroidUnits.getDistanceStringV3(totalDistMeters));
 		totalTime.setText(DroidUnits.msToStrV2(state.get(position).totalTime())) ; 
 		avgSpeed.setText(DroidUnits.getSpeedStringV2(state.get(position).totalTime(), state.get(position).getDistanceSoFar())); 

@@ -78,9 +78,6 @@ public class StepCompleteActivity extends Activity {
 
 		completedStep = currentLeg.get(completedStepIndex); 
 
-		//If everything goes well, remove all the proximity listeners for this step and prior
-		currentLeg.removeProximityAlerts(completedStep, getApplicationContext()); 
-
 		rootLayout = (LinearLayout) findViewById(R.id.stepCompleteLayout); 
 		//stepCompleteTitle = (TextView) findViewById(R.id.stepCompleteTitle); 
 		stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
@@ -112,7 +109,6 @@ public class StepCompleteActivity extends Activity {
 			rootLayout.setBackgroundResource(R.drawable.congratulations); 
 		}
 
-		completedStep.completeStep(); 
 		setNextStep(); 
 		displayMsg();
 		vibrate(vibe);  
@@ -183,8 +179,8 @@ public class StepCompleteActivity extends Activity {
 		}
 
 		//Distance this leg and total distance overall
-		int legDistanceMeters = currentLeg.getDistanceSoFar(); 
-		int totalDistanceMeters = runDirections.getDistanceSoFar(); 
+		double legDistanceMeters = currentLeg.getActualDistanceRan(); 
+		double totalDistanceMeters = runDirections.getDistanceSoFar(); 
 
 		legDistance = DroidUnits.getDistanceStringV3(legDistanceMeters); 
 		totalDistance = DroidUnits.getDistanceStringV3(totalDistanceMeters); 

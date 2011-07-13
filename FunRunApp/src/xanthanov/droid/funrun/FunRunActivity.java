@@ -231,7 +231,7 @@ public class FunRunActivity extends MapActivity
 		super.onDestroy(); 
 
 		//Remove this leg if the runner didn't go any distance. 
-		if (currentLeg.getDistanceSoFar() <= 0 || currentLeg.getMaxStepCompleted() < 0) {
+		if (currentLeg.getActualDistanceRan() <= 0.0 || currentLeg.getMaxStepCompleted() < 0) {
 			runDirections.remove(currentLeg); 
 			(Toast.makeText(this, "No steps complete. Progress not saved.", 5)).show(); 
 			
@@ -320,7 +320,7 @@ public class FunRunActivity extends MapActivity
 		android.location.Location.distanceBetween(lastPathPoint.lat, lastPathPoint.lng, latLng[0], latLng[1], distance);
 
 		if (distance[0] >= PATH_INCREMENT_METERS) {
-			actualPath.add(new LatLng(latLng)); 
+			currentLeg.addToActualPath(new LatLng(latLng)); 
 		}
 	}
 

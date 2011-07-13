@@ -10,12 +10,10 @@ import java.text.DateFormat;
 public class GoogleDirections implements java.io.Serializable {
 
 	private List<GoogleLeg> legs; 
-	private boolean completed; 
 	private Date dateOfRun; 
 
 	public GoogleDirections() {
 		legs = new ArrayList<GoogleLeg>();
-		completed = false; 
 		dateOfRun = new Date(); 
 	}
 
@@ -23,10 +21,9 @@ public class GoogleDirections implements java.io.Serializable {
 	public void add(GoogleLeg l) {legs.add(l);}
 	public int size() {return legs.size();}
 	public GoogleLeg get(int i) {return legs.get(i);}
-	public boolean isCompleted() {return completed;}
-	public void complete() {this.completed = true;} 
 	public GoogleLeg lastLeg() {return (legs.size() > 0 ? legs.get(legs.size() - 1) : null);}
 	public Date getDate() {return dateOfRun;}
+
 	public long getEndTime() {return (lastLeg() == null ? -1 : lastLeg().getEndTime()); }
 	public long getStartTime() {return (legs.get(0) == null ? -1 : legs.get(0).getStartTime()); }
 
@@ -59,10 +56,10 @@ public class GoogleDirections implements java.io.Serializable {
 		return s; 
 	}
 
-	public int getDistanceSoFar() {
-		int dist = 0; 
+	public double getDistanceSoFar() {
+		double dist = 0.0; 
 		for (GoogleLeg l: legs) {
-			dist += l.getDistanceSoFar();  
+			dist += l.getActualDistanceRan();  
 		}
 		return dist; 
 	}
