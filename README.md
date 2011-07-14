@@ -12,6 +12,17 @@ Programming and Project Lead, Charles L. Capps AKA Xanthanov (<a href="https://w
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
 
+<h2>Key Features</h2>
+
+<ul>
+<li>Plot your runs through the city</li>
+<li>See the path you take in real-time on a map</li>
+<li>Google Walking Directions spoken aloud automatically</li>
+<li>Keeps track of all your stats: total distance, total time, average speed for each place you run to</li>
+<li>View your previous runs in the Stats Gallery, even see the exact routes you ran on a map</li>
+
+</ul>
+
 <h2>What does it do?</h2>
 
 <p><dd>
