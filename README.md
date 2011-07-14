@@ -22,6 +22,12 @@ Note you can press the "volume up" button to repeat the directions. <b><i>And it
 </dd></p>
 
 <p><dd>
+	When you need the next set of directions, they will automatically be spoken aloud. You can also see your total distance, total time, and average speed 
+at any step along the way. If you decided you want to run to a new place, you can just press back to change your destination. All your progress will be saved
+as long as you ran a significant distance. 
+</dd></p>
+
+<p><dd>
 	You can also view your previous runs in the stats gallery (<b>Press the Load button from the title screen</b>). 
 You can then view the previous run on a map. (Functionality will be added to share your runs on Facebook). 	
 </dd></p>
