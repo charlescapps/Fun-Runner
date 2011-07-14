@@ -12,6 +12,8 @@ Programming and Project Lead, Charles L. Capps AKA Xanthanov (<a href="https://w
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
 
+<h2>What does it do?</h2>
+
 <p><dd>
 	This app helps a runner to plot a route through a city, passing by various places of interest. 
 <b><i>It makes running into a game to help you get into shape!</b></i> You choose a place-category from a list, 
