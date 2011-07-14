@@ -11,6 +11,11 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.DashPathEffect; 
 
+import android.widget.ImageView; 
+import android.widget.RelativeLayout;  
+import android.view.animation.TranslateAnimation; 
+import android.graphics.drawable.AnimationDrawable; 
+
 import java.util.List;
 
 import com.google.android.maps.Overlay;
@@ -34,38 +39,54 @@ public class FunRunOverlay extends Overlay {
 	private final static float[] ROUTE_DASHES = new float[] {10.0f, 5.0f, 3.0f, 5.0f};  
 	private final static float[] ACTUAL_DASHES = new float[] {10.0f, 5.0f};  
 
-	private final static Point PIN_OFFSET = new Point(5,29);
-	private final static Point STICK_GUY_OFFSET = new Point(15,27);
 	private final static Point START_OFFSET = new Point(35,0);
+	private final static Point RUNNER_OFFSET = new Point(15,40);
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
 	private GoogleDirections directions = null;
 	private GoogleLeg specificLeg = null; 
-	private GeoPoint currentLoc = null;
 	private boolean drawRoute = false; 
 	private boolean drawSpecificRoute = false; 
 	
 	private Bitmap START = null; 
 	private Bitmap DESTINATION1 = null; 
 	private Bitmap DESTINATION2 = null; 
-	private Bitmap STICK_GUY_RUN1 = null; 
-	private Bitmap STICK_GUY_RUN2 = null; 
-	private Bitmap STICK_GUY_BG = null; 
-	private Bitmap CURRENT_STICK_GUY = null; 
 
-	public FunRunOverlay(MapView map, GoogleDirections directions, boolean drawRoute, boolean drawSpecificRoute) {
+	private Bitmap RUNNER1; 
+
+	private boolean animateRunner; 
+	private ImageView runnerImageView; 
+	private GeoPoint prevRunnerPoint; 
+	private GeoPoint curRunnerPoint;
+	private RelativeLayout mapRelLayout; 
+
+	public FunRunOverlay(MapView map, GoogleDirections directions, boolean drawRoute, boolean drawSpecificRoute, boolean animateRunner, RelativeLayout mapRelLayout) {
+		System.out.println("***********ENTERING FUN RUN OVERLAY CONSTRUCTOR**************"); 
 		this.theMapView = map;
 		this.directions = directions;
 		this.drawRoute = drawRoute; 
 		this.drawSpecificRoute = drawSpecificRoute; 
 		this.pathPaint = new Paint();
+		this.animateRunner = animateRunner; 
+
+		prevRunnerPoint = curRunnerPoint = null;
+
+		this.mapRelLayout = mapRelLayout; 
+		System.out.println("Map rel layout: " + mapRelLayout); 
+
+		if (animateRunner && mapRelLayout != null) {
+
+			runnerImageView = new ImageView(map.getContext()); 
+			runnerImageView.setBackgroundResource(R.drawable.runner_anim);
+			runnerImageView.setAdjustViewBounds(true); 
+			mapRelLayout.addView(runnerImageView); 
+
+		}
 
 		if (directions != null) {
-			this.currentLoc = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); 
-		}
-		else {
-			this.currentLoc = null; 
+			this.curRunnerPoint = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); 
+			curRunnerPoint = prevRunnerPoint = curRunnerPoint; 
 		}
 
 		//Paint settings
@@ -75,16 +96,29 @@ public class FunRunOverlay extends Overlay {
 		DESTINATION1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.destination_icon1); 
 		DESTINATION2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.destination_icon2); 
 
-		STICK_GUY_RUN1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run1);
-		STICK_GUY_RUN2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_run2);
-		CURRENT_STICK_GUY = STICK_GUY_RUN1; 
-		STICK_GUY_BG = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.stick_guy_bg);
+		RUNNER1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner1); 
 
+	}
+
+	public void startRunAnimation() {
+		AnimationDrawable runnerAnim = (AnimationDrawable)runnerImageView.getBackground(); 
+		runnerAnim.start(); 
+
+	}
+
+	public void stopRunAnimation() {
+		AnimationDrawable runnerAnim = (AnimationDrawable)runnerImageView.getBackground(); 
+		runnerAnim.stop(); 
 	}
 
 	public void setSpecificLeg(GoogleLeg l) {this.specificLeg = l; }
 
-	public void updateCurrentLocation(GeoPoint loc) { this.currentLoc = loc; }	
+	public void updateCurrentLocation(GeoPoint loc) { 
+		prevRunnerPoint = curRunnerPoint; 
+		curRunnerPoint = loc; 
+
+		theMapView.postInvalidate(); 
+	}	
 
 	public void updateCurrentDirections(GoogleDirections directions) { this.directions = directions;}
 
@@ -106,7 +140,7 @@ public class FunRunOverlay extends Overlay {
 			if (drawSpecificRoute && (specificLeg != null )) { //Either draw a specific leg, or the last leg by default
 				legToDraw = specificLeg; 
 			}
-			else if (drawRoute) { //default = last leg
+			else { //default = last leg
 				legToDraw = directions.lastLeg(); 
 			}
 
@@ -118,8 +152,10 @@ public class FunRunOverlay extends Overlay {
 			pro.toPixels(startPoint, startCoords); 
 			pro.toPixels(endPoint, endCoords);
 
+			if (drawRoute || drawSpecificRoute) {
 			//Draw the directions for the current leg in ROUTE_COLOR
-			drawAPath(legToDraw.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
+				drawAPath(legToDraw.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
+			}
 
 			//Draw the current path you've ran for the leg in ACTUAL_COLOR
 			drawAPath(legToDraw.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
@@ -144,13 +180,20 @@ public class FunRunOverlay extends Overlay {
 		}
 
 		//Draw stick guy at current location even if no directions exist
-		if (currentLoc != null) {
-			pro.toPixels(currentLoc, currentCoords);
 		
-			canvas.drawBitmap(STICK_GUY_BG, currentCoords.x - STICK_GUY_OFFSET.x, currentCoords.y - STICK_GUY_OFFSET.y, pathPaint);
-			canvas.drawBitmap(STICK_GUY_RUN1, currentCoords.x - STICK_GUY_OFFSET.x, currentCoords.y - STICK_GUY_OFFSET.y, pathPaint);
-		}
+		if (curRunnerPoint != null) {
 
+			Point runnerPoint = new Point(); 
+			pro.toPixels(curRunnerPoint, runnerPoint); 
+
+			if (animateRunner) {
+				TranslateAnimation ta = new TranslateAnimation((int)runnerPoint.x - RUNNER_OFFSET.x, (int)runnerPoint.x - RUNNER_OFFSET.x, (int)runnerPoint.y - RUNNER_OFFSET.y, (int)runnerPoint.y - RUNNER_OFFSET.y); 
+				runnerImageView.startAnimation(ta); 
+			}
+			else {
+				canvas.drawBitmap(RUNNER1, runnerPoint.x - RUNNER_OFFSET.x, runnerPoint.y - RUNNER_OFFSET.y, pathPaint);
+			}
+		}
 	}
 
 	private void drawAPath(List<LatLng> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro, float[] dashes) {

@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Button; 
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast; 
 import android.content.Context; 
 import android.location.Location;
@@ -59,6 +60,7 @@ public class FunRunActivity extends MapActivity
 	private Button zoomToRouteButton;
 	private TextView directionsTextView; 
 	private TextView chosenPlaceTextView; 
+	private RelativeLayout mapRelLayout; 
 	//*******************OTHER OBJECTS****************************
 	private FunRunApplication funRunApp; 
 	private MyLocationOverlay myLocOverlay;
@@ -104,6 +106,7 @@ public class FunRunActivity extends MapActivity
 		directionsTextView = (TextView) findViewById(R.id.directionsTextView); 
 		chosenPlaceTextView = (TextView) findViewById(R.id.chosenPlaceTextView); 
 		parentContainer = (LinearLayout) findViewById(R.id.run_parentContainer); 
+		mapRelLayout = (RelativeLayout) findViewById(R.id.run_relLayout); 
 		//******************DEFINE OTHER OBJECTS**************************
 		droidLoc = new DroidLoc(this); 
 		myLocOverlay = new MyLocationOverlay(this, myMap); 
@@ -131,6 +134,7 @@ public class FunRunActivity extends MapActivity
 		setupCenterOnMeButton(); 
 		setupZoomToRouteButton(); 
 		setupZoomButtons(); 
+		myMap.preLoad(); 
 
 		long theTime = System.currentTimeMillis(); 
 
@@ -155,7 +159,7 @@ public class FunRunActivity extends MapActivity
 
 		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
 			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); 
-			if (!myTts.isSpeaking()) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
+			if (funRunApp.isTtsReady() && !myTts.isSpeaking()) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
 				speakDirections(); 	
 			}
 		}
@@ -169,9 +173,21 @@ public class FunRunActivity extends MapActivity
 		return true; 
 	}
 
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus); 
+
+		if (hasFocus) {
+			myFunRunOverlay.startRunAnimation(); 
+		}
+
+	}
+
 	@Override 
 	protected void onStart() {
 		super.onStart();
+
 		//See if current step was updated by StepCompleteActivity
 		currentStep = ((FunRunApplication)getApplication()).getCurrentStep(); 
 		if (currentStep != null) {
@@ -180,9 +196,11 @@ public class FunRunActivity extends MapActivity
 
 			if (funRunApp.isTtsReady()) {
 				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
+				System.out.println("Html instructions raw: " + currentStep.getHtmlInstructions()); 
 				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
+				System.out.println("Html instructions expanded: " + fullString); 
 				myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
-				myTts.playSilence(1000, TextToSpeech.QUEUE_ADD, null); 
+				myTts.playSilence(500, TextToSpeech.QUEUE_ADD, null); 
 				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, null); 
 			}
 			else {
@@ -210,12 +228,9 @@ public class FunRunActivity extends MapActivity
 
 		if (currentStep != null) {
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
-
-			if (funRunApp.isTtsReady()) {
-				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
-				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
-				myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
-			}
+			System.out.println("Html instructions string: " + htmlInstructions.toString()); 
+			String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
+			myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
 		}
 	}
 	
@@ -335,7 +350,7 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, true, false);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, true, false, true, mapRelLayout);
 		myFunRunOverlay.updateCurrentDirections(runDirections); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 

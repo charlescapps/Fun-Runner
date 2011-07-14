@@ -69,6 +69,12 @@ public class ViewOldRunActivity extends MapActivity {
 	}
 
 	@Override
+	public void onStop() {
+		super.onStop();
+	
+	}
+	
+	@Override
 	public boolean isRouteDisplayed() {
 		return true;
 	}
@@ -152,10 +158,11 @@ public class ViewOldRunActivity extends MapActivity {
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, true, true);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, true, true, false, null);
 		myFunRunOverlay.updateCurrentDirections(run); 
 		myFunRunOverlay.setSpecificLeg(run.get(legIndex)); 
 		myMap.getOverlays().add(myFunRunOverlay); 
+		myMap.preLoad(); 
 		myMap.postInvalidate(); 
 	}
 

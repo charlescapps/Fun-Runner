@@ -113,6 +113,7 @@ public class ChoosePlaceActivity extends MapActivity
 		setupNextButton(); 
 		setupZoomButtons(); 
 		centerOnMe(); 
+		myMap.preLoad(); 
 		
     }
 	
@@ -213,11 +214,11 @@ public class ChoosePlaceActivity extends MapActivity
 		adapter.setDropDownViewResource(R.layout.spinner_dropdown);
 		runCategorySpinner.setAdapter(adapter); 
 		
-		runCategorySpinner.setOnItemSelectedListener(new FunRunOnItemSelected());
+		//runCategorySpinner.setOnItemSelectedListener(new FunRunOnItemSelected());
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, false, false);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, false, false, false, null);
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 		myFunRunOverlay.updateCurrentDirections(currentDirections); 
 		myMap.getOverlays().add(myLocOverlay); 
@@ -282,6 +283,7 @@ public class ChoosePlaceActivity extends MapActivity
 			}
 		}
 		catch (Exception e) {
+			nearbyPlaces = null; //An error occurred. Use null to indicate we didn't simply find zero places
 			throw e; 
 		}
 		finally {
@@ -452,7 +454,10 @@ public class ChoosePlaceActivity extends MapActivity
 			//Set remainingPlaces = shallow copy of nearbyPlaces  
 			remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); 
 
-			if (result == null || result.size() <= 0) {
+			if (result == null) {
+				; //Places query should show a popup indicating you don't have an internet connection or some other horrible error occurred
+			}
+			else if (result.size() <= 0) {
 				//Output dialog indicating nothing was found...choose a new category
 				DroidDialogs.showPopup(a, "Choose a new category", "No '" + searchStr + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
 						+ "Please choose a different category and try again."); 

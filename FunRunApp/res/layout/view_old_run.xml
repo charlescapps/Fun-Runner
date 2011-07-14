@@ -37,6 +37,13 @@
 			android:enabled="true"
 			android:clickable="true"
 			android:apiKey="0qcLJ4NCw2oBuHqV1ULWIxkq043Y6fnxYPrXfjA"/>
+<!-- Makes more sense to define animation in code
+		<ImageView android:id="@+id/runner_anim"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@drawable/runner_anim"
+			/>
+-->
 		<LinearLayout android:id="@+id/run_zoomButtonsLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

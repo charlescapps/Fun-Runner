@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:id="@+id/runner_animation" 
+	android:oneshot="false">
+    <item android:drawable="@drawable/runner1" android:duration="100" />
+    <item android:drawable="@drawable/runner2" android:duration="100" />
+    <item android:drawable="@drawable/runner3" android:duration="100" />
+    <item android:drawable="@drawable/runner4" android:duration="100" />
+    <item android:drawable="@drawable/runner5" android:duration="100" />
+    <item android:drawable="@drawable/runner6" android:duration="100" />
+ </animation-list>
