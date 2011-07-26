@@ -2,8 +2,11 @@
 <h4> An Android App by Xanthanov </h4>
 
 Copyright &copy; 2011 Charles L. Capps <br/>
-Released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php)</br>
-</br>
+Source code released under the MIT License (<a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php)</a><br/>
+<br/>
+
+Artwork Copyright &copy; 2011 Alice Bessoni and Charles L. Capps <br/>
+Artwork released under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License (<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons License</a>)
 
 Programming and Project Lead, Charles L. Capps AKA Xanthanov (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>charles.l.capps@gmail.com</b></br>
@@ -45,7 +48,8 @@ You can then view the previous run on a map. (Functionality will be added to sha
 
 <h2>Credit for code samples</h2>
 <dd>The Google Directions API doesn&apos;t provide information on how to decode the &apos;overview polyline&apos; string to draw more accurate directions. 
-I found code to do so on Jeffrey Sambell&apos;s <a href="http://jeffreysambells.com/posts/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java/">blog</a>.</dd>
+I found code to do so on Jeffrey Sambell&apos;s <a href="http://jeffreysambells.com/posts/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java/">blog</a>.
+Permission to use code granted via email correspondence.</dd>
 
 <h2>A few things to keep in mind</h2>
 
