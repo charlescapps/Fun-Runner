@@ -19,12 +19,12 @@
 			android:layout_width = "wrap_content"
 			android:layout_height="wrap_content" 
 			android:textStyle="bold"
-			android:text="Prev Place"/>
+			android:background="@drawable/left_style"/>
 		<Button android:id="@+id/nextLegButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
 			android:textStyle="bold"
-			android:text = "Next Place"/>
+			android:background="@drawable/right_style"/>
 	</LinearLayout>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"

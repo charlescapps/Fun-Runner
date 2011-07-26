@@ -129,14 +129,19 @@ public class FunRunOverlay extends Overlay {
 		//Get a Projection object to convert between lat/lng --> x/y
 		Projection pro = theMapView.getProjection(); 
 
-		Point startCoords = new Point();
 		Point endCoords = new Point();
 		Point currentCoords = new Point();
 
-		//If directions isn't null, draw the directions in red
-		if (directions != null && directions.size() > 0) {
+		if (directions!= null && directions.size() > 0) { //Stuff you can only draw if you have some directions
+			GeoPoint startPoint = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); //First point of run
+			Point startCoords = new Point();
+			pro.toPixels(startPoint, startCoords); 
+			Bitmap bmp = START; 
+			//Draw the little red circle at the start point
+			canvas.drawBitmap(bmp, startCoords.x - bmp.getWidth() / 2, startCoords.y - bmp.getHeight() / 2, pathPaint); 
 
-			GoogleLeg legToDraw = null; 
+			GoogleLeg legToDraw = null; //The "current" leg to draw your path in blue
+
 			if (drawSpecificRoute && (specificLeg != null )) { //Either draw a specific leg, or the last leg by default
 				legToDraw = specificLeg; 
 			}
@@ -146,14 +151,9 @@ public class FunRunOverlay extends Overlay {
 
 			int indexOfLeg = directions.getLegs().indexOf(specificLeg); //Get index of the currently selected leg
 
-			GeoPoint startPoint = DroidLoc.degreesToGeoPoint(legToDraw.getFirstPoint()); //First point of the last leg
-			GeoPoint endPoint = DroidLoc.degreesToGeoPoint(legToDraw.getLastPoint());  //Last point of the last leg
-
-			pro.toPixels(startPoint, startCoords); 
-			pro.toPixels(endPoint, endCoords);
-
+			//If directions isn't null, and directions are meant to be drawn, draw the directions in red
 			if (drawRoute || drawSpecificRoute) {
-			//Draw the directions for the current leg in ROUTE_COLOR
+				//Draw the directions for the appropriate leg in ROUTE_COLOR
 				drawAPath(legToDraw.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
 			}
 
@@ -161,23 +161,22 @@ public class FunRunOverlay extends Overlay {
 			drawAPath(legToDraw.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
 
 			//Draw all your previous actual path's other than the current one in COMPLETED_COLOR
-			for (int i = 0; i < directions.size() - 1; i++) {
+			for (int i = 0; i < directions.size(); i++) {
 				if (i != indexOfLeg) {
 					drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro, ACTUAL_DASHES); 
 				}
+
+				GeoPoint endPoint = DroidLoc.degreesToGeoPoint(directions.get(i).getLastPoint());  //Last point of the leg
+				pro.toPixels(endPoint, endCoords); 
+
+				bmp = (i == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
+				canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
 			}
 
-			//Draw start graphic at initial point
-			Point journeyStartPoint = new Point(); 
-			pro.toPixels(DroidLoc.degreesToGeoPoint(directions.getFirstPoint()), journeyStartPoint); 
-			Bitmap bmp = START; 
-			canvas.drawBitmap(bmp, journeyStartPoint.x - bmp.getWidth() / 2, journeyStartPoint.y - bmp.getHeight() / 2, pathPaint); 
 
+		}
 			//Draw destination image at end point
 			//Bitmap bmp = legToDraw.getLegDestination().getIconBmp(); 
-			bmp = (indexOfLeg == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
-			canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
-		}
 
 		//Draw stick guy at current location even if no directions exist
 		

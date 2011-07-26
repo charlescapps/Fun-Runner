@@ -141,7 +141,7 @@ public class RunDataSerializer {
 			java.util.Arrays.sort(legs, new AbcFileComparator()); 
 
 			for (int j = 0; j < legs.length; j++) {
-				System.out.println("Leg Filename #" + j + ": " + legs[i].getPath()); 
+				System.out.println("Leg Filename #" + j + ": " + legs[j].getPath()); 
 				GoogleLeg legToAdd;
 				try {
 					ois = new ObjectInputStream(new FileInputStream(legs[j].getPath()));

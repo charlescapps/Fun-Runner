@@ -112,6 +112,14 @@ public class ChoosePlaceActivity extends MapActivity
 		setupZoomButtons(); 
 		centerOnMe(); 
 		myMap.preLoad(); 
+
+		List<String> providers = 
+		droidLoc.getLocManager().getProviders(false); 
+
+		System.out.println("ALL PROVIDERS:"); 
+		for (String s: providers) {
+			System.out.println("\t" + s); 
+		}
     }
 
 	@Override	

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import android.widget.BaseAdapter; 
 import android.widget.TextView; 
+import android.widget.Button; 
 import android.view.View; 
 import android.view.ViewGroup; 
 import android.widget.Gallery;
@@ -117,8 +118,36 @@ public class ViewStatsAdapter extends BaseAdapter {
 		//galleryView.setLayoutParams(new Gallery.LayoutParams(150, 100));
         galleryView.setBackgroundResource(galleryItemBackground);
 
+		setupButtons(galleryView, position); 
+
 		galleryViews[position] = galleryView; 
 		return galleryView;
+	}
+
+	private void setupButtons(ViewGroup galleryView, int position) {
+		Button leftButton = (Button) galleryView.findViewById(R.id.leftArrow); 
+		Button rightButton = (Button) galleryView.findViewById(R.id.rightArrow); 
+
+		if (position <= 0) {
+			leftButton.setEnabled(false); 
+		}
+		if (position >= getCount() - 1) {
+			rightButton.setEnabled(false); 
+		}
+
+		leftButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				theGallery.setSelection(theGallery.getFirstVisiblePosition() - 1, true); 	
+			}
+		}); 	
+
+		rightButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				theGallery.setSelection(theGallery.getFirstVisiblePosition() + 1, true); 	
+			}
+		}); 	
 	}
 
 	private View getEmptyView() {
