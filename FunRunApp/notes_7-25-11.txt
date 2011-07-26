@@ -1,0 +1,10 @@
+
+
+-Need to change dialog so you can see the route when deciding
+
+-Need to center on guy when you return to the ChoosePlace activity. (done)
+	-Also when you get first GPS fix
+
+-Need to get modified background from Alice. (emailed) 
+
+-

@@ -4,6 +4,9 @@
     android:dither="true"
     android:variablePadding="false" >
     <item
+        android:drawable="@drawable/button_disabled"
+        android:state_enabled="false"/>
+    <item
         android:drawable="@drawable/button_down"
         android:state_pressed="true"/>
     <item

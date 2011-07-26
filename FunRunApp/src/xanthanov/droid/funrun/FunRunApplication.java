@@ -27,26 +27,28 @@ public class FunRunApplication extends Application {
 	private File dataDir; 
 	private String fullPath; 
 
-	private boolean addedDirections; 
-
 	public static final long MIN_GPS_UPDATE_TIME_MS = 1000; //1 second update time
 	public static final String DATA_DIR = "funrun_data";
-	public static final String DATA_FILE = "my_funrun_data.ser";
 
 	@Override
 	public void onCreate() {
 		super.onCreate(); 
 
-
-		runDirections = new GoogleDirections(); 
-		addedDirections = false; 
-
 		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
-		fullPath = dataDir + File.separator + DATA_FILE; 
+		RunDataSerializer.setDataDir(dataDir); 	
 
-		System.out.println("Full path:" + fullPath); 
-		state = null; 
+		try {
+			state = RunDataSerializer.getFunRunData(); 
+		}
+		catch (Exception e) {
+			System.err.println("Failure reading in old runs."); 
+			e.printStackTrace(); 
+			state = new FunRunData(); 
+		}
 
+		//Call new method to get FunRunData from a collection of files here
+
+		/*
 		try {
 			state = RunDataSerializer.getFunRunData(fullPath); 
 		}
@@ -58,17 +60,13 @@ public class FunRunApplication extends Application {
 			//**************Test persistent data saving*********************
 
 			addTestDirections(); 	
-		}
+		}*/
 	
-		state.trim(); 
 		System.out.println("NUMBER OF RUNS FOUND: " + state.size()); 
 
 		for (int i = 0; i < state.size(); i++) {
 			System.out.println(state.get(i).toString()); 
 		}
-
-		writeState(); 
-	
 
 		//***************END TEST**********************************
 
@@ -91,6 +89,10 @@ public class FunRunApplication extends Application {
 		myTextToSpeech = new TextToSpeech(this, ttsListener); 
 		myTextToSpeech.setSpeechRate(0.75f); 
 		myTextToSpeech.setPitch(1.25f); 
+	}
+
+	public File getDataDir() {
+		return dataDir; 
 	}
 
 	private void addTestDirections() {
@@ -121,12 +123,6 @@ public class FunRunApplication extends Application {
 
 	public FunRunData getState() {return state; }
 
-	public void writeState() {
-		if (state != null) {
-			RunDataSerializer.writeFunRunData(fullPath, state); 
-		}
-	}
-
 	public void setRunDirections(GoogleDirections d) {runDirections = d;}
 	
 	public GoogleDirections getRunDirections() {return runDirections; }
@@ -136,10 +132,7 @@ public class FunRunApplication extends Application {
 	public void setCurrentStep(GoogleStep s) {currentStep=s;} 
 
 	public void addDirectionsToState() {
-		if (!addedDirections) {
-			state.add(runDirections); 
-			addedDirections = true; 
-		}
+		state.add(runDirections); 
 	}
 
 

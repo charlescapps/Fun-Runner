@@ -36,15 +36,12 @@ public class FunRunTitle extends Activity
 	public void onDestroy() {
 		super.onDestroy(); 
 		FunRunApplication app = (FunRunApplication)getApplicationContext();
-		app.writeState(); 
 		app.getTextToSpeech().shutdown(); 
 	}
 
 	@Override 
 	public void onStop() {
 		super.onStop(); 
-		FunRunApplication app = (FunRunApplication)getApplicationContext();
-		app.writeState(); 
 		
 	}
 

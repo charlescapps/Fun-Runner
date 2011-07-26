@@ -39,7 +39,6 @@ public class ViewStatsActivity extends Activity {
 		returnButton = (Button)findViewById(R.id.backToTitle); 
 		loadOnMapButton = (Button)findViewById(R.id.loadRunOnMap); 
 
-		setupButtons(); 
 
 		//Get the gallery from the layout 
 		statsGallery = (Gallery) findViewById(R.id.statsGallery);
@@ -52,22 +51,24 @@ public class ViewStatsActivity extends Activity {
 		statsGallery.setAdapter(myAdapter); 
 		statsGallery.setOnItemClickListener(new OnItemClickListener() {
 				public void onItemClick(AdapterView parent, View v, int position, long id) {
-		/*			Toast tmp = new Toast(theContext); 
-					tmp.setView(droidLay.inflateView(R.layout.toast_view)); 
-					TextView tv = (TextView)tmp.getView(); 
-					tv.setText("Run " + (position + 1)  + " of " + myAdapter.getCount() + "\nScroll <-->"); 
-					tmp.show(); 
-		*/
-					
 					toastRunNumber.setText("Run " + (position + 1)  + " of " + myAdapter.getCount()); 
 					toastRunNumber.show(); 
 				}
 			});
+		
+		setupButtons(); 
+		
 	}
 
 	private void setupButtons() {
+
 		returnButton.setOnClickListener(new ClickReturn()); 
-		loadOnMapButton.setOnClickListener(new ClickLoadOnMap()); 
+		if (myAdapter.isEmpty()) {
+			loadOnMapButton.setEnabled(false); 
+		}
+		else {		
+			loadOnMapButton.setOnClickListener(new ClickLoadOnMap()); 
+		}
 	}
 
 	//Nested classes for buttons

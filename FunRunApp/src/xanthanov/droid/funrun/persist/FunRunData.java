@@ -14,8 +14,6 @@ public class FunRunData implements Serializable {
 
 	public FunRunData() {
 		myRuns = new ArrayList<GoogleDirections>(); 
-
-
 	}
 
 	public GoogleDirections get(int i) {return myRuns.get(i); }

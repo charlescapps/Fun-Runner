@@ -24,7 +24,6 @@ public class GoogleLeg implements java.io.Serializable {
 	private long endTime; 
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
-	private int maxStepUponGetDistance; //Used to check if the calculated 
 	private boolean gotToDestination; 
 
 	//ACTUAL PATH RAN
@@ -92,7 +91,7 @@ public class GoogleLeg implements java.io.Serializable {
 			return; 
 		}
 
-		//Add distance from previous point to added point to the actualDistanceRan
+		//Add (distance between previous point -> new point) to the actualDistanceRan
 
 		int size  = actualPath.size(); 
 		double[] latLngStart = actualPath.get(size - 2).getArray(); 

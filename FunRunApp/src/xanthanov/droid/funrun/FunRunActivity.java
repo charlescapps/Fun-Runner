@@ -2,6 +2,7 @@ package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
 import xanthanov.droid.xantools.*;
+import xanthanov.droid.funrun.persist.RunDataSerializer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -84,7 +85,7 @@ public class FunRunActivity extends MapActivity
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static float ACCEPT_RADIUS_METERS = 30.0f; 
+	public final static float ACCEPT_RADIUS_METERS = 60.0f; 
 	public final static float PATH_INCREMENT_METERS = 10.0f; 
 
 	public final static String STEP_EXTRA = "step_no";
@@ -146,31 +147,53 @@ public class FunRunActivity extends MapActivity
 
 		myTts = funRunApp.getTextToSpeech(); 
 		ttsTools = new DroidTTS(); 
-		
     }
 	
+	@Override
 	public boolean isRouteDisplayed() {
 		return true;
 	}
 
 	@Override
 	public boolean onKeyDown( int keycode, KeyEvent e) {		
-		super.onKeyDown(keycode, e); 
+	//	super.onKeyDown(keycode, e); 
 
 		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
 			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); 
 			if (funRunApp.isTtsReady() && !myTts.isSpeaking()) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
 				speakDirections(); 	
 			}
+			return true; 
 		}
 		else if (keycode == KeyEvent.KEYCODE_VOLUME_DOWN) {
 			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE); 
 			if (funRunApp.isTtsReady()) { //Stop anything playing when you press volume down
 				myTts.playSilence(100, TextToSpeech.QUEUE_FLUSH, null); 
 			}
+			return true; 
+		}
+		else if (keycode == KeyEvent.KEYCODE_BACK) {
+			DroidDialogs.showPopup(this, false, "Choose new place?", 
+									"Stop running to " + runPlace.getName() + "?\nYour progress will be saved if you completed any steps.", 
+									"Okay", "No way!", 
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int id) {
+											dialog.dismiss(); 
+											FunRunActivity.this.finish(); 
+										}
+									},	
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int id) {
+											dialog.dismiss(); 
+										}
+									}	
+									); 
+			return true; 
 		}
 
-		return true; 
+		return false; 
 	}
 
 
@@ -194,7 +217,7 @@ public class FunRunActivity extends MapActivity
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
 			updateDirectionsTextView(); 
 
-			if (funRunApp.isTtsReady()) {
+			if (funRunApp.isTtsReady()) { //Expand abbreviations so it speaks properly and play it
 				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
 				System.out.println("Html instructions raw: " + currentStep.getHtmlInstructions()); 
 				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
@@ -218,7 +241,7 @@ public class FunRunActivity extends MapActivity
 			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
 			myMap.postInvalidate(); 
 		}
-		else {
+		else { //current step was null, indicating the user finished running to a place.
 			//Go choose another place	
 			finish(); 
 		}
@@ -254,7 +277,7 @@ public class FunRunActivity extends MapActivity
 		else {
 			(Toast.makeText(this, "Progress saved", 5)).show(); 
 			funRunApp.addDirectionsToState(); 
-			funRunApp.writeState(); 
+			RunDataSerializer.writeLegToFile(runDirections, currentLeg, runDirections.getLegs().indexOf(currentLeg)); 
 		}
 	}
 

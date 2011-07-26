@@ -27,7 +27,7 @@ public class GoogleDirections implements java.io.Serializable {
 	public Date getDate() {return dateOfRun;}
 
 	public long getEndTime() {return (lastLeg() == null ? -1 : lastLeg().getEndTime()); }
-	public long getStartTime() {return (legs.get(0) == null ? -1 : legs.get(0).getStartTime()); }
+	public long getStartTime() {return (legs.size() <=0 || legs.get(0) == null ? -1 : legs.get(0).getStartTime()); }
 
 	public void nullBitmapsForSerialization() {
 		for (GoogleLeg leg: legs) {

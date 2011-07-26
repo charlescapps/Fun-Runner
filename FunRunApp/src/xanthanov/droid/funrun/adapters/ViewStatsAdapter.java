@@ -50,6 +50,10 @@ public class ViewStatsAdapter extends BaseAdapter {
         a.recycle();
 	}
 
+	public boolean isEmpty() {
+		return state.size() <= 0; 
+	}
+
 	@Override
 	public int getCount() {
 		return state.size() >= 1 ? state.size() : 1; 
