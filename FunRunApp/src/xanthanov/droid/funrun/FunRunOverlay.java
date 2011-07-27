@@ -172,8 +172,6 @@ public class FunRunOverlay extends Overlay {
 				bmp = (i == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
 				canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
 			}
-
-
 		}
 			//Draw destination image at end point
 			//Bitmap bmp = legToDraw.getLegDestination().getIconBmp(); 

@@ -34,6 +34,7 @@ import android.speech.tts.TextToSpeech;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random; 
+import java.util.HashMap; 
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -73,12 +74,15 @@ public class FunRunActivity extends MapActivity
 	private GoogleLeg currentLeg; 
 	private GoogleStep currentStep; 
 	private GooglePlace runPlace;  
-	private Spanned htmlInstructions; 
 	private DroidLoc droidLoc; 
 
 	private TextToSpeech myTts; 
 	private DroidTTS ttsTools; 
 	private AudioManager audioMan;  
+
+	private Spanned htmlInstructions;
+	private String speakingInstructions;  
+	private boolean firstSpeechCompleted; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -87,6 +91,8 @@ public class FunRunActivity extends MapActivity
 
 	public final static float ACCEPT_RADIUS_METERS = 60.0f; 
 	public final static float PATH_INCREMENT_METERS = 10.0f; 
+
+	private final static float MIN_DISTANCE_TO_SAVE = 200.0f; 
 
 	public final static String STEP_EXTRA = "step_no";
 	//************************************************************
@@ -147,6 +153,14 @@ public class FunRunActivity extends MapActivity
 
 		myTts = funRunApp.getTextToSpeech(); 
 		ttsTools = new DroidTTS(); 
+		firstSpeechCompleted = false; 
+
+		myTts.setOnUtteranceCompletedListener(new TextToSpeech.OnUtteranceCompletedListener() {
+			@Override
+			public void onUtteranceCompleted(String id) {
+				firstSpeechCompleted = true; 
+			}
+		});
     }
 	
 	@Override
@@ -159,22 +173,30 @@ public class FunRunActivity extends MapActivity
 	//	super.onKeyDown(keycode, e); 
 
 		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
-			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); 
-			if (funRunApp.isTtsReady() && !myTts.isSpeaking()) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
+			if (firstSpeechCompleted && funRunApp.isTtsReady() && (!myTts.isSpeaking())) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
 				speakDirections(); 	
 			}
+			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); 
 			return true; 
 		}
 		else if (keycode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE); 
-			if (funRunApp.isTtsReady()) { //Stop anything playing when you press volume down
-				myTts.playSilence(100, TextToSpeech.QUEUE_FLUSH, null); 
-			}
+			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI); 
 			return true; 
 		}
 		else if (keycode == KeyEvent.KEYCODE_BACK) {
+
+			String msg; 
+			double distanceRan = currentLeg.getActualDistanceRan(); 
+			
+			if (distanceRan < MIN_DISTANCE_TO_SAVE) {
+				msg = "Your progress won't be saved. You ran less than " + (int)MIN_DISTANCE_TO_SAVE + " meters.";
+			}
+			else {
+				msg = "Your progress will be saved, since you ran " + distanceRan + " meters.";  
+			}
+
 			DroidDialogs.showPopup(this, false, "Choose new place?", 
-									"Stop running to " + runPlace.getName() + "?\nYour progress will be saved if you completed any steps.", 
+									"Stop running to " + runPlace.getName() + "?\n\n" + msg, 
 									"Okay", "No way!", 
 									new DialogInterface.OnClickListener() {
 										@Override
@@ -211,20 +233,21 @@ public class FunRunActivity extends MapActivity
 	protected void onStart() {
 		super.onStart();
 
+		firstSpeechCompleted = false; 
+
 		//See if current step was updated by StepCompleteActivity
 		currentStep = ((FunRunApplication)getApplication()).getCurrentStep(); 
 		if (currentStep != null) {
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
+			speakingInstructions = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
 			updateDirectionsTextView(); 
 
 			if (funRunApp.isTtsReady()) { //Expand abbreviations so it speaks properly and play it
-				System.out.println("Html instructions string: " + htmlInstructions.toString()); 
-				System.out.println("Html instructions raw: " + currentStep.getHtmlInstructions()); 
-				String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
-				System.out.println("Html instructions expanded: " + fullString); 
-				myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
-				myTts.playSilence(500, TextToSpeech.QUEUE_ADD, null); 
-				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, null); 
+				HashMap<String,String> params = new HashMap<String,String> (); 
+				params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FIRST_SPEECH"); 
+				myTts.speak(speakingInstructions, TextToSpeech.QUEUE_FLUSH, null); 
+				myTts.playSilence(300, TextToSpeech.QUEUE_ADD, null); 
+				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, params); 
 			}
 			else {
 				System.err.println("TTS NOT READY! OWNED!"); 
@@ -239,7 +262,7 @@ public class FunRunActivity extends MapActivity
 
 			//Update visuals so it doesn't show you in the wrong place
 			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-			myMap.postInvalidate(); 
+			myMap.invalidate(); 
 		}
 		else { //current step was null, indicating the user finished running to a place.
 			//Go choose another place	
@@ -248,13 +271,7 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void speakDirections() {
-
-		if (currentStep != null) {
-			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
-			System.out.println("Html instructions string: " + htmlInstructions.toString()); 
-			String fullString = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
-			myTts.speak(fullString, TextToSpeech.QUEUE_FLUSH, null); 
-		}
+		myTts.speak(speakingInstructions, TextToSpeech.QUEUE_FLUSH, null); 
 	}
 	
 	@Override 
@@ -269,14 +286,15 @@ public class FunRunActivity extends MapActivity
 		super.onDestroy(); 
 
 		//Remove this leg if the runner didn't go any distance. 
-		if (currentLeg.getActualDistanceRan() <= 0.0 || currentLeg.getMaxStepCompleted() < 0) {
+		if (currentLeg.getActualDistanceRan() < MIN_DISTANCE_TO_SAVE) {
 			runDirections.remove(currentLeg); 
-			(Toast.makeText(this, "No steps complete. Progress not saved.", 5)).show(); 
+			(Toast.makeText(this, "You ran too little. Progress not saved.", 5)).show(); 
 			
 		}
 		else {
 			(Toast.makeText(this, "Progress saved", 5)).show(); 
 			funRunApp.addDirectionsToState(); 
+			funRunApp.setCurrentDirectionsAdded(true); 
 			RunDataSerializer.writeLegToFile(runDirections, currentLeg, runDirections.getLegs().indexOf(currentLeg)); 
 		}
 	}
@@ -314,7 +332,7 @@ public class FunRunActivity extends MapActivity
 		
 		//Update the overlay so it draws properly
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		myMap.postInvalidate(); 
+		myMap.invalidate(); 
 
 		//Just for fun! Animate the title bar.
 		//As a side effect, this indicates whether GPS is working or not (^o ^o)
@@ -378,7 +396,7 @@ public class FunRunActivity extends MapActivity
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
 		
-		myMap.postInvalidate(); 
+		myMap.invalidate(); 
 	}
 
 	private void setupCenterOnMeButton() {

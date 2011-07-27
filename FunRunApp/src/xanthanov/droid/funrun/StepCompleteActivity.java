@@ -3,6 +3,8 @@ package xanthanov.droid.funrun;
 import xanthanov.droid.gplace.*;
 import xanthanov.droid.xantools.*; 
 
+import java.util.HashMap; 
+
 import android.app.Activity; 
 import android.os.Bundle;
 import android.os.Vibrator; 
@@ -16,6 +18,7 @@ import android.content.Intent;
 import android.text.Spanned;
 import android.view.animation.Animation; 
 import android.view.animation.AlphaAnimation;
+import android.view.KeyEvent; 
 
 import android.speech.tts.TextToSpeech; 
 
@@ -51,7 +54,7 @@ public class StepCompleteActivity extends Activity {
 	private TextToSpeech myTts; 
 
 	private Vibrator vibe; 
-	private final static long[] VIB_PATTERN = new long[] {500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 500, 100, 1000, 100, 1000, 100, 1000, 100}; 
+	private final static long[] VIB_PATTERN = new long[] {500, 500, 500, 500, 500, 500, 500, 500}; 
 
 	@Override
 	public void onCreate(Bundle b) {
@@ -128,7 +131,25 @@ public class StepCompleteActivity extends Activity {
 			}			
 			myTts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null); 
 
+			if (completedStepIndex < currentLeg.size() - 1) {
+				HashMap<String,String> params = new HashMap<String,String> (); 
+				params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FIRST_SPEECH"); 
+				myTts.playSilence(300, TextToSpeech.QUEUE_ADD, null); 
+				myTts.speak("View your stats, or press volume up to get the next directions.", TextToSpeech.QUEUE_ADD, params); 
+			}
+
 		}
+	}
+
+	@Override
+	public boolean onKeyDown( int keycode, KeyEvent e) {		
+	//	super.onKeyDown(keycode, e); 
+
+		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) { //Go back to run screen and get the next directions
+			finish(); 	
+			return true; 
+		}
+		return false; 
 	}
 
 	private void setTransparency() {

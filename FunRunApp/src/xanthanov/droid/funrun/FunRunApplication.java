@@ -19,6 +19,8 @@ public class FunRunApplication extends Application {
 	private GoogleStep currentStep; 
 	private FunRunData state; 
 
+	private boolean currentDirectionsAdded; 
+
 	//Shared TTS object
 	private TextToSpeech myTextToSpeech; 
 	private TextToSpeech.OnInitListener ttsListener; 
@@ -33,6 +35,8 @@ public class FunRunApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate(); 
+
+		currentDirectionsAdded = false; 
 
 		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
 		RunDataSerializer.setDataDir(dataDir); 	
@@ -91,6 +95,10 @@ public class FunRunApplication extends Application {
 		myTextToSpeech.setPitch(1.25f); 
 	}
 
+	public void setCurrentDirectionsAdded(boolean val) {
+		currentDirectionsAdded = val; 
+	}
+
 	public File getDataDir() {
 		return dataDir; 
 	}
@@ -132,7 +140,9 @@ public class FunRunApplication extends Application {
 	public void setCurrentStep(GoogleStep s) {currentStep=s;} 
 
 	public void addDirectionsToState() {
-		state.add(runDirections); 
+		if (!currentDirectionsAdded) {
+			state.add(runDirections); 
+		}
 	}
 
 

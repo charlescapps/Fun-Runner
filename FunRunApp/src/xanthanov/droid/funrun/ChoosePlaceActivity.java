@@ -73,7 +73,6 @@ public class ChoosePlaceActivity extends MapActivity
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
 	public final static int MAX_RADIUS_METERS = 4000; 
-	public final static int MIN_RADIUS_METERS = 50; 
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -98,8 +97,11 @@ public class ChoosePlaceActivity extends MapActivity
 		lastKnownLocation = droidLoc.getLastKnownLoc();
 		System.out.println("Last location: " + lastKnownLocation);
 		funRunApp = (FunRunApplication) getApplicationContext();
+
 		currentDirections = new GoogleDirections(); //Create new directions now, since they correspond to a run
 		funRunApp.setRunDirections(currentDirections); //Store the current directions object with the application 
+		funRunApp.setCurrentDirectionsAdded(false); 
+
 		if (!RunDataSerializer.createRunDir(currentDirections)) {//Create directory to store these runs
 			showCriticalErrorPopup("Critical Error", "Failed to create new run directory.\nTry restarting the app."); 
 		} 
@@ -156,19 +158,28 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	@Override
-	protected void onStart() {
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus); 
+
+		if (hasFocus) {
+			myMap.invalidate(); 
+			centerOnMe(); 
+		}
+
+	}
+
+	@Override
+	public void onStart() {
 		super.onStart(); 
 		checkGps(); 
 		myLocOverlay.enableCompass(); 	
 		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
 		lastKnownLocation = droidLoc.getLastKnownLoc(); 
 		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		myMap.postInvalidate(); 
-		centerOnMe(); 
 	}
 
 	@Override
-	protected void onStop() {
+	public void onStop() {
 		super.onStop(); 
 		droidLoc.getLocManager().removeUpdates(myLocListener); 
 		myLocOverlay.disableCompass();
@@ -255,7 +266,7 @@ public class ChoosePlaceActivity extends MapActivity
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
 		myMapController.setZoom(DEFAULT_ZOOM); 
-		myMap.postInvalidate(); 
+		myMap.invalidate(); 
 	}
 
 	private void setupWhereAmIButton() {
@@ -513,14 +524,30 @@ public class ChoosePlaceActivity extends MapActivity
 		
 		public void onClick(View v) {
 			if (firstGpsFix == null) {
-				DroidDialogs.showPopup(a, "No GPS location found", "Can't get a fix on your current location.\nTurn on GPS, go outside, then try again.");
-				return;
+				DroidDialogs.showPopup(a, false, "No GPS location found", "Up-to-date location not found since app started. Turn on GPS and go outside.\n\n Start anyway?", 
+												"Yeah", "Wait a bit", 
+												new DialogInterface.OnClickListener() {
+													@Override
+													public void onClick(DialogInterface dialog, int id) {
+														dialog.dismiss(); 
+														startPlacesQuery(); 
+													}
+												}, 
+												new DialogInterface.OnClickListener() {
+													@Override
+													public void onClick(DialogInterface dialog, int id) {
+														dialog.dismiss(); 
+													}
+												});
 			}
 
-			String search = (runCategorySpinner.getSelectedItem()).toString();
-			new PlacesQueryTask(a).execute(search); 	
 		}
 
+	}
+
+	private void startPlacesQuery() {
+		String search = (runCategorySpinner.getSelectedItem()).toString();
+		new PlacesQueryTask(this).execute(search); 	
 	}
 	
 }
