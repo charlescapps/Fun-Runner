@@ -9,8 +9,29 @@ import xanthanov.droid.xantools.DroidLoc;
 import com.google.android.maps.GeoPoint;
 
 import android.speech.tts.TextToSpeech;  
-
 import java.io.File; 
+
+/**
+* <p>
+* <b>Application class to store global data.</b> Responsibilities include: <br/>
+*	-Ready the Text-to-speech engine when the app starts<br/>
+*	-De-serialize data from files when the app starts, i.e. previous run stats.<br/> 
+*	-Store the GoogleDirections, GoogleStep, and FunRunData objects since they are globally used by several activities. <br/>
+*	-currentStep is the step in the Google walking directions that the runner is currently on. Of course the app also allows for 
+*skipping any number of steps. The FunRunActivity class has a proximity listener for the end of every step. 
+* </p>
+*
+* <h4>File structure</h4>
+* <ul>
+* <li>Data is in runrun_data subfolder. </li>
+* <li>Each 'run' has a subfolder labeled by the date/time the run started. </li>
+* <li>A run is represented by a GoogleDirections object. It stores some data in addition to what's pulled from Google. </li>
+* <li>(Perhaps would be a good idea to make a subclass to separate data from google vs. data from the app. Doesn't seem 100% necessary.) </li>
+* <li>There's a 'base run' file in each run folder, plus a file for each GoogleLeg object. </li>
+* <li>Decided on this structure, because a DB seemed like a convoluted solution for this data, but multiple files makes losing data less likely.</li>
+* <li>This way, a GoogleLeg is written to SD card as soon as the user finishes that leg of the run. Then it's only read for viewing previous runs </li>
+* </ul>
+**/
 
 public class FunRunApplication extends Application {
 
