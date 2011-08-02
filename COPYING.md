@@ -6,7 +6,7 @@ Source code released under the MIT License (<a href="http://www.opensource.org/l
 &apos;Source code&apos; means java source files (.java) and xml files (.xml). <br/>
 
 Artwork Copyright &copy; 2011 Alice Bessoni and Charles L. Capps <br/>
-Artwork released under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License (<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons License</a>)
+Artwork released under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License (<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons License</a>)<br/>
 &apos;Artwork&apos; means any image files (.png or .jpg). <br/>
 
 Programming and Project Lead, Charles L. Capps AKA Xanthanov (<a href="https://www.github.com/Xanthanov">Github page</a>)<br/>
