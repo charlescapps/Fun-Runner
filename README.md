@@ -15,7 +15,8 @@ Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
 
 <h2>Building the project</h2>
-This is a standard Android project targeting Android 1.6 with Google APIs. No other dependencies are necessary. 
+This is a standard Android project targeting Android 1.6 with Google APIs. No other dependencies are necessary. This 
+is API level 4, which happens to also be the Target ID #4. (run "android list targets").  
 <ol>
 <li>git clone git@github.com:Xanthanov/Android--All-Apps.git</li>
 <li>After cloning the git repo, you need to download artwork.tar from github.</li>
