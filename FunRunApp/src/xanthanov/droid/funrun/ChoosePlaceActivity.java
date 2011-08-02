@@ -41,6 +41,23 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay; 
 import com.google.android.maps.Overlay; 
 
+/*
+* <p>
+* Activity class for the screen where the runner chooses the next place to run to. 
+* Has a spinner to choose the category, then a button to 'Find nearby places'. 
+* MapView shows where the runner is. 
+* </p>
+*
+*<p>
+*TODO: Change dialog so that you can see the route when deciding where to run. 
+* Maybe make the background less dark as well. 
+* Seems silly to get the directions but not let the user see them before running. 
+*</p>
+*
+* @author Charles L. Capps
+* @version 0.9b
+*/
+
 public class ChoosePlaceActivity extends MapActivity
 {
 

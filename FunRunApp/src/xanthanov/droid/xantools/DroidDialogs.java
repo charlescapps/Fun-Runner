@@ -6,6 +6,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface; 
 
+/**
+*<p>
+*Convenience class for working with dialogs. Allows you to start a dialog from anywhere, even 
+*a non-UI thread doing some heavy-lifting. That is, provided you pass in the Activity so that it 
+*can properly start the dialog on the UI thread. 
+*
+*Used to get around my frustrations when I wanted my AsyncTask code to determine where a dialog box 
+*popped up--but you can't start a dialog outside of the UI thread! 
+*
+*</p>
+*
+*@author Charles L. Capps
+*@version 0.9b
+*
+**/
+
 public class DroidDialogs {
 	private static AlertDialog currentDialog = null; 
 	private static ProgressDialog currentProgressDialog = null; 
