@@ -14,6 +14,16 @@ Programming and Project Lead, Charles L. Capps AKA Xanthanov (<a href="https://w
 Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>) <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;<b>alicebessoni@gmail.com</b><br/>
 
+<h2>Building the project</h2>
+This is a standard Android project targeting Android 1.6 with Google APIs. No other dependencies are necessary. 
+<ol>
+<li>git clone git@github.com:Xanthanov/Android--All-Apps.git</li>
+<li>After cloning the git repo, you need to download artwork.tar from github.</li>
+<li>unpack artwork.tar into the res/drawable subfolder</li>
+<li>To build by command-line, simply run "ant debug" to use the ant build script. "ant install" to install on your phone.</li>
+<li>If you don't use the command-line, import into Eclipse or your favorite IDE.</li>  
+</ol>
+
 <h2>Key Features</h2>
 
 <ul>
