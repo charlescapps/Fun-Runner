@@ -1,1 +1,0 @@
-5890222109017655483L; but expected xanthanov.droid.gplace.GoogleDirections: static final long serialVersionUID =8833672701305178532L
