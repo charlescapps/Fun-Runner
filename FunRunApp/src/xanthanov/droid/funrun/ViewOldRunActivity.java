@@ -27,6 +27,20 @@ import android.text.Spanned;
 import java.text.SimpleDateFormat; 
 import java.text.DateFormat; 
 
+/**
+*<h3>Activity for viewing an old run on a MapView showing your route</h3>
+*
+*<b>Things this class does:</b>
+*<ul>
+*<li>Cycle through legs of your run, displaying them on map.</li>
+*<li>Called from ViewStatsActivity</li>
+*<li>TODO: add some functionality, such as maybe displaying distance on the map.</li>
+*</ul>
+*
+*@author Charles L. Capps
+*@version 0.9b
+**/
+
 public class ViewOldRunActivity extends MapActivity {
 
 	private Button prevLegButton; 

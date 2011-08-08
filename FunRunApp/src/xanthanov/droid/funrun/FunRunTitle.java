@@ -14,10 +14,16 @@ import android.view.View;
 import android.view.MotionEvent;
 
 /**
+* <h3>Activity for Title Screen</h3>
 *
-*
-*@author Charles L. Capps
-*
+* Simplest activity. Just sets up its buttons to call ChoosePlaceActivity and ViewStatsActivity. <br/>
+* On destroy it calls TextToSpeech.shutdown(), because the app is destroyed if the opening activity is destroyed. <br/>
+* As a note, the Android API specifically says there's no way to run arbitrary user code when the app is destroyed. <br/>
+* So it only makes sense to do cleanup when the base activity is destroyed. TODO: see if there's a better solution. <br />
+* Might add an &quot;about&quot; button to give Copyright info, etc. but not strictly necessary. <br />
+* Might add some other button I come up with, e.g. link to Facebook. 
+* 
+* @author Charles L. Capps
 * @version 0.9b
 **/
 

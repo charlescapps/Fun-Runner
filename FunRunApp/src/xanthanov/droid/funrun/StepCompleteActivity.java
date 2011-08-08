@@ -25,6 +25,23 @@ import android.view.KeyEvent;
 
 import android.speech.tts.TextToSpeech; 
 
+/**
+* <h3>Activity for when user completes a step in the directions, or arrives at a place.</h3>
+*
+* <b>Some important things about this activity:</b>
+* <ul>
+* <li>It's started by FunRunActivity when the user completes a Google walking directions step, or arrives at a place.</li>
+* <li>It receives an Intent &quot;Extra&quot; so it knows which step was completed. </li>
+* <li> It speaks a message: &quot;Step Complete!&quot; or &quot;Congratulations! You ran to x!&quot; </li>
+* <li>Displays your stats: total distance, overall avg. speed, distance this leg, avg. speed this leg.</li>
+* <li>TODO: Add hotkey to hear next directions, so runner doesn't have to bust out phone a press a button on screen </li>
+* <li>Simplify? I hate the amount of code required to add messages to text views, etc.</li>
+* </ul>
+*
+* @author Charles L. Capps
+* @version 0.9b
+**/
+
 public class StepCompleteActivity extends Activity {
 
 	private GoogleStep completedStep = null; 
