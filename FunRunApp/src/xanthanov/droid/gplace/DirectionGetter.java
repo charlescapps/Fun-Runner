@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.gplace; 
 
 import xanthanov.droid.gplace.*;
@@ -18,6 +21,25 @@ import java.net.MalformedURLException;
 import com.google.android.maps.GeoPoint; 
 
 import org.json.*; 
+
+/**
+* <h3>Class to get Google Walking Directions via HTTP request.</h3>
+* <b>Some things to note:</b>
+* <ul>
+* <li>AFAIK from Google's documentation, unlimited directions requests are allowed per day. Doesn't even pass in the API key in GET request.</li>
+* <li>Avoid highways = true</li>
+* <li>Alternatives = false. Just gets one possible route to simplify parsing. </li>
+* <li>Parses JSON, and returns result as a GoogleLeg. Each leg of a GoogleDirections object corresponds to the user running to one place. </li>
+* <li>In retrospect, it's a bit misleading that I call the container &quot;GoogleDirections&quot;. I did so because initially I thought Google 
+* would return multiple legs, but it turns out this is only the case if you set waypoints. </li>
+* 
+*</ul>
+*
+*
+*@author Charles L. Capps
+*@version 0.9b
+*@see xanthanov.droid.funrun.PlaceSearcher
+**/
 
 public class DirectionGetter {
 

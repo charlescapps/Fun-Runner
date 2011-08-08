@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.gplace; 
 
 import android.graphics.Bitmap; 
@@ -5,9 +8,20 @@ import com.google.android.maps.GeoPoint;
 import java.net.URL;
 import xanthanov.droid.xantools.*;  
 
+/**
+*
+*<h3>Class representing a place the user can run to--has data from Google Place search</h3>
+*
+* Stores the name of the place, the latitude/longitude, the icon's URL, and--optionally--the actual Bitmap icon from Google. <br/>
+* The icon provided by Google is *rarely* not the default icon, so decided not to use this feature. <br/>
+* The Bitmap is no longer being downloaded, so this field is unnecessary. Not sure if this app will use the icon in the future. 
+*
+*@author Charles L. Capps
+*@version 0.9b
+**/
+
 public class GooglePlace implements java.io.Serializable {
 	private String name; 
-	//private GeoPoint geoPt;
 	private double[] latLng; 
 	private URL iconUrl;  
 	private Bitmap iconBmp; 

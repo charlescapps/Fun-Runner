@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.gplace; 
 
 import java.util.List;
@@ -5,7 +8,17 @@ import java.util.ArrayList;
 
 import xanthanov.droid.xantools.*; 
 
-import android.app.PendingIntent; 
+/**
+*
+*<h3>Class with data for a &apos;step&apos; of the Google directions from API query.</h3>
+*
+* In addition to data from HTTP request, stores start time and end time from user. <br/>
+* <b>Note that the start time and end time aren't always set--the user might not finish a run, or might skip a step</b> <br/>
+* Accordingly, any code written that relies on this data should check if the start / end time is equal to the default value of 0. 
+* 
+*@author Charles L. Capps
+*@version 0.9b
+**/
 
 public class GoogleStep implements java.io.Serializable{
 	

@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.gplace; 
 
 import java.util.List;
@@ -5,6 +8,30 @@ import java.util.ArrayList;
 
 import xanthanov.droid.xantools.DroidLoc; 
 import android.content.Context; 
+
+/**
+*<h3>Class for one &apos;leg&apos; of the user's run, running to one place.</h3>
+*
+* <p>
+* Holds a List of GoogleStep objects. Corresponds to the leg item returned in the JSON from the Google Directions API. 
+* Stores the distance string returned by Google, the polyline for drawing a more accurate route, etc.
+* <h3>Other things to note:</h3>
+* <ul>
+* <li>Holds the SW and NE bound as returned by Google; used to fit the route to the map view.</li>
+* <li>Updates the actual distance ran by the user every time a point is added to the actual path ran.</li>
+* <li>Stores all latitude/longitudes as doubles since the Google class GeoPoint is not serializable!</li>
+* <li>Stores the destination of the leg as a GooglePlace</li>
+* <li>Stores the start/end times, i.e. time the user started/finished running this leg in ms.</li>
+* <li>A leg is saved to SD card when the FunRunActivity is destroyed, provided the user ran at least 200m </li>
+* <li>TODO: May make this minimum distance a preference the user can tweak </li>
+* <li>Stores the max step of the directions that the user completed </li>
+* </ul>
+* </p>
+*
+*@author Charles L. Capps
+*@version 0.9b
+* @see xanthanov.droid.gplace.GooglePlace
+**/
 
 public class GoogleLeg implements java.io.Serializable {
 

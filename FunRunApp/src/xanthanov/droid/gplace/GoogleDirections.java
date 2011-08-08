@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.gplace;
 
 import com.google.android.maps.GeoPoint; 
@@ -6,6 +9,20 @@ import java.util.List;
 import java.util.ArrayList; 
 import java.util.Date; 
 import java.text.DateFormat; 
+
+/**
+*
+* <h3>Class representing a user's &apos;run&apos;, has List of GoogleLeg objects for each place the user runs to.</h3>
+*
+* <b>Important data and methods:</b>
+* <ul>
+* <li>Stores the Date the user started the new run as a java.util.Date.</li>
+* <li>In retrospect, could have extended ArrayList&lt;GoogleLeg&gt;, but maybe it's nice to not have too many methods in the same scope.</li>
+*</ul>
+*
+*@author Charles L. Capps
+*@version 0.9b
+**/
 
 public class GoogleDirections implements java.io.Serializable {
 

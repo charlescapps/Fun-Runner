@@ -1,4 +1,19 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.gplace; 
+
+/**
+*
+* <h3>Simple container class to hold a double longitude and a double for latitude</h3>
+*
+* Needed this class simply so we could have an ArrayList&lt;LatLng&gt;--it seemed a poor idea
+* to use 2 ArrayList&apos;s of Doubles. 
+*
+* @author Charles L. Capps
+* @version 0.9b
+**/
+
 
 public class LatLng implements java.io.Serializable {
 
