@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun; 
 
 import xanthanov.droid.funrun.persist.FunRunData; 

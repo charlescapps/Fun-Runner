@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
@@ -24,6 +27,26 @@ import com.google.android.maps.Projection;
 import com.google.android.maps.MapView;
 
 import xanthanov.droid.xantools.DroidLoc; 
+
+/**
+*
+* <h3>Overlay class for drawing on top of MapView</h3>
+* This class is used in every MapActivity class to draw various things on top of the map. <br/>
+* Flags passed through the constructor determine what it draws. 
+*<h3>Things this class draws:</h3>
+* <ul>
+*<li>The Google walking directions route of current leg. Obtained via HTTP request in ChoosePlaceActivity. (<b>in red</b>)</li>
+*<li>The route the user actually ran for the current leg. (<b>in blue</b>)</li>
+*<li>The route the user actually ran on previous legs. (<b>in green</b>)</li>
+*<li>The runner animation. Uses an ImageView object holding the animation. AFAIK this is the only way to do it without using OpenGL. </li>
+*<li>The start point (to be an animation)</li>
+*<li>A trophy icon for the place the user is running to.</li>
+*</ul>
+*
+*@author Charles L. Capps
+*
+*@version 0.9b
+**/
 
 public class FunRunOverlay extends Overlay {
 	

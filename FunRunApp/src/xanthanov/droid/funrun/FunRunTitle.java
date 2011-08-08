@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
@@ -9,6 +12,14 @@ import android.content.Intent;
 import android.content.Context; 
 import android.view.View;
 import android.view.MotionEvent;
+
+/**
+*
+*
+*@author Charles L. Capps
+*
+* @version 0.9b
+**/
 
 public class FunRunTitle extends Activity
 {

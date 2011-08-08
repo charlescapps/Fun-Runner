@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
@@ -44,9 +47,22 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay; 
 
 /**
-*	Copyright (c) 2011 Charles L. Capps
+* <h3>Activity for when user is actually running.</h3>
 *
-*	@author Xanthanov
+*<h3>Things this class does:</h3>
+*<ul>
+*<li>Displays route the user runs as they run.</li>
+*<li>Speaks walking directions. User can press &quot;volume up&quot; button to repeat them. (This fact is spoken aloud)</li>
+*<li>Adds a point to this route every PATH_INCREMENT_METERS meters (public static constant, see below).</li>
+*<li>Detects when the user is within ACCEPT_RADIUS_METERS meters of the end of a step for the Google directions.</li>
+*<li>Passes index of completed step to the StepCompleteActivity using Intent &quot;extras&quot;</li>
+*<li>TODO: Tweak accept radius. Need balance between accuracy, and guaranteeing it's actually accepted even if GPS is inaccurate.</li>
+*<li>Also TODO: Make a preferences screen allowing the user to choose the accept radius, path increment</li>
+*<li>Maybe try to integrate wifi, but from my experience it's way too inaccurate for this.</li>
+*</ul>
+*
+*@author Charles L. Capps
+*@version 0.9b
 *
 **/
 

@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun; 
 
 import xanthanov.droid.gplace.*; 
@@ -5,6 +8,16 @@ import java.util.Random;
 import java.util.List; 
 import android.content.Context; 
 import com.google.android.maps.GeoPoint; 
+
+/**
+*<h3>Class to automatically get a random Google Place and Google walking directions for testing.</h3>
+*
+*Not much else to say about this class; it uses the DirectionGetter and PlaceSearcher classes. <br/>
+*Needed for testing so I didn't have to go running every single time I tested something, before persistent data was working. 
+*
+*@author Charles L. Capps
+*@version 0.9b
+**/
 
 
 public class MockFactory {

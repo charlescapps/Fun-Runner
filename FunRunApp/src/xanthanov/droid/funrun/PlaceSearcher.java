@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun; 
 
 import xanthanov.droid.gplace.*;
@@ -20,6 +23,27 @@ import android.content.res.Resources;
 
 import com.google.android.maps.GeoPoint; 
 import org.json.*; 
+
+/**
+*<h3>Class to make HTTP request to Google Places API to get nearby places.</h3>
+*
+*Notes about this class: 
+*<ul>
+*<li>Maps resource strings in res/values/strings.xml into GET params for the HTTP request.</li>
+*<li>Parses JSON result</li>
+*<li>Returns a List of GooglePlace objects </li>
+*<li>TODO: pay Google for upgraded Google Places account to raise limit on no. of requests / day.</li>
+*<li>Google API Key is hard-coded into the source. Didn't see any reason not to do so.</li>
+*<li>TODO: Improve queries, make more categories. Maybe allow for a custom search? </li>
+*<li>TODO: Is it possible to do a search &quot;just like typing into search box&quot; at maps.google.com?</li>
+*<li>Note: Maps API has a fixed list of categories. Name search appears to be very strict, search str must be substring of the place's name.</li>
+*</ul>
+*
+*@see xanthanov.droid.gplace 
+*
+*@author Charles L. Capps
+*@version 0.9b
+**/
 
 public class PlaceSearcher {
 

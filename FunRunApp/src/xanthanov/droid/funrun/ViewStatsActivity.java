@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun; 
 
 import xanthanov.droid.funrun.adapters.*; 
@@ -16,6 +19,26 @@ import android.widget.LinearLayout;
 import android.view.View; 
 import android.content.Context; 
 import android.content.Intent; 
+
+/**
+*<h3>Activity for viewing old runs in a gallery view. </h3>
+*<ul>
+*<li>Has a &quot;Load Map&quot; button to view the run on a map -> ViewOldRunActivity. </li>
+*<li>Uses Intent &quot;Extras&quot; to send the index of the run we're viewing to the ViewOldRunActivity.</li> 
+*</ul>
+*
+*<h3>TODO</h3>
+*<ul>
+*<li>Figure out how to send any data type through an intent. Not really necessary but a good idea.</li>
+*<li>Give an option to send a run to your email, or to post on Facebook (Google+?)</li>
+*<li>Figure out how to customize the gallery view background more. May be difficult since it magically highlights when you touch it, etc.</li>
+*<li>Obviously fix the disappearing arrow bug. Been lazy about this, it's probably just due to the state drawable.</li>
+*</ul>
+*
+*@author Charles L. Capps
+*
+*@version 0.9b
+**/
 
 public class ViewStatsActivity extends Activity {
 

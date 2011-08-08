@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.funrun;
 
 import xanthanov.droid.xantools.*; 
@@ -41,22 +44,26 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay; 
 import com.google.android.maps.Overlay; 
 
-/*
-* <p>
-* Activity class for the screen where the runner chooses the next place to run to. 
-* Has a spinner to choose the category, then a button to 'Find nearby places'. 
+/**
+* <h3>First activity when you start a new run. Runner chooses the next place to run to. </h3>
+* Has a spinner to choose the category, and a button to 'Find nearby places'. 
 * MapView shows where the runner is. 
-* </p>
+*<h3>Notes:</h3>
+*<ul>
+* <li>Uses PlaceSearcher class to perform Google Places API query.</li>
+* <li>Uses DirectionGetter class to get Google walking directions as the user presses "next place" button.</li>
+* <li>Does these requests with an AsyncTask.</li>
+* <li>MapView shows previous legs the user ran.</li>
+* <li>TODO: Change dialog so that you can see the route when deciding where to run. </li>
+* <li>Along same line, make the background less dark as well. </li>
+* <li>(Seems silly to get the directions but not let the user see them before running.) </li>
+* </ul>
 *
-*<p>
-*TODO: Change dialog so that you can see the route when deciding where to run. 
-* Maybe make the background less dark as well. 
-* Seems silly to get the directions but not let the user see them before running. 
-*</p>
-*
+* @see xanthanov.droid.gplace
+* @see xanthanov.droid.xantools
 * @author Charles L. Capps
 * @version 0.9b
-*/
+**/
 
 public class ChoosePlaceActivity extends MapActivity
 {
