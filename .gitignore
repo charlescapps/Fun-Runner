@@ -1,0 +1,9 @@
+*.class
+*.dex
+*.jpg
+*.png
+*.apk
+*.ap_
+*.swp
+*.properties
+
