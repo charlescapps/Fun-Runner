@@ -1,0 +1,14 @@
+<body>
+<h2>This package has classes storing data from Google Places queries and Google directions queries.</h2>
+<b>A brief summary of each class:</b>
+<ul>
+<li>GooglePlace--contains name, latitude, longitude, and icon URL (to download bitmap from Google server) for a place.</li>
+<li>GoogleStep--contains start/end lat/lng for a &apos;step&apos; in the google directions.</li>
+<li>GoogleLeg--contains all the GoogleSteps for the directions to one place. Also stores time user started / finished the leg.<br/>
+	Also has the actual path the user ran as a list of Latitude / Longitude pairs.</li>
+<li>GoogleDirections--contains a List of GoogleLegs, i.e. all the places the user ran to, the directions, and the path the user took.</li>
+<li>LatLng--simple container class with a double for latitude, double for longitude. Couldn't use com.google.android.maps.GeoPoint, because
+it doesn't implement java.io.Serializable </li>
+<li>PlaceComparator--comparator to sort places by their distance from the runner (i.e. base point)</li>
+</ul>
+</body>
