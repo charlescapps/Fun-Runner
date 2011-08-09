@@ -24,7 +24,7 @@ This is a standard Android project targeting Android 1.6 with Google APIs (Api L
 <li>If you don't use the command-line, import into Eclipse or your favorite IDE.</li>  
 </ol>
 
-<b>Javadoc can be found in the javadoc subfolder [here](FunRunApp/javadoc/index.html) </b>
+<b>Javadoc can be found in the javadoc subfolder [here](https://github.com/Xanthanov/Android--All-Apps/blob/master/FunRunApp/javadoc/index.html) </b>
 
 <h2>Key Features</h2>
 
