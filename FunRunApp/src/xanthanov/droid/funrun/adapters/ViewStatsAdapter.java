@@ -125,9 +125,9 @@ public class ViewStatsAdapter extends BaseAdapter {
 	}
 
 	private void setupButtons(ViewGroup galleryView, int position) {
-		Button leftButton = (Button) galleryView.findViewById(R.id.leftArrow); 
-		Button rightButton = (Button) galleryView.findViewById(R.id.rightArrow); 
-
+		//Button leftButton = (Button) galleryView.findViewById(R.id.leftArrow); 
+		//Button rightButton = (Button) galleryView.findViewById(R.id.rightArrow); 
+/*
 		if (position <= 0) {
 			leftButton.setEnabled(false); 
 		}
@@ -147,7 +147,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				theGallery.setSelection(theGallery.getFirstVisiblePosition() + 1, true); 	
 			}
-		}); 	
+		});*/ 	
 	}
 
 	private View getEmptyView() {
