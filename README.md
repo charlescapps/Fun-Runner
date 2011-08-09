@@ -17,14 +17,14 @@ Artwork by Alice Bessoni (<a href="http://www.alicebessoni.com/">her website</a>
 <h2>Building the project</h2>
 This is a standard Android project targeting Android 1.6 with Google APIs (Api Level 4, or Target ID 4). No other dependencies are necessary. <br/>
 <ol>
-<li>git clone git@github.com:Xanthanov/Android--All-Apps.git</li>
+<li>git clone git@github.com:Xanthanov/Fun-Runner.git</li>
 <li>After cloning the git repo, you need to download artwork.tar from github.</li>
 <li>unpack artwork.tar into the res/drawable subfolder</li>
 <li>To build by command-line, simply run "ant debug" to use the ant build script. "ant install" to install on your phone.</li>
 <li>If you don't use the command-line, import into Eclipse or your favorite IDE.</li>  
 </ol>
 
-<b>Javadoc can be found in the javadoc subfolder [here](https://github.com/Xanthanov/Android--All-Apps/blob/master/FunRunApp/javadoc/index.html) </b>
+<b>Javadoc can be found [here](http://xanthanov.github.com/funrunner/javadoc/index.html) </b>
 
 <h2>Key Features</h2>
 
