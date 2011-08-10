@@ -10,21 +10,18 @@
 		android:gravity="center_horizontal"
 		android:textSize="24dp"
 		android:textColor="#ffa824"/>
-	<!-- Next / Previous buttons-->
 	<LinearLayout 
-		android:layout_width = "fill_parent"
+		android:layout_width = "wrap_content"
 		android:layout_height = "wrap_content" 
 		android:gravity="center_horizontal">
-		<Button android:id="@+id/prevLegButton" 
+		<ImageButton android:id="@+id/leftArrow" 
 			android:layout_width = "wrap_content"
 			android:layout_height="wrap_content" 
-			android:textStyle="bold"
-			android:background="@drawable/left_style"/>
-		<Button android:id="@+id/nextLegButton"
+			android:src="@drawable/left_arrow_old_run"/>
+		<ImageButton android:id="@+id/rightArrow"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
-			android:textStyle="bold"
-			android:background="@drawable/right_style"/>
+			android:src="@drawable/right_arrow_old_run"/>
 	</LinearLayout>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"
@@ -37,40 +34,33 @@
 			android:enabled="true"
 			android:clickable="true"
 			android:apiKey="0qcLJ4NCw2oBuHqV1ULWIxkq043Y6fnxYPrXfjA"/>
-<!-- Makes more sense to define animation in code
-		<ImageView android:id="@+id/runner_anim"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="@drawable/runner_anim"
-			/>
--->
 		<LinearLayout android:id="@+id/run_zoomButtonsLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true">
-		<Button android:id="@+id/run_buttonZoomOut" 
-			style="?android:attr/buttonStyleSmall" 
-			android:background="@drawable/button_style"
-			android:text="Zoom (-)" 
-			android:textStyle="bold" 
-			android:paddingLeft="3dp"
-			android:paddingRight="3dp"
-			android:paddingTop="3dp"
-			android:paddingBottom="3dp"
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"/>
-		<Button android:id="@+id/run_buttonZoomIn" 
-			style="?android:attr/buttonStyleSmall" 
-			android:background="@drawable/button_style"
-			android:text="Zoom (+)" 
-			android:textStyle="bold" 
-			android:paddingLeft="3dp"
-			android:paddingRight="3dp"
-			android:paddingTop="3dp"
-			android:paddingBottom="3dp"
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"/>
+			<Button android:id="@+id/run_buttonZoomOut" 
+				style="?android:attr/buttonStyleSmall" 
+				android:background="@drawable/button_style"
+				android:text="Zoom (-)" 
+				android:textStyle="bold" 
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:paddingTop="3dp"
+				android:paddingBottom="3dp"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"/>
+			<Button android:id="@+id/run_buttonZoomIn" 
+				style="?android:attr/buttonStyleSmall" 
+				android:background="@drawable/button_style"
+				android:text="Zoom (+)" 
+				android:textStyle="bold" 
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:paddingTop="3dp"
+				android:paddingBottom="3dp"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"/>
 		</LinearLayout>
 		<LinearLayout android:id="@+id/run_centerButtons"
 			android:layout_width="wrap_content"
@@ -78,17 +68,17 @@
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
 			>
-		<Button android:id="@+id/run_buttonZoomToRoute" 
-			style="?android:attr/buttonStyleSmall" 
-			android:background="@drawable/button_style"
-			android:text="Zoom to route" 
-			android:textStyle="bold" 
-			android:paddingLeft="3dp"
-			android:paddingRight="3dp"
-			android:paddingTop="3dp"
-			android:paddingBottom="3dp"
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"/>
+			<Button android:id="@+id/run_buttonZoomToRoute" 
+				style="?android:attr/buttonStyleSmall" 
+				android:background="@drawable/button_style"
+				android:text="Zoom to route" 
+				android:textStyle="bold" 
+				android:paddingLeft="3dp"
+				android:paddingRight="3dp"
+				android:paddingTop="3dp"
+				android:paddingBottom="3dp"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content"/>
 		</LinearLayout>
 	</RelativeLayout>
 </LinearLayout>

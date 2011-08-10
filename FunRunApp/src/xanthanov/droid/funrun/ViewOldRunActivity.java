@@ -20,6 +20,7 @@ import android.os.Bundle;
 
 import android.content.Intent; 
 import android.widget.Button; 
+import android.widget.ImageButton; 
 import android.widget.TextView; 
 import android.view.View; 
 import android.text.Spanned; 
@@ -43,8 +44,8 @@ import java.text.DateFormat;
 
 public class ViewOldRunActivity extends MapActivity {
 
-	private Button prevLegButton; 
-	private Button nextLegButton;
+	private ImageButton prevLegButton; 
+	private ImageButton nextLegButton;
 	private Button zoomToRouteButton;
 	private Button zoomInButton;
 	private Button zoomOutButton;
@@ -77,6 +78,7 @@ public class ViewOldRunActivity extends MapActivity {
 
 		getViews(); 
 		setupButtons(); 
+		setButtonsEnabledState(legIndex); 
 
 		centerOnLeg(legIndex); 
 
@@ -98,8 +100,8 @@ public class ViewOldRunActivity extends MapActivity {
 
 	private void getViews() {
 		placeTextView = (TextView) findViewById(R.id.placeTextView); 
-		prevLegButton = (Button) findViewById(R.id.prevLegButton); 
-		nextLegButton = (Button) findViewById(R.id.nextLegButton); 
+		prevLegButton = (ImageButton) findViewById(R.id.leftArrow); 
+		nextLegButton = (ImageButton) findViewById(R.id.rightArrow); 
 		zoomToRouteButton = (Button) findViewById(R.id.run_buttonZoomToRoute); 
 		zoomInButton = (Button) findViewById(R.id.run_buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.run_buttonZoomOut); 
@@ -114,19 +116,30 @@ public class ViewOldRunActivity extends MapActivity {
 		placeTextView.setText(dateSpanned); 
 	}
 
+	private void setButtonsEnabledState(int position) {
+		if (position <= 0) {
+			prevLegButton.setEnabled(false); 
+		}
+		else {
+			prevLegButton.setEnabled(true); 
+		}
+
+		if (position >= run.size() - 1) {
+			nextLegButton.setEnabled(false); 
+		}
+		else {
+			nextLegButton.setEnabled(true); 
+		}
+		
+	}
+
 	private void setupButtons() {
 		prevLegButton.setOnClickListener( new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				legIndex = (legIndex - 1 < 0 ? 0 : legIndex - 1);
+				legIndex = (legIndex - 1 <= 0 ? 0 : legIndex - 1);
 
-				if (legIndex == 0) {
-					((Button) v).setEnabled(false); 
-				}
-				if (legIndex == run.size() - 2) {
-					nextLegButton.setEnabled(true); 
-				}
-				
+				setButtonsEnabledState(legIndex); 	
 				centerOnLeg(legIndex);  
 				setupText(); 
 				myFunRunOverlay.setSpecificLeg(run.get(legIndex)); 
@@ -136,13 +149,9 @@ public class ViewOldRunActivity extends MapActivity {
 		nextLegButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				legIndex = (legIndex + 1 >= run.size() ? run.size() - 1 : legIndex + 1);
-				if (legIndex >= run.size() - 1) {
-					((Button) v).setEnabled(false); 
-				}
-				if (legIndex == 1) {
-					prevLegButton.setEnabled(true); 
-				}
+				legIndex = (legIndex + 1 >= run.size() - 1 ? run.size() - 1 : legIndex + 1);
+
+				setButtonsEnabledState(legIndex); 	
 
 				centerOnLeg(legIndex);  
 				setupText(); 
@@ -150,10 +159,6 @@ public class ViewOldRunActivity extends MapActivity {
 			}
    		}); 
 
-		prevLegButton.setEnabled(false); 
-		if (run.size() <= 1) {
-			nextLegButton.setEnabled(false); 
-		}
 		setupZoomButtons(); 
 		setupZoomToRouteButton(); 
 	}

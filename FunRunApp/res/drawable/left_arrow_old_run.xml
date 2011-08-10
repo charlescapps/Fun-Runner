@@ -4,12 +4,12 @@
     android:dither="true"
     android:variablePadding="false" >
     <item
-        android:drawable="@drawable/arrow_left_small_press"
+        android:drawable="@drawable/arrow_left_small_press2"
         android:state_enabled="false"/>
     <item
-        android:drawable="@drawable/arrow_left_small_press"
+        android:drawable="@drawable/arrow_left_small_press2"
         android:state_pressed="true"/>
     <item
-        android:drawable="@drawable/arrow_left_small"
+        android:drawable="@drawable/arrow_left_small2"
         />
 </selector>

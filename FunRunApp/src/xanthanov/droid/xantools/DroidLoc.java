@@ -1,3 +1,6 @@
+//Copyright (c) 2011 Charles L. Capps
+//Released under MIT License
+
 package xanthanov.droid.xantools; 
 
 import android.location.LocationManager;
@@ -9,6 +12,15 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 
 import xanthanov.droid.gplace.LatLng; 
+
+/**
+* 
+* <h3>Convenience class for dealing with location providers</h3>
+*
+* 
+* @version 0.9b
+* @author Charles L. Capps
+**/
 
 public class DroidLoc {
 

@@ -93,9 +93,9 @@ public class FunRunApplication extends Application {
 	
 		System.out.println("NUMBER OF RUNS FOUND: " + state.size()); 
 
-		for (int i = 0; i < state.size(); i++) {
+		/*for (int i = 0; i < state.size(); i++) {
 			System.out.println(state.get(i).toString()); 
-		}
+		}*/
 
 		//***************END TEST**********************************
 
@@ -118,6 +118,7 @@ public class FunRunApplication extends Application {
 		myTextToSpeech = new TextToSpeech(this, ttsListener); 
 		myTextToSpeech.setSpeechRate(0.75f); 
 		myTextToSpeech.setPitch(1.25f); 
+
 	}
 
 	public void setCurrentDirectionsAdded(boolean val) {

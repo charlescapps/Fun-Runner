@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Toast; 
 import android.widget.TextView; 
 import android.widget.Button; 
+import android.widget.ImageButton; 
 import android.widget.LinearLayout; 
 import android.view.View; 
 import android.content.Context; 
@@ -106,7 +107,7 @@ public class ViewStatsActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			Intent showMap = new Intent(ViewStatsActivity.this, ViewOldRunActivity.class); 
-			showMap.putExtra(RUN_INDEX_EXTRA, statsGallery.getLastVisiblePosition()); 
+			showMap.putExtra(RUN_INDEX_EXTRA, myAdapter.getCurrentPosition()); 
 			ViewStatsActivity.this.startActivity(showMap); 
 
 		}

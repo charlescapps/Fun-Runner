@@ -9,6 +9,21 @@
 		android:layout_width = "fill_parent" 
 		android:layout_height="wrap_content" />
 	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content" 
+		android:gravity="center_horizontal" >
+		<ImageButton android:id = "@+id/leftArrow"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:src="@drawable/left_small_style" 
+			android:background="#000000"/>	
+		<ImageButton android:id = "@+id/rightArrow"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:src="@drawable/right_small_style" 
+			android:background="#000000"/>	
+	</LinearLayout>
+	<LinearLayout
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
 		android:gravity="center_horizontal">

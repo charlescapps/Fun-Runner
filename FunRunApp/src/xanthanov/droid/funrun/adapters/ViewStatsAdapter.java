@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import android.widget.BaseAdapter; 
 import android.widget.TextView; 
 import android.widget.Button; 
+import android.widget.ImageButton; 
+import android.widget.AdapterView; 
 import android.view.View; 
 import android.view.ViewGroup; 
 import android.widget.Gallery;
@@ -31,6 +33,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 	private View[] galleryViews; 
 	private Gallery theGallery; 
 	private int galleryItemBackground; 
+	private int currentPosition; 
 
 	private final DateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy h:mm aa"); 
 
@@ -49,6 +52,28 @@ public class ViewStatsAdapter extends BaseAdapter {
 		galleryItemBackground = a.getResourceId(
                 R.styleable.StatsGallery_android_galleryItemBackground, 0);
         a.recycle();
+
+		setupButtons();
+		setButtonsEnabledState(theGallery.getFirstVisiblePosition());  
+		currentPosition = theGallery.getFirstVisiblePosition(); 
+
+		theGallery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView parent, View view, int position, long id) {
+				setButtonsEnabledState(position); 
+				currentPosition = position; 
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView parent) {
+
+			}
+		}); 
+	}
+
+	public int getCurrentPosition() {
+		return currentPosition; 
 	}
 
 	public boolean isEmpty() {
@@ -118,36 +143,47 @@ public class ViewStatsAdapter extends BaseAdapter {
 		//galleryView.setLayoutParams(new Gallery.LayoutParams(150, 100));
         galleryView.setBackgroundResource(galleryItemBackground);
 
-		setupButtons(galleryView, position); 
 
 		galleryViews[position] = galleryView; 
 		return galleryView;
 	}
 
-	private void setupButtons(ViewGroup galleryView, int position) {
-		//Button leftButton = (Button) galleryView.findViewById(R.id.leftArrow); 
-		//Button rightButton = (Button) galleryView.findViewById(R.id.rightArrow); 
-/*
-		if (position <= 0) {
-			leftButton.setEnabled(false); 
-		}
-		if (position >= getCount() - 1) {
-			rightButton.setEnabled(false); 
-		}
+	private void setupButtons() {
+		ImageButton leftButton = (ImageButton) ((ViewGroup)theGallery.getParent()).findViewById(R.id.leftArrow); 
+		ImageButton rightButton = (ImageButton) ((ViewGroup)theGallery.getParent()).findViewById(R.id.rightArrow); 
+
 
 		leftButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				theGallery.setSelection(theGallery.getFirstVisiblePosition() - 1, true); 	
+				theGallery.setSelection(currentPosition - 1, true); 	
 			}
 		}); 	
 
 		rightButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				theGallery.setSelection(theGallery.getFirstVisiblePosition() + 1, true); 	
+				theGallery.setSelection(currentPosition + 1, true); 	
 			}
-		});*/ 	
+		}); 	
+	}
+
+	private void setButtonsEnabledState(int position) {
+		ImageButton leftButton = (ImageButton) ((ViewGroup)theGallery.getParent()).findViewById(R.id.leftArrow); 
+		ImageButton rightButton = (ImageButton) ((ViewGroup)theGallery.getParent()).findViewById(R.id.rightArrow); 
+
+		if (position <= 0) {
+			leftButton.setEnabled(false); 
+		}
+		else {
+			leftButton.setEnabled(true); 
+		}
+		if (position >= getCount() - 1) {
+			rightButton.setEnabled(false); 
+		}
+		else {
+			rightButton.setEnabled(true); 
+		}
 	}
 
 	private View getEmptyView() {
