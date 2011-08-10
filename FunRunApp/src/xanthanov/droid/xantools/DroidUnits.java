@@ -6,6 +6,18 @@ package xanthanov.droid.xantools;
 import android.text.Spanned; 
 import java.text.DecimalFormat; 
 
+/**
+*
+* <h3>Convenience class for converting between distance, time, speed units into human-readable form.</h3>
+*
+* It's not very general right now, it's mainly for the Fun Runner app. 
+* Could easily add more methods that simply return the double converstion rather than a Spanned object. 
+*
+* @version 0.9b
+* @author Charles L. Capps
+*
+**/
+
 public class DroidUnits {
 
 	public final static double metersPerMile = 1609.344; 

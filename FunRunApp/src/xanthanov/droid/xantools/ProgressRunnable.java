@@ -9,6 +9,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface; 
 
+/**
+*
+* 
+* 
+*@version 0.9b
+*@author Charles L. Capps
+**/
+
 public class ProgressRunnable implements Runnable {
 	private ProgressDialog pd = null; 
 	private Activity activity = null; 

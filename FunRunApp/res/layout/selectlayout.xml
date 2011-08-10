@@ -16,7 +16,7 @@
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"
 		android:prompt="@string/spinner_prompt" />
-	<Button android:id="@+id/nextDestinationButton"
+	<ImageButton android:id="@+id/nextDestinationButton"
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content" 
 		android:background="@drawable/nearby_places_style"/>

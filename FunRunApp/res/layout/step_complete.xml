@@ -3,7 +3,8 @@
 	android:id="@+id/stepCompleteLayout"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+	android:gravity="center_horizontal">
 	<!--
 		<TextView android:id="@+id/stepCompleteTitle" 
 			android:textSize="30dp"
@@ -20,56 +21,68 @@
 	-->
 		<TextView android:id="@+id/stepCompleteTextView"	
 			android:textSize="24dp"
-			android:textColor="#ff6600"
+			android:textColor="#CC1100"
 			android:gravity="center_horizontal"
 			android:layout_width = "fill_parent"
 			android:layout_height = "wrap_content"
 			android:layout_marginTop = "70dp"/>
 		<TableLayout 
 			android:layout_gravity="center_horizontal"
-			android:layout_width = "fill_parent"
+			android:layout_width = "wrap_content"
 			android:layout_height = "wrap_content">
 			<TableRow style="@style/table_row">
 				<TextView android:id="@+id/legDistanceTitle" 
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					android:text="Dist. to place"/>
 				<TextView android:id="@+id/legDistanceTextView"	
+					android:textColor="#cd3700"
 					style="@style/row_title"/>
 			</TableRow>
 			<TableRow style="@style/table_row">
 				<TextView android:id="@+id/totalDistanceTitle" 
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					android:text="Dist. overall"/>
 				<TextView android:id="@+id/totalDistanceTextView"	
+					android:textColor="#cd3700"
 					style="@style/row_title"/>
 			</TableRow>
 			<TableRow style="@style/table_row" >
 				<TextView android:id="@+id/avgSpeedTitle" 
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					android:text="Speed to place"/>
 				<TextView android:id="@+id/avgSpeedTextView"	
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					/>
 			</TableRow>
 			<TableRow style="@style/table_row" >
 				<TextView android:id="@+id/avgSpeedRunTitle" 
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					android:text="Speed overall"/>
 				<TextView android:id="@+id/avgSpeedRunTextView"	
+					android:textColor="#cd3700"
 					style="@style/row_title" />
 			</TableRow>
 			<TableRow style="@style/table_row" >
 				<TextView android:id="@+id/elapsedTimeToPlaceTitle"	
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					android:text="Time to place"/>
 				<TextView android:id="@+id/elapsedTimeToPlaceTextView"	
+					android:textColor="#cd3700"
 					style="@style/row_title" />
 			</TableRow>
 			<TableRow style="@style/table_row" >
 				<TextView android:id="@+id/totalElapsedTimeTitle"	
 					style="@style/row_title"
+					android:textColor="#cd3700"
 					android:text="Time overall"/>
 				<TextView android:id="@+id/totalElapsedTimeTextView"	
+					android:textColor="#cd3700"
 					style="@style/row_title" />
 			</TableRow>
 		</TableLayout>
@@ -77,9 +90,10 @@
 			android:background="@drawable/button_style"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="30dp"
-			android:layout_marginLeft="40dp"
-			android:layout_marginRight="40dp"
+			android:layout_marginTop="15dp"
+			android:layout_marginBottom="15dp"
+			android:layout_marginLeft="30dp"
+			android:layout_marginRight="30dp"
 			android:paddingTop="10dp"
 			android:paddingBottom="10dp"
 			android:textSize="20dp"

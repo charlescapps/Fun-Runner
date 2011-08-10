@@ -3,7 +3,8 @@
 	android:id="@+id/run_parentContainer"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+	android:gravity="center_horizontal">
 	<TextView android:id="@+id/placeTextView"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
@@ -17,10 +18,12 @@
 		<ImageButton android:id="@+id/leftArrow" 
 			android:layout_width = "wrap_content"
 			android:layout_height="wrap_content" 
+			android:background="#000000"
 			android:src="@drawable/left_arrow_old_run"/>
 		<ImageButton android:id="@+id/rightArrow"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
+			android:background="#000000"
 			android:src="@drawable/right_arrow_old_run"/>
 	</LinearLayout>
 	<RelativeLayout

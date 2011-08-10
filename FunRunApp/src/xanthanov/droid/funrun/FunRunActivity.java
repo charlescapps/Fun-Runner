@@ -209,7 +209,7 @@ public class FunRunActivity extends MapActivity
 				msg = "Your progress won't be saved. You ran less than " + (int)MIN_DISTANCE_TO_SAVE + " meters.";
 			}
 			else {
-				msg = "Your progress will be saved, since you ran " + distanceRan + " meters.";  
+				msg = "Your progress will be saved, since you ran " + new java.text.DecimalFormat("#.##").format(distanceRan) + " meters.";  
 			}
 
 			DroidDialogs.showPopup(this, false, "Choose new place?", 

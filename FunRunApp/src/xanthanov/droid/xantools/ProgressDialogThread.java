@@ -8,6 +8,21 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
+/**
+*<h3>Helper class for DroidDialogs. </h3>
+*
+*<p>
+*The main purpose of DroidDialogs is to allow the client program to start popups from any thread. 
+* For example, in the Fun Runner ChoosePlaceActivity, there are some dialogs a non-UI thread needs to display--
+* the UI thread can't really know when to show them. 
+* So we pass in the Activity to the DroidDialogs class and call the android runOnUIThread method. 
+* This is just the thread that displays the dialog. 
+* </p>
+*
+*@version 0.9b
+*@author Charles L. Capps
+**/
+
 
 public class ProgressDialogThread extends Thread {
 

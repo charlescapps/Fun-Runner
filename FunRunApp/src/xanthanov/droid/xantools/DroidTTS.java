@@ -5,6 +5,17 @@ package xanthanov.droid.xantools;
 
 import java.util.HashMap; 
 
+/**
+* <h3>Class to assist in using text-to-speech with Google Walking directions.</h3>
+*
+* Main purpose is to convert abbreviations into text-to-speach readable text. 
+*
+* May add more features later as needed. 
+*
+* @version 0.9b
+* @author Charles L. Capps
+**/
+
 public class DroidTTS {
 
 	private static HashMap<String,String> abbrevToFull; 

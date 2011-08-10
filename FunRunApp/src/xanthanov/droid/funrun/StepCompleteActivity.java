@@ -165,7 +165,7 @@ public class StepCompleteActivity extends Activity {
 	public boolean onKeyDown( int keycode, KeyEvent e) {		
 	//	super.onKeyDown(keycode, e); 
 
-		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) { //Go back to run screen and get the next directions
+		if (keycode == KeyEvent.KEYCODE_VOLUME_UP || keycode == KeyEvent.KEYCODE_BACK) { //Go back to run screen and get the next directions
 			finish(); 	
 			return true; 
 		}

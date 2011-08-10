@@ -22,6 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 import android.widget.Button; 
+import android.widget.ImageButton; 
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.ArrayAdapter;
@@ -71,7 +72,7 @@ public class ChoosePlaceActivity extends MapActivity
 	//***********VIEW OBJECTS DEFINED IN XML**********************
 	private Spinner runCategorySpinner; 
 	private Button whereAmIButton; 
-	private Button nextDestinationButton;
+	private ImageButton nextDestinationButton;
 	private MapView myMap;
 	private Button zoomInButton;
 	private Button zoomOutButton;
@@ -109,7 +110,7 @@ public class ChoosePlaceActivity extends MapActivity
 		runCategorySpinner = (Spinner) findViewById(R.id.runCategorySpinner); 
 		myMap = (MapView) findViewById(R.id.myMap); 
 		whereAmIButton = (Button) findViewById(R.id.gpsButton); 
-		nextDestinationButton = (Button) findViewById(R.id.nextDestinationButton); 
+		nextDestinationButton = (ImageButton) findViewById(R.id.nextDestinationButton); 
 		zoomInButton = (Button) findViewById(R.id.buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.buttonZoomOut); 
 		//******************DEFINE OTHER OBJECTS**************************
@@ -356,11 +357,12 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void getNextPlace() {
 
-		if (nearbyPlaces == null || nearbyPlaces.size() == 0 || remainingPlaces == null ) {
+		if (nearbyPlaces == null || nearbyPlaces.size() == 0 || remainingPlaces == null) {
 			//There *should* be a dialog alerting the user if no places were found!
+			System.out.println("No nearby places found in getNextPlace\n"); 
 			return; 
 		}
-
+		
 		//check if no places are remaining
 		if (remainingPlaces.size() == 0) {
 			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
@@ -435,6 +437,15 @@ public class ChoosePlaceActivity extends MapActivity
 
 		popup = myBuilder.create(); 
 		popup.setCancelable(true); 
+
+		android.view.WindowManager.LayoutParams WMLP = popup.getWindow().getAttributes();
+
+		//WMLP.x = 100;   //x positionv
+		WMLP.gravity = android.view.Gravity.TOP; 
+		WMLP.verticalMargin = .05f;
+
+		popup.getWindow().setAttributes(WMLP);
+
 		popup.show(); 
 	}
 
@@ -563,6 +574,9 @@ public class ChoosePlaceActivity extends MapActivity
 														dialog.dismiss(); 
 													}
 												});
+			}
+			else {
+				startPlacesQuery(); 
 			}
 
 		}
