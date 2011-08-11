@@ -49,6 +49,7 @@
 			android:paddingRight="3dp"
 			android:paddingTop="3dp"
 			android:paddingBottom="3dp"
+			android:textColor="@color/button_text_color"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"/>
 		<Button android:id="@+id/run_buttonZoomIn" 
@@ -60,6 +61,7 @@
 			android:paddingRight="3dp"
 			android:paddingTop="3dp"
 			android:paddingBottom="3dp"
+			android:textColor="@color/button_text_color"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"/>
 		</LinearLayout>
@@ -78,6 +80,7 @@
 			android:paddingRight="3dp"
 			android:paddingTop="3dp"
 			android:paddingBottom="3dp"
+			android:textColor="@color/button_text_color"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"/>
 		<Button android:id="@+id/run_buttonCenterOnMe" 
@@ -85,6 +88,7 @@
 			android:background="@drawable/button_style"
 			android:text="Center on me" 
 			android:textStyle="bold" 
+			android:textColor="@color/button_text_color"
 			android:paddingLeft="3dp"
 			android:paddingRight="3dp"
 			android:paddingTop="3dp"
