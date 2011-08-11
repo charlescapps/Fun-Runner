@@ -67,7 +67,6 @@ import com.google.android.maps.Overlay;
 *
 **/
 
-
 public class FunRunActivity extends MapActivity
 {
 	//***********VIEW OBJECTS DEFINED IN XML**********************
@@ -84,9 +83,13 @@ public class FunRunActivity extends MapActivity
 	private FunRunApplication funRunApp; 
 	private MyLocationOverlay myLocOverlay;
 	private MapController myMapController; 
-	private LocationListener myLocListener; 
+	private LocationListener myGpsListener; 
+	private LocationListener myNetworkListener; 
 	private FunRunOverlay myFunRunOverlay; 
-	private GeoPoint lastKnownLocation; 
+
+	private GeoPoint lastKnownGeoPoint; 
+	private Location bestLocation; 
+
 	private GoogleDirections runDirections; 
 	private GoogleLeg currentLeg; 
 	private GoogleStep currentStep; 
@@ -153,7 +156,6 @@ public class FunRunActivity extends MapActivity
 		updateDirectionsTextView(); 
 
 		//******************CALL SETUP METHODS****************************
-		setupLocListener(); 
 		setupMap(); 
 		setupCenterOnMeButton(); 
 		setupZoomToRouteButton(); 
@@ -270,15 +272,19 @@ public class FunRunActivity extends MapActivity
 				System.err.println("TTS NOT READY! OWNED!"); 
 			}
 
+			setupLocListener(); //Instantiate new location listeners 
+
 			//Start up compass and location updates
 			myLocOverlay.enableCompass(); 	
-			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
+			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myGpsListener);
+			droidLoc.getLocManager().requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myNetworkListener);
 
-			//Force update of lastKnownLocation
-			lastKnownLocation = droidLoc.getLastKnownLoc(); 
+			//Force update of lastKnownGeoPoint
+			bestLocation = droidLoc.getBestLocation(bestLocation); 
+			lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); 
 
 			//Update visuals so it doesn't show you in the wrong place
-			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+			myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
 			myMap.invalidate(); 
 		}
 		else { //current step was null, indicating the user finished running to a place.
@@ -294,7 +300,8 @@ public class FunRunActivity extends MapActivity
 	@Override 
 	protected void onStop() {
 		super.onStop(); 
-		droidLoc.getLocManager().removeUpdates(myLocListener); 
+		droidLoc.getLocManager().removeUpdates(myGpsListener); 
+		droidLoc.getLocManager().removeUpdates(myNetworkListener); 
 		myLocOverlay.disableCompass();
 	}
 
@@ -321,35 +328,32 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void setupLocListener() {
-		myLocListener = new LocationListener() {
-			@Override
-			public void onLocationChanged(Location l) {
-				updateLocation(l); 
-			}
-			public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    		public void onProviderEnabled(String provider) {}
-
-		    public void onProviderDisabled(String provider) {}		
-		};
-
-		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
+		myGpsListener = new MyLocListener(); 
+		myNetworkListener = new MyLocListener(); 
 	}
 
 	private void updateLocation(Location l) {
-		if (l==null) { //not sure if this locListener will ever return null here. May as well check
+		if (l==null) {
 			return;
 		}
-		//Update the local variable with the last known location
-		lastKnownLocation = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
-		double[] latLng = new double[] {l.getLatitude(), l.getLongitude()}; 
+
+		bestLocation = droidLoc.compareLocations(bestLocation, l); //Compare new location to previous best, and return the best one
+
+		GeoPoint newGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); 
+
+		lastKnownGeoPoint = newGeoPoint; 
+
+		//Update location and invalidate map to redraw
+		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
+		myMap.invalidate(); 
+
+		double[] latLng = null; 
+		if (bestLocation != null) {
+			latLng = new double[] {bestLocation.getLatitude(), bestLocation.getLongitude()}; 
+		}
 
 		//Check if we've finished a step
 		checkForCompleteSteps(); 
-		
-		//Update the overlay so it draws properly
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
-		myMap.invalidate(); 
 
 		//Just for fun! Animate the title bar.
 		//As a side effect, this indicates whether GPS is working or not (^o ^o)
@@ -357,13 +361,15 @@ public class FunRunActivity extends MapActivity
 
 		//Add a GeoPoint to the actualPath in the currentLeg, provided the previous point is far enough away from the current point. 
 		//This obviously is intended to prevent 
-		addToActualPath(latLng); 
+		if (latLng != null) {
+			addToActualPath(latLng);
+		} 
 	}
 
 	private void checkForCompleteSteps() {
 		float distance[] = new float[1]; 
 		GoogleStep step = null;
-		double latLng[] = DroidLoc.geoPointToDegrees(lastKnownLocation); 
+		double latLng[] = DroidLoc.geoPointToDegrees(lastKnownGeoPoint); 
 		for (int i = currentLeg.getMaxStepCompleted() + 1; i < currentLeg.size(); i++) {
 			step = currentLeg.get(i); 
 			Location.distanceBetween(step.getEndPoint()[0], step.getEndPoint()[1], latLng[0], latLng[1], distance); 
@@ -418,7 +424,7 @@ public class FunRunActivity extends MapActivity
 
 	private void setupCenterOnMeButton() {
 		final MapController mc = myMapController; 
-		final GeoPoint loc = lastKnownLocation; 
+		final GeoPoint loc = lastKnownGeoPoint; 
 
 		Animation animation = new AlphaAnimation(1.0f, 0.7f);
 		animation.setFillAfter(true);
@@ -433,11 +439,11 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void centerOnMe() {
-		if (lastKnownLocation == null) {
+		if (lastKnownGeoPoint == null) {
 			return; 
 		}
 		else {
-			myMapController.animateTo(lastKnownLocation); 
+			myMapController.animateTo(lastKnownGeoPoint); 
 		}
 		
 	}
@@ -485,6 +491,24 @@ public class FunRunActivity extends MapActivity
 
 		myMapController.animateTo(midPoint); 
 		myMapController.zoomToSpan(latSpan, lngSpan); 
+	}
+
+	class MyLocListener implements LocationListener {
+
+		@Override
+		public void onLocationChanged(Location l) {
+			FunRunActivity.this.updateLocation(l); 
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+		@Override
+		public void onProviderEnabled(String provider) {}
+
+		@Override
+		public void onProviderDisabled(String provider) {}		
+
 	}
 
 }
