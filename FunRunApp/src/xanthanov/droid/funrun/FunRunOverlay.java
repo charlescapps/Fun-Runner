@@ -64,6 +64,7 @@ public class FunRunOverlay extends Overlay {
 
 	private final static Point START_OFFSET = new Point(35,0);
 	private final static Point RUNNER_OFFSET = new Point(15,40);
+	private final static Point FLAG_OFFSET = new Point(0, 31); 
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
@@ -72,9 +73,10 @@ public class FunRunOverlay extends Overlay {
 	private boolean drawRoute = false; 
 	private boolean drawSpecificRoute = false; 
 	
-	private Bitmap START = null; 
-	private Bitmap DESTINATION1 = null; 
-	private Bitmap DESTINATION2 = null; 
+	private Bitmap START;
+	private Bitmap DESTINATION1; 
+	private Bitmap DESTINATION2; 
+	private Bitmap FLAG; 
 
 	private Bitmap RUNNER1; 
 
@@ -119,12 +121,13 @@ public class FunRunOverlay extends Overlay {
 
 		RUNNER1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner1); 
 
+		FLAG = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.chequered_flag_icon); 
+
 	}
 
 	public void startRunAnimation() {
 		AnimationDrawable runnerAnim = (AnimationDrawable)runnerImageView.getBackground(); 
 		runnerAnim.start(); 
-
 	}
 
 	public void stopRunAnimation() {
@@ -193,6 +196,14 @@ public class FunRunOverlay extends Overlay {
 				bmp = (i == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
 				canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
 			}
+		}
+
+		if ( (directions == null || directions.size() <= 0) && drawSpecificRoute && specificLeg != null) { //For drawing a route when the leg isn't part of any directions object
+			System.out.println("*****************Drew specific leg**********************"); 
+			drawAPath(specificLeg.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
+			GeoPoint endOfRoute = DroidLoc.degreesToGeoPoint(specificLeg.getLastPoint()); 
+			pro.toPixels(endOfRoute, endCoords); 
+			canvas.drawBitmap(FLAG, endCoords.x - FLAG_OFFSET.x, endCoords.y - FLAG_OFFSET.y, pathPaint); 
 		}
 			//Draw destination image at end point
 			//Bitmap bmp = legToDraw.getLegDestination().getIconBmp(); 

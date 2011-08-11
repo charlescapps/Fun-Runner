@@ -188,7 +188,6 @@ public class ChoosePlaceActivity extends MapActivity
 
 		if (hasFocus) {
 			myMap.invalidate(); 
-			centerOnMe(); 
 		}
 
 	}
@@ -217,6 +216,7 @@ public class ChoosePlaceActivity extends MapActivity
 		droidLoc.getLocManager().removeUpdates(myGpsListener); 
 		droidLoc.getLocManager().removeUpdates(myNetworkListener); 
 		myLocOverlay.disableCompass();
+		myFunRunOverlay.setSpecificLeg(null); 
 	}
 
 	@Override 
@@ -235,7 +235,6 @@ public class ChoosePlaceActivity extends MapActivity
 		if (currentDirections.size() <= 0) {
 			RunDataSerializer.deleteEmptyRun(currentDirections); 
 		}
-
 	}
 
 	private void checkGps() {
@@ -327,8 +326,6 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private List<GooglePlace> performPlacesQuery(String search, GeoPoint lastLocation, int currentRadiusMeters) throws Exception {
 
-		
- 
 		List<GooglePlace> foundPlaces = null; 
 
 		//START LOADING DIALOG
@@ -375,6 +372,7 @@ public class ChoosePlaceActivity extends MapActivity
 			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
 			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Place' to see your options again.");
 			currentRunToPlace = null; 
+			myFunRunOverlay.setSpecificLeg(null); 
 			return; 
 		}
 
@@ -384,24 +382,12 @@ public class ChoosePlaceActivity extends MapActivity
 		System.out.println("Chosen place:" + currentRunToPlace); 
 
 		//Make another HTTP request to get directions from current location to 'runToPlace'
-		lastKnownGeoPoint = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
+		bestLocation = droidLoc.getBestLocation(bestLocation); 
+		lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); //Get most recent location before getting directions
 		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
 
-		tempLeg = myDirectionGetter.getDirections(lastKnownGeoPoint, currentRunToPlace.getGeoPoint());
-		System.out.println("Temp leg: " + tempLeg); 
+		new DirectionsQueryTask(this).execute(lastKnownGeoPoint, currentRunToPlace.getGeoPoint()); 
 
-		if (tempLeg != null) {
-
-			tempLeg.setLegDestination(currentRunToPlace); 
-			myFunRunOverlay.setSpecificLeg(tempLeg); 
-			
-			showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
-				"Place: " + currentRunToPlace.getName() + "\n" +
-				"Distance: " + tempLeg.getDistanceString() + " / " + tempLeg.getDistanceMeters() + "m" );	
-		}
-		else {
-			DroidDialogs.showPopup(this, "Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
-		}
 	}
 
 	private void setupZoomButtons() {
@@ -446,11 +432,19 @@ public class ChoosePlaceActivity extends MapActivity
 		popup = myBuilder.create(); 
 		popup.setCancelable(true); 
 
+		popup.setOnCancelListener(new AlertDialog.OnCancelListener() {  //Clear the route being drawn when you cancel the dialogue
+			@Override
+			public void onCancel(DialogInterface d) {
+				myFunRunOverlay.setSpecificLeg(null); 
+				centerOnMe(); 
+			}
+		}); 
+
 		android.view.WindowManager.LayoutParams WMLP = popup.getWindow().getAttributes();
 
 		//WMLP.x = 100;   //x positionv
 		WMLP.gravity = android.view.Gravity.TOP; 
-		WMLP.verticalMargin = .05f;
+		WMLP.verticalMargin = .02f;
 
 		popup.getWindow().setAttributes(WMLP);
 
@@ -561,6 +555,58 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 	}
 
+	private class DirectionsQueryTask extends AsyncTask<GeoPoint, Integer, GoogleLeg> {
+		private Activity a = null;
+
+		public DirectionsQueryTask(Activity a) {
+			super(); 
+			this.a = a; 
+		}
+
+		protected GoogleLeg doInBackground(GeoPoint... directionPoints) {
+			if (directionPoints.length != 2) {
+				return null; 
+			}
+
+			//START LOADING DIALOG
+			ProgressRunnable pr = DroidDialogs.showProgressDialog(a, "", "Grabbing Google walking directions...");  
+			GoogleLeg result = null; 
+
+			try {
+				result = myDirectionGetter.getDirections(lastKnownGeoPoint, currentRunToPlace.getGeoPoint());
+			}
+			catch (Exception e) { //Dialog will popup due to null result. No need to deal with exception here
+				e.printStackTrace();
+			}
+			finally {
+				pr.dismissDialog(); 
+			}
+	
+			return result; 
+		}
+
+		protected void onPostExecute(GoogleLeg result) {
+			tempLeg = result; 
+
+			if (tempLeg != null) {
+
+				tempLeg.setLegDestination(currentRunToPlace); 
+				myFunRunOverlay.setSpecificLeg(tempLeg); 
+				zoomToTempRoute(); 
+				myMap.invalidate(); 
+				
+				showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
+					"Place: " + currentRunToPlace.getName() + "\n" +
+					"Distance: " + tempLeg.getDistanceString() + " / " + tempLeg.getDistanceMeters() + "m" );	
+			}
+			else {
+				DroidDialogs.showPopup(a, "Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
+				myFunRunOverlay.setSpecificLeg(null); 
+				centerOnMe(); 
+			}
+		}
+	}
+
 	private class OnClickNext implements View.OnClickListener {
 
 		private Activity a = null; 
@@ -599,6 +645,20 @@ public class ChoosePlaceActivity extends MapActivity
 	private void startPlacesQuery() {
 		String search = (runCategorySpinner.getSelectedItem()).toString();
 		new PlacesQueryTask(this).execute(search); 	
+	}
+
+	private void zoomToTempRoute() {
+		if (tempLeg == null) {
+			return; 
+		}
+		final GeoPoint neBound = DroidLoc.degreesToGeoPoint(tempLeg.getNeBound()); 
+		final GeoPoint swBound = DroidLoc.degreesToGeoPoint(tempLeg.getSwBound()); 
+		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
+		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
+		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 
+
+		myMapController.animateTo(midPoint); 
+		myMapController.zoomToSpan(latSpan, lngSpan); 
 	}
 
 	class MyLocListener implements LocationListener {
