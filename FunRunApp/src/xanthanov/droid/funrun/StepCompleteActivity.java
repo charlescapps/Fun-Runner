@@ -91,6 +91,13 @@ public class StepCompleteActivity extends Activity {
 			String msg = "Step completed, but stepNo was -1 in IntExtra"; 
 			System.err.println(msg); 
 			DroidDialogs.showPopup(this,"Error--Debugging", msg); 
+			/*
+			rootLayout = (LinearLayout) findViewById(R.id.stepCompleteLayout); 
+			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
+			stepCompleteText = (TextView) findViewById(R.id.stepCompleteTextView); 
+			stepCompleteText.setTextSize(40.0f); 
+			stepCompleteText.setText(android.text.Html.fromHtml("<b>Starbucks</b>!"));  
+			*/
 			//finish(); 
 			return; 
 		}	  
@@ -126,6 +133,7 @@ public class StepCompleteActivity extends Activity {
 		if (completedStepIndex >= currentLeg.size() - 1) {
 			//stepCompleteTitle.setText("Congratulations!"); 
 			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
+			stepCompleteText.setTextSize(40.0f); //Make text bigger if we arrived at a place, since it just needs to display the name
 			currentLeg.setGotToDestination(true); 
 		}
 		else {
@@ -136,7 +144,7 @@ public class StepCompleteActivity extends Activity {
 		displayMsg();
 		vibrate(vibe);  
 		setupNextDirectionsButton(); 
-		setTransparency(); 
+	//	setTransparency(); 
 
 		myTts = funRunApp.getTextToSpeech(); 
 
@@ -235,9 +243,9 @@ public class StepCompleteActivity extends Activity {
 		avgSpeedRun = DroidUnits.getSpeedStringV2(completedStep.getEndTime() - runDirections.get(0).getStartTime(), totalDistanceMeters); 
 
 		//Set text views.
+		stepCompleteText.setText(msg); 
 		legDistanceText.setText(legDistance); 
 		totalDistanceText.setText(totalDistance); 
-		stepCompleteText.setText(msg); 
 		elapsedTimeToPlaceText.setText(legElapsedTime); 
 		totalElapsedTimeText.setText(totalElapsedTime);
 		avgSpeedText.setText(avgSpeed); 

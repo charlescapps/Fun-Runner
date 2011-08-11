@@ -46,6 +46,10 @@ public class FunRunTitle extends Activity
 		//****************End Get Views************************ 
 
 		setupButtons(); 
+/*
+		Intent testStepComplete = new Intent(this, StepCompleteActivity.class); 
+		startActivity(testStepComplete); 
+*/
 
     }
 

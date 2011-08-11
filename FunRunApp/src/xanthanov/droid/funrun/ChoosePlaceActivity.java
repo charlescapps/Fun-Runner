@@ -329,7 +329,7 @@ public class ChoosePlaceActivity extends MapActivity
 		List<GooglePlace> foundPlaces = null; 
 
 		//START LOADING DIALOG
-		ProgressRunnable pr = DroidDialogs.showProgressDialog(this, "", "Loading nearby places...");  
+		ProgressRunnable pr = DroidDialogs.showProgressDialog(this, "", "Downloading Google places...");  
 		
 		try {
 			//Increase the radius until something is found (or the max radius is reached)
@@ -373,6 +373,7 @@ public class ChoosePlaceActivity extends MapActivity
 			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Place' to see your options again.");
 			currentRunToPlace = null; 
 			myFunRunOverlay.setSpecificLeg(null); 
+			centerOnMe(); 
 			return; 
 		}
 
