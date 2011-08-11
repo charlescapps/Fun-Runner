@@ -85,7 +85,6 @@ public class FunRunOverlay extends Overlay {
 	private RelativeLayout mapRelLayout; 
 
 	public FunRunOverlay(MapView map, GoogleDirections directions, boolean drawRoute, boolean drawSpecificRoute, boolean animateRunner, RelativeLayout mapRelLayout) {
-		System.out.println("***********ENTERING FUN RUN OVERLAY CONSTRUCTOR**************"); 
 		this.theMapView = map;
 		this.directions = directions;
 		this.drawRoute = drawRoute; 
@@ -96,7 +95,6 @@ public class FunRunOverlay extends Overlay {
 		prevRunnerPoint = curRunnerPoint = null;
 
 		this.mapRelLayout = mapRelLayout; 
-		System.out.println("Map rel layout: " + mapRelLayout); 
 
 		if (animateRunner && mapRelLayout != null) {
 

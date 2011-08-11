@@ -19,12 +19,14 @@
 			android:layout_width = "wrap_content"
 			android:layout_height="wrap_content" 
 			android:background="#000000"
-			android:src="@drawable/left_arrow_old_run"/>
+			android:src="@drawable/left_small_style" />
+			<!--android:src="@drawable/left_arrow_old_run"/>-->
 		<ImageButton android:id="@+id/rightArrow"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
 			android:background="#000000"
-			android:src="@drawable/right_arrow_old_run"/>
+			android:src="@drawable/right_small_style" /> 
+			<!--android:src="@drawable/right_arrow_old_run"/>-->
 	</LinearLayout>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"

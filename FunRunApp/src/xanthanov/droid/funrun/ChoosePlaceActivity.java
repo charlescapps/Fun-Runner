@@ -80,12 +80,14 @@ public class ChoosePlaceActivity extends MapActivity
 	private DroidLoc droidLoc; 
 	private MyLocationOverlay myLocOverlay;
 	private MapController myMapController; 
-	private LocationListener myLocListener; 
+	private LocationListener myGpsListener; 
+	private LocationListener myNetworkListener; 
 	private PlaceSearcher myPlaceSearcher; //Class to do HTTP request to get place data from google maps API
 	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
 	private FunRunOverlay myFunRunOverlay; 
 	private AlertDialog popup;
-	private GeoPoint lastKnownLocation; 
+	private Location bestLocation; 
+	private GeoPoint lastKnownGeoPoint; 
 	private GeoPoint firstGpsFix;
 	//Places found, directions found, etc.
 	private List<GooglePlace> nearbyPlaces;
@@ -119,8 +121,13 @@ public class ChoosePlaceActivity extends MapActivity
 		myMapController = myMap.getController(); 
 		myPlaceSearcher = new PlaceSearcher(this.getResources()); 
 		myDirectionGetter = new DirectionGetter(); 
-		lastKnownLocation = droidLoc.getLastKnownLoc();
-		System.out.println("Last location: " + lastKnownLocation);
+
+		bestLocation = droidLoc.getBestLocation(null); 
+		if (bestLocation != null) {
+			lastKnownGeoPoint = droidLoc.locationToGeoPoint(bestLocation);
+		}
+
+		System.out.println("Last location: " + lastKnownGeoPoint);
 		funRunApp = (FunRunApplication) getApplicationContext();
 
 		currentDirections = new GoogleDirections(); //Create new directions now, since they correspond to a run
@@ -140,13 +147,6 @@ public class ChoosePlaceActivity extends MapActivity
 		centerOnMe(); 
 		myMap.preLoad(); 
 
-		List<String> providers = 
-		droidLoc.getLocManager().getProviders(false); 
-
-		System.out.println("ALL PROVIDERS:"); 
-		for (String s: providers) {
-			System.out.println("\t" + s); 
-		}
     }
 
 	@Override	
@@ -196,17 +196,26 @@ public class ChoosePlaceActivity extends MapActivity
 	@Override
 	public void onStart() {
 		super.onStart(); 
-		checkGps(); 
-		myLocOverlay.enableCompass(); 	
-		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myLocListener);
-		lastKnownLocation = droidLoc.getLastKnownLoc(); 
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+
+		checkGps(); //Output error dialog if GPS is disabled 
+		myLocOverlay.enableCompass(); 	//Enable compass
+		setupLocListener(); //Instantiate new listeners for GPS and Network
+
+		bestLocation = droidLoc.getBestLocation(bestLocation); //Get immediate location
+		lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); //Convert to GeoPoint immediately
+		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); //Update location in overlay
+		myMap.invalidate(); //Redraw
+
+		//Start GPS and Network updates
+		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myGpsListener);
+		droidLoc.getLocManager().requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myNetworkListener);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop(); 
-		droidLoc.getLocManager().removeUpdates(myLocListener); 
+		droidLoc.getLocManager().removeUpdates(myGpsListener); 
+		droidLoc.getLocManager().removeUpdates(myNetworkListener); 
 		myLocOverlay.disableCompass();
 	}
 
@@ -246,31 +255,27 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void setupLocListener() {
 
-		myLocListener = new LocationListener() {
-			@Override
-			public void onLocationChanged(Location l) {
-				updateLocation(l); 
-			}
-			public void onStatusChanged(String provider, int status, Bundle extras) {}
+		myGpsListener = new MyLocListener(); 
+		myNetworkListener = new MyLocListener(); 
 
-    		public void onProviderEnabled(String provider) {}
-
-		    public void onProviderDisabled(String provider) {}		
-		};
-
-		droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLocListener);
 	}
 
 	private void updateLocation(Location l) {
 		if (l==null) {
 			return;
 		}
-		boolean wasNull = (lastKnownLocation == null || firstGpsFix == null); 
+		boolean wasNull = (firstGpsFix == null); 
 
-		lastKnownLocation = firstGpsFix = DroidLoc.degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		bestLocation = droidLoc.compareLocations(bestLocation, l); //Compare new location to previous best, and return the best one
+
+		GeoPoint newGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); 
+
+		lastKnownGeoPoint = newGeoPoint; 
+
+		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
 
 		if (wasNull) {
+			firstGpsFix = newGeoPoint; 
 			centerOnMe(); 
 		}
 	}
@@ -285,8 +290,8 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, false, false, false, null);
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		myFunRunOverlay = new FunRunOverlay(myMap, null, false, true, false, null);
+		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
 		myFunRunOverlay.updateCurrentDirections(currentDirections); 
 		myMap.getOverlays().add(myLocOverlay); 
 		myMap.getOverlays().add(myFunRunOverlay); 
@@ -310,9 +315,9 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void centerOnMe() {
 		
-		if (lastKnownLocation !=null) {
-			myMapController.animateTo(lastKnownLocation); 
-			myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		if (lastKnownGeoPoint !=null) {
+			myMapController.animateTo(lastKnownGeoPoint); 
+			myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
 		}
 	}
 
@@ -321,6 +326,8 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private List<GooglePlace> performPlacesQuery(String search, GeoPoint lastLocation, int currentRadiusMeters) throws Exception {
+
+		
  
 		List<GooglePlace> foundPlaces = null; 
 
@@ -377,15 +384,16 @@ public class ChoosePlaceActivity extends MapActivity
 		System.out.println("Chosen place:" + currentRunToPlace); 
 
 		//Make another HTTP request to get directions from current location to 'runToPlace'
-		lastKnownLocation = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
-		myFunRunOverlay.updateCurrentLocation(lastKnownLocation); 
+		lastKnownGeoPoint = droidLoc.getLastKnownLoc(); //Get most recent location before getting directions
+		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
 
-		tempLeg = myDirectionGetter.getDirections(lastKnownLocation, currentRunToPlace.getGeoPoint());
+		tempLeg = myDirectionGetter.getDirections(lastKnownGeoPoint, currentRunToPlace.getGeoPoint());
 		System.out.println("Temp leg: " + tempLeg); 
 
 		if (tempLeg != null) {
 
 			tempLeg.setLegDestination(currentRunToPlace); 
+			myFunRunOverlay.setSpecificLeg(tempLeg); 
 			
 			showAcceptRejectPopup("Run to:\n" + currentRunToPlace.getName() + "?", 
 				"Place: " + currentRunToPlace.getName() + "\n" +
@@ -507,8 +515,13 @@ public class ChoosePlaceActivity extends MapActivity
 			searchStr = searchParams[0]; 
 			List<GooglePlace> result = null; 
 
+			if (lastKnownGeoPoint == null) {
+				DroidDialogs.showPopup(a, "No location found.", "No location found. Turn on GPS and go outside, then try again."); 
+				return null; 
+			}
+
 			try {
-				result = performPlacesQuery(searchStr, lastKnownLocation, DEFAULT_RADIUS_METERS ); 	
+				result = performPlacesQuery(searchStr, lastKnownGeoPoint, DEFAULT_RADIUS_METERS ); 	
 			}
 			catch (Exception e) {
 				DroidDialogs.showPopup(a, "Error connecting to Google Maps", "Unable to connect to Google Maps.\nPlease check your internet connection and try again."); 
@@ -541,7 +554,7 @@ public class ChoosePlaceActivity extends MapActivity
 			//AND sort them by which is closer...
 			//To avoid getting directions for all of them, do the crude thing of getting "as the bird flies" distance
 				//PlaceSearcher.printListOfPlaces(nearbyPlaces);  
-				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownLocation)); 
+				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownGeoPoint)); 
 			}
 			//Call the dialog to cycle through places
 			getNextPlace();
@@ -586,6 +599,24 @@ public class ChoosePlaceActivity extends MapActivity
 	private void startPlacesQuery() {
 		String search = (runCategorySpinner.getSelectedItem()).toString();
 		new PlacesQueryTask(this).execute(search); 	
+	}
+
+	class MyLocListener implements LocationListener {
+
+		@Override
+		public void onLocationChanged(Location l) {
+			ChoosePlaceActivity.this.updateLocation(l); 
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+		@Override
+		public void onProviderEnabled(String provider) {}
+
+		@Override
+		public void onProviderDisabled(String provider) {}		
+
 	}
 	
 }
