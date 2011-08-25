@@ -5,6 +5,7 @@ package xanthanov.droid.furun.db;
 
 import android.database.sqlite.SQLiteOpenHelper; 
 import android.database.sqlite.SQLiteDatabase; 
+import android.content.Context; 
 
 public class FunRunDbHelper extends SQLiteOpenHelper {
 
@@ -24,5 +25,9 @@ public class FunRunDbHelper extends SQLiteOpenHelper {
 
 	}
 	
+	@Override
+	public void onUpgrade (SQLiteDatabase db, int oldVersion, int newVersion) {
+		return; 
+	}
 
 }

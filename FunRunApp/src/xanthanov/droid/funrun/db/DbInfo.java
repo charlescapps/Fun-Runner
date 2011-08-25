@@ -3,6 +3,9 @@
 
 package xanthanov.droid.funrun.db; 
 
+import java.text.SimpleDateFormat; 
+import android.content.Context; 
+
 /**
 *
 *<h3>Dummy class to store database metadata such as table names and queries.</h3>
@@ -15,7 +18,7 @@ public class DbInfo {
 
 	public final static SimpleDateFormat dbDate= new SimpleDateFormat("MM-dd-yyyy_HH:mm:ss"); 
 
-	public static final String DB_NAME = "funrun_db"
+	public final static String DB_NAME = "funrun_db";
 
 	//Table names
 	public final static String RUN_PATH_TBL = "run_path"; 
@@ -46,6 +49,7 @@ public class DbInfo {
 	public final static String PLACE_NAME = "place_name"; 
 	public final static String PLACE_LAT = "place_lat"; 
 	public final static String PLACE_LNG = "place_lng"; 
+	public final static String LEG_POINTS = "leg_points"; 
 
 	public final static String CREATE_RUN_TBL = 
 		"CREATE TABLE " + RUN_TBL + " (" + 
@@ -73,5 +77,6 @@ public class DbInfo {
 			SW_LNG + " REAL, " +
 			GOT_TO_DEST + " INTEGER, " +
 			PLACE_LAT + " REAL, " + 
-			PLACE_LNG + " REAL);"; 
+			PLACE_LNG + " REAL, " + 
+			LEG_POINTS + ");"; 
 }

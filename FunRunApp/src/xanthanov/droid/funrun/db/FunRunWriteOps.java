@@ -3,14 +3,21 @@
 
 package xanthanov.droid.funrun.db; 
 
+import xanthanov.droid.gplace.GooglePlace; 
+import xanthanov.droid.gplace.GoogleDirections; 
+import xanthanov.droid.gplace.GoogleLeg; 
+import xanthanov.droid.gplace.LatLng; 
+
 import android.database.sqlite.SQLiteOpenHelper; 
 import android.database.sqlite.SQLiteDatabase; 
 import android.database.sqlite.SQLiteStatement; 
+import android.content.Context; 
 
 import java.util.Date; 
 import java.text.SimpleDateFormat; 
+import java.sql.SQLException; 
 
-import static DbInfo.*; 
+import static xanthanov.droid.funrun.db.DbInfo.*; 
 
 /**
 *<h3>Performs SQLite queries to insert run data into the DB</h3>
@@ -39,9 +46,10 @@ public class FunRunWriteOps {
 	//Query to insert leg data into table. See DbInfo for more info. Includes start, end times, bounds of route for centering on route, etc. 
 	private final static String insertLegInfo = "INSERT INTO " + LEG_TBL + 
 													" (" + RUN_ID + ", " + START_TIME + ", " + END_TIME + ", " + POLYLINE + 
-													", " + NE_LAT + ", " + NE_LNG + ", " + SE_LAT + ", " + SE_LNG + 
-													", " + GOT_TO_DEST + ", " + PLACE_LAT + ", " + PLACE_LNG + ") " + 
-													"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
+													", " + NE_LAT + ", " + NE_LNG + ", " + SW_LAT + ", " + SW_LNG + 
+													", " + GOT_TO_DEST + ", " + PLACE_LAT + ", " + PLACE_LNG + ", " + LEG_POINTS + ") " + 
+													"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
+
 
 	public FunRunWriteOps(Context c) {
 
@@ -85,13 +93,60 @@ public class FunRunWriteOps {
 	* Using a transaction, since according to sqlite.org, this is far faster. 
 	*
 	**/
-	public boolean insertLeg(GoogleLeg leg) {
+	public void insertLeg(GoogleLeg leg) throws SQLException {
+
+		//Get appropraite data from GoogleLeg object in memory --> SQLite insert statement
+		SQLiteStatement legStmt = db.compileStatement(insertLegInfo); 
+
+		legStmt.bindLong(1, this.runId); 
+		legStmt.bindLong(2, leg.getStartTime()); 		
+		legStmt.bindLong(3, leg.getEndTime()); 		
+		legStmt.bindString(4, leg.getOverviewPolyline()); 
+
+		double[] swBound = leg.getSwBound(); 
+		double[] neBound = leg.getNeBound(); 
+
+		legStmt.bindDouble(5, neBound[0]); 
+		legStmt.bindDouble(6, neBound[1]); 
+		legStmt.bindDouble(7, swBound[0]); 
+		legStmt.bindDouble(8, swBound[1]); 
+
+		legStmt.bindLong(9, leg.gotToDestination() ? 1 : 0); 
+
+		GooglePlace dest = leg.getLegDestination(); 
+		double[] placeCoords = dest.getLatLng(); 
+
+		legStmt.bindDouble(10, placeCoords[0]); 
+		legStmt.bindDouble(11, placeCoords[1]); 
+
+		legStmt.bindLong(12, leg.getLegPoints()); 
+
+		//Insert the info for this leg, and get the new leg ID
+		int legRowId = legStmt.executeInsert(); 
+
+		//Get compiled statement for inserting a point of the user's path into DB
+		SQLiteStatement insertPathPt = db.compileStatement(insertPathPoint); 
+		insertPathPt.bindLong(1, this.runId); 
+		insertPathPt.bindLong(2, legRowId); 
+
+		//Start a transaction to insert the many points of the user's run path as pairs of latitude / longitude doubles
 		db.beginTransaction(); 
 
-		SQLiteStatement legStmt = db.compileStatement(insertLegInfo); 
+		List<LatLng> actualPath = leg.getActualPath(); 
+		
+		LatLng pathCoords; 
+
+		for (int i = 0; i < actualPath.size(); i++) {
+			pathCoords = actualPath.get(i); 			
+			insertPathPt.bindDouble(3, pathCoords.lat); 
+			insertPathPt.bindDouble(4, pathCoords.lng); 
+			insertPathPt.executeInsert(); 
+		}
 
 		db.endTransaction(); 
 		
 	}
+
+
 
 }

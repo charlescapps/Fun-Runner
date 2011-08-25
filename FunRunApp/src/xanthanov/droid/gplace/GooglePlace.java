@@ -65,6 +65,8 @@ public class GooglePlace implements java.io.Serializable {
 		return result[0]; 
 	}
 
+	public double[] getLatLng() {return latLng; }
+
 	public float distanceTo(double[] myLocation) {
 		float result[] = new float[1]; 
 

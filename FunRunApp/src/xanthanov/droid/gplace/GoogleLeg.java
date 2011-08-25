@@ -51,7 +51,6 @@ public class GoogleLeg implements java.io.Serializable {
 	private long endTime; 
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
-	private boolean gotToDestination; 
 
 	//ACTUAL PATH RAN
 	List<LatLng> actualPath; 
@@ -75,11 +74,14 @@ public class GoogleLeg implements java.io.Serializable {
 	public int getMaxStepCompleted() {return maxStepCompleted;}
 	public void setMaxStepCompleted(int n) {maxStepCompleted = n;}
 
-	public boolean gotToDestination() {return gotToDestination; }
-	public void setGotToDestination(boolean b) {gotToDestination = b; }
+	//To do: make this method do something
+	public int getLegPoints() {
+		return 0; 
+	}
+
+	public boolean gotToDestination() {return maxStepCompleted >= steps.size() - 1; }
 
 	public GoogleStep lastStepDone() {return steps.get(maxStepCompleted); }
-
 
 	//Method to decode the overview_polyline data from Google Directions API into a list of GeoPoint's
 	//
