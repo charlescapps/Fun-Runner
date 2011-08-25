@@ -6,6 +6,7 @@ package xanthanov.droid.funrun;
 import xanthanov.droid.xantools.*; 
 import xanthanov.droid.gplace.*;
 import xanthanov.droid.funrun.persist.RunDataSerializer; 
+import xanthanov.droid.funrun.db.FunRunWriteOps; 
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -96,6 +97,7 @@ public class ChoosePlaceActivity extends MapActivity
 	private GooglePlace currentRunToPlace;
 	private GoogleLeg tempLeg; 
 	private FunRunApplication funRunApp; 
+	private FunRunWriteOps dbWriter; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -132,11 +134,25 @@ public class ChoosePlaceActivity extends MapActivity
 
 		currentDirections = new GoogleDirections(); //Create new directions now, since they correspond to a run
 		funRunApp.setRunDirections(currentDirections); //Store the current directions object with the application 
-		funRunApp.setCurrentDirectionsAdded(false); 
 
-		if (!RunDataSerializer.createRunDir(currentDirections)) {//Create directory to store these runs
-			showCriticalErrorPopup("Critical Error", "Failed to create new run directory.\nTry restarting the app."); 
+		//Instantiate a new object for writing data to the database, and store it in the Application object to pass between activities
+		this.dbWriter = new FunRunWriteOps(funRunApp); 
+		funRunApp.setDbWriter(this.dbWriter); 
+
+		//Write new run to DB
+		boolean success = false; 
+
+		try {//Create directory to store these runs
+			success = dbWriter.insertNewRun(currentDirections); 
+		}
+		catch (java.sql.SQLException e) {
+			System.err.println("Error inserting new run into DB."); 
+		}
+
+		if (!success) {
+			showCriticalErrorPopup("Critical Error", "Failed to add new run to database.\nTry restarting the app."); 
 		} 
+
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
 		setupSpinner(); 
@@ -232,8 +248,8 @@ public class ChoosePlaceActivity extends MapActivity
 			System.out.println("Directions null upon leaving ChoosePlaceActivity."); 
 		}
 
-		if (currentDirections.size() <= 0) {
-			RunDataSerializer.deleteEmptyRun(currentDirections); 
+		if (currentDirections.size() <= 0) { //If we didn't actually add any legs, delete residual crap from database
+			dbWriter.deleteRun(); 
 		}
 	}
 

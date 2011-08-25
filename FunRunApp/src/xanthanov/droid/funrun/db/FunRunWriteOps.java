@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.content.Context; 
 
 import java.util.Date; 
+import java.util.List; 
 import java.text.SimpleDateFormat; 
 import java.sql.SQLException; 
 
@@ -31,7 +32,7 @@ public class FunRunWriteOps {
 
 	private SQLiteOpenHelper sqlHelper; 
 	private SQLiteDatabase db; 
-	private int runId; 
+	private long runId; 
 
 	//Query String to insert a new run. Just inserts the date and auto-generates the new row id. 
 	private final static String insertNewRun = "INSERT INTO " + RUN_TBL + 
@@ -66,17 +67,16 @@ public class FunRunWriteOps {
 	* It would be horrendous to store row id's somewhere in my activity class. </b>  
 	*
 	**/
-	public boolean insertNewRun(GoogleDirections run) {
+	public boolean insertNewRun(GoogleDirections run) throws java.sql.SQLException {
 		Date runDate = run.getDate(); 
 		String dateStr = dbDate.format(runDate);
 		//Create a new SQLite statement for inserting a new run, and bind this specific date to it.  
 		SQLiteStatement stmt = db.compileStatement(insertNewRun); 
 		stmt.bindString(1, dateStr); 
 
-		int rowId = stmt.executeInsert(); 
-		this.runId = rowId; 
+		this.runId = stmt.executeInsert(); 
 
-		if (rowId < 0) {
+		if (runId < 0) {
 			System.err.println("Pwn. Failed to insert new run into database in FunRunWriteOps.insertNewRun method\n"); 
 			return false; 
 		}
@@ -122,7 +122,7 @@ public class FunRunWriteOps {
 		legStmt.bindLong(12, leg.getLegPoints()); 
 
 		//Insert the info for this leg, and get the new leg ID
-		int legRowId = legStmt.executeInsert(); 
+		long legRowId = legStmt.executeInsert(); 
 
 		//Get compiled statement for inserting a point of the user's path into DB
 		SQLiteStatement insertPathPt = db.compileStatement(insertPathPoint); 
@@ -147,6 +147,13 @@ public class FunRunWriteOps {
 		
 	}
 
+	public void deleteRun() throws SQLException {
+
+		db.execSQL("DELETE FROM " + LEG_TBL + " WHERE " + RUN_ID + " = " + runId + ";"); 
+		db.execSQL("DELETE FROM " + RUN_PATH_TBL + " WHERE " + RUN_ID + " = " + runId + ";"); 
+		db.execSQL("DELETE FROM " + RUN_TBL + " WHERE " + RUN_ID + " = " + runId + ";"); 
+
+	}
 
 
 }

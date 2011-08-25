@@ -1,18 +1,19 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.furun.db; 
+package xanthanov.droid.funrun.db; 
 
 import android.database.sqlite.SQLiteOpenHelper; 
 import android.database.sqlite.SQLiteDatabase; 
 import android.content.Context; 
 
+//import static xanthanov.droid.funrun.db.DbInfo.*; 
+
 public class FunRunDbHelper extends SQLiteOpenHelper {
 
-	public static final int DB_VERSION = 1; 
 
-	FunRunDbHelper(Context c) {
-		super(c, DbInfo.DB_NAME, null, DB_VERSION); 
+	public FunRunDbHelper(Context c) {
+		super(c, DbInfo.DB_NAME, null, DbInfo.DB_VERSION); 
 		
 	}
 	

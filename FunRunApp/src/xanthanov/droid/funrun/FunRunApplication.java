@@ -5,10 +5,12 @@ package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
 import xanthanov.droid.funrun.persist.*; 
+import xanthanov.droid.xantools.DroidLoc; 
+import xanthanov.droid.funrun.db.FunRunWriteOps; 
+
 import android.app.Application; 
 import android.os.Bundle; 
 import android.content.Context;
-import xanthanov.droid.xantools.DroidLoc; 
 import com.google.android.maps.GeoPoint;
 
 import android.speech.tts.TextToSpeech;  
@@ -43,6 +45,7 @@ public class FunRunApplication extends Application {
 	private GoogleDirections runDirections; 
 	private GoogleStep currentStep; 
 	private FunRunData state; 
+	private FunRunWriteOps dbWriter; 
 
 	private boolean currentDirectionsAdded; 
 
@@ -121,6 +124,12 @@ public class FunRunApplication extends Application {
 
 	}
 
+	public void setDbWriter(FunRunWriteOps frwo) {
+		this.dbWriter = frwo; 
+	}
+
+	public FunRunWriteOps getDbWriter() {return dbWriter; }
+
 	public void setCurrentDirectionsAdded(boolean val) {
 		currentDirectionsAdded = val; 
 	}
@@ -128,7 +137,7 @@ public class FunRunApplication extends Application {
 	public File getDataDir() {
 		return dataDir; 
 	}
-
+/*
 	private void addTestDirections() {
 
 		final int arbitraryRadius = 1000; 
@@ -149,7 +158,7 @@ public class FunRunApplication extends Application {
 
 		}
 	}
-
+*/
 
 	public TextToSpeech getTextToSpeech() {return myTextToSpeech; }
 

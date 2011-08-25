@@ -130,11 +130,10 @@ public class StepCompleteActivity extends Activity {
 
 		vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
-		if (completedStepIndex >= currentLeg.size() - 1) {
+		if ( currentLeg.gotToDestination()) {
 			//stepCompleteTitle.setText("Congratulations!"); 
 			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
 			stepCompleteText.setTextSize(40.0f); //Make text bigger if we arrived at a place, since it just needs to display the name
-			currentLeg.setGotToDestination(true); 
 		}
 		else {
 			rootLayout.setBackgroundResource(R.drawable.congratulations); 

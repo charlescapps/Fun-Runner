@@ -16,6 +16,8 @@ import android.content.Context;
 
 public class DbInfo {
 
+	public static final int DB_VERSION = 1; 
+
 	public final static SimpleDateFormat dbDate= new SimpleDateFormat("MM-dd-yyyy_HH:mm:ss"); 
 
 	public final static String DB_NAME = "funrun_db";
