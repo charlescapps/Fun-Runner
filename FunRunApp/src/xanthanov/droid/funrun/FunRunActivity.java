@@ -317,6 +317,8 @@ public class FunRunActivity extends MapActivity
 		}
 		else {
 			(Toast.makeText(this, "Progress saved", 5)).show(); 
+			//Here: write directions to DB. If this is too slow, even with a transaction, then instead write as they run, 
+			//and delete if they don't run enough
 			funRunApp.addDirectionsToState(); 
 			funRunApp.setCurrentDirectionsAdded(true); 
 			RunDataSerializer.writeLegToFile(runDirections, currentLeg, runDirections.getLegs().indexOf(currentLeg)); 

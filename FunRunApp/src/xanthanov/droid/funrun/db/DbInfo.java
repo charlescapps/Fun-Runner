@@ -13,6 +13,10 @@ package xanthanov.droid.funrun.db;
 
 public class DbInfo {
 
+	public final static SimpleDateFormat dbDate= new SimpleDateFormat("MM-dd-yyyy_HH:mm:ss"); 
+
+	public static final String DB_NAME = "funrun_db"
+
 	//Table names
 	public final static String RUN_PATH_TBL = "run_path"; 
 	public final static String RUN_TBL = "run_info"; 
@@ -45,12 +49,12 @@ public class DbInfo {
 
 	public final static String CREATE_RUN_TBL = 
 		"CREATE TABLE " + RUN_TBL + " (" + 
-			RUN_ID + " INTEGER PRIMARY KEY, " +
+			RUN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 			RUN_DATE + " TEXT);";
 
 	public final static String CREATE_RUN_PATH_TBL = 
 		"CREATE TABLE " + RUN_PATH_TBL + " (" + 
-			PATH_ID + " INTEGER PRIMARY KEY, " + 
+			PATH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
 			RUN_ID + " INTEGER, " +
 			LEG_ID + " INTEGER, " + 
 			PATH_LAT + " REAL, " + 
@@ -58,7 +62,7 @@ public class DbInfo {
 
 	public final static String CREATE_LEG_TBL = 
 		"CREATE TABLE " + LEG_TBL + " (" + 
-			LEG_ID + " INTEGER PRIMARY KEY, " + 
+			LEG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + 
 			RUN_ID + " INTEGER, " + 
 			START_TIME + " INTEGER, " + 
 			END_TIME + " INTEGER, " + 

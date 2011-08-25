@@ -3,15 +3,24 @@
 
 package xanthanov.droid.furun.db; 
 
-import android.database.SQLiteOpenHelper; 
-import android.database.SQLiteDatabase; 
+import android.database.sqlite.SQLiteOpenHelper; 
+import android.database.sqlite.SQLiteDatabase; 
 
 public class FunRunDbHelper extends SQLiteOpenHelper {
 
+	public static final int DB_VERSION = 1; 
+
+	FunRunDbHelper(Context c) {
+		super(c, DbInfo.DB_NAME, null, DB_VERSION); 
+		
+	}
 	
 
 	@Override 
 	public void onCreate(SQLiteDatabase db) {
+		db.execSQL(DbInfo.CREATE_RUN_TBL); 
+		db.execSQL(DbInfo.CREATE_RUN_PATH_TBL); 
+		db.execSQL(DbInfo.CREATE_LEG_TBL); 
 
 	}
 	
