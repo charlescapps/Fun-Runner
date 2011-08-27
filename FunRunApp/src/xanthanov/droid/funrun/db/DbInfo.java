@@ -51,6 +51,7 @@ public class DbInfo {
 	public final static String PLACE_NAME = "place_name"; 
 	public final static String PLACE_LAT = "place_lat"; 
 	public final static String PLACE_LNG = "place_lng"; 
+	public final static String DISTANCE_RAN = "distance_ran"; 
 	public final static String LEG_POINTS = "leg_points"; 
 
 	public final static String CREATE_RUN_TBL = 
@@ -78,7 +79,9 @@ public class DbInfo {
 			SW_LAT + " REAL, " + 
 			SW_LNG + " REAL, " +
 			GOT_TO_DEST + " INTEGER, " +
+			PLACE_NAME + " TEXT, " +
 			PLACE_LAT + " REAL, " + 
 			PLACE_LNG + " REAL, " + 
+			DISTANCE_RAN + " REAL, " + 
 			LEG_POINTS + ");"; 
 }

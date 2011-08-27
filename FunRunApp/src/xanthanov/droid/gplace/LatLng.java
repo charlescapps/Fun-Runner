@@ -23,6 +23,7 @@ public class LatLng implements java.io.Serializable {
 	public double lng; 
 
 	public LatLng(double[] latLng) {this.lat = latLng[0]; this.lng = latLng[1]; }
+	public LatLng(double lat, double lng) {this.lat = lat; this.lng = lng; }
 
 	public double[] getArray() {return new double[] {lat, lng}; }
 

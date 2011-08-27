@@ -38,6 +38,7 @@ import android.text.Spanned;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random; 
+import java.sql.SQLException;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -151,6 +152,7 @@ public class ChoosePlaceActivity extends MapActivity
 
 		if (!success) {
 			showCriticalErrorPopup("Critical Error", "Failed to add new run to database.\nTry restarting the app."); 
+			this.finish(); 
 		} 
 
 		//******************CALL SETUP METHODS****************************
@@ -249,7 +251,12 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 
 		if (currentDirections.size() <= 0) { //If we didn't actually add any legs, delete residual crap from database
-			dbWriter.deleteRun(); 
+			try {
+				dbWriter.deleteRun();
+			}
+			catch (SQLException e) {
+				System.err.println("Error deleting empty run in ChoosePlaceActivity.onDestroy() "); 
+			} 
 		}
 	}
 

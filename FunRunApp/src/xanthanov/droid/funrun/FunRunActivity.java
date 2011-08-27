@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random; 
 import java.util.HashMap; 
+import java.sql.SQLException; 
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -317,11 +318,16 @@ public class FunRunActivity extends MapActivity
 		}
 		else {
 			(Toast.makeText(this, "Progress saved", 5)).show(); 
-			//Here: write directions to DB. If this is too slow, even with a transaction, then instead write as they run, 
+			//Here: write directions to DB. If this is too slow, even with a transaction, then will change implementation to instead write as they run, 
 			//and delete if they don't run enough
-			funRunApp.addDirectionsToState(); 
-			funRunApp.setCurrentDirectionsAdded(true); 
-			RunDataSerializer.writeLegToFile(runDirections, currentLeg, runDirections.getLegs().indexOf(currentLeg)); 
+			try {
+				funRunApp.getDbWriter().insertLeg(currentLeg); 
+			}
+			catch (SQLException e) {
+				System.err.println("Error writing leg to SQLite DB: "); 
+				e.printStackTrace(); 
+				DroidDialogs.showPopup(this, "Error", "Error saving run data to SQLite Database."); 
+			}
 		}
 	}
 

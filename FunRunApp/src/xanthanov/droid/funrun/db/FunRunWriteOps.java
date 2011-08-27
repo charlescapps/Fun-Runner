@@ -48,8 +48,8 @@ public class FunRunWriteOps {
 	private final static String insertLegInfo = "INSERT INTO " + LEG_TBL + 
 													" (" + RUN_ID + ", " + START_TIME + ", " + END_TIME + ", " + POLYLINE + 
 													", " + NE_LAT + ", " + NE_LNG + ", " + SW_LAT + ", " + SW_LNG + 
-													", " + GOT_TO_DEST + ", " + PLACE_LAT + ", " + PLACE_LNG + ", " + LEG_POINTS + ") " + 
-													"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
+													", " + GOT_TO_DEST + ", " + PLACE_NAME + ", " + PLACE_LAT + ", " + PLACE_LNG + ", " + LEG_POINTS + ") " + 
+													"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
 
 
 	public FunRunWriteOps(Context c) {
@@ -114,12 +114,17 @@ public class FunRunWriteOps {
 		legStmt.bindLong(9, leg.gotToDestination() ? 1 : 0); 
 
 		GooglePlace dest = leg.getLegDestination(); 
+
+		legStmt.bindString(10, dest.getName()); 
+
 		double[] placeCoords = dest.getLatLng(); 
 
-		legStmt.bindDouble(10, placeCoords[0]); 
-		legStmt.bindDouble(11, placeCoords[1]); 
+		legStmt.bindDouble(11, placeCoords[0]); 
+		legStmt.bindDouble(12, placeCoords[1]); 
+		
+		legStmt.bindDouble(13, leg.getActualDistanceRan()); 
 
-		legStmt.bindLong(12, leg.getLegPoints()); 
+		legStmt.bindLong(14, leg.getLegPoints()); 
 
 		//Insert the info for this leg, and get the new leg ID
 		long legRowId = legStmt.executeInsert(); 

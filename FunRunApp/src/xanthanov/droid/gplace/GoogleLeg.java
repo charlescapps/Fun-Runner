@@ -51,6 +51,7 @@ public class GoogleLeg implements java.io.Serializable {
 	private long endTime; 
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
+	private final static double POINT_FACTOR = 1000.0; 
 
 	//ACTUAL PATH RAN
 	List<LatLng> actualPath; 
@@ -76,7 +77,12 @@ public class GoogleLeg implements java.io.Serializable {
 
 	//To do: make this method do something
 	public int getLegPoints() {
-		return 0; 
+		if (endTime <= startTime || startTime == 0 || endTime == 0) {
+			return 0; 
+		}
+		double speed = actualDistanceRan / (endTime - startTime); 
+		int points = (int) (speed*speed*actualDistanceRan/POINT_FACTOR); 
+		return points; 
 	}
 
 	public boolean gotToDestination() {return maxStepCompleted >= steps.size() - 1; }
@@ -88,6 +94,10 @@ public class GoogleLeg implements java.io.Serializable {
 	public List<LatLng> getPathPoints() {
 
 		return decodePoly(overviewPolyline); 
+	}
+
+	public static List<LatLng> getPathPoints(String polyline) {
+		return decodePoly(polyline); 
 	}
 
 	public void setNeBound(double[] latLng) {neBound = latLng;}
@@ -159,7 +169,7 @@ public class GoogleLeg implements java.io.Serializable {
 //Got this from Jeffrey Sander's blog before I found the Google Documentation on this. 
 //Received permission via email from Mr. Sanders to use this code in this app
 //He is also mentioned in the README
-	private List<LatLng> decodePoly(String encoded) {
+	private static List<LatLng> decodePoly(String encoded) {
 
 	  List<LatLng> poly = new ArrayList<LatLng>();
 	  int index = 0, len = encoded.length();

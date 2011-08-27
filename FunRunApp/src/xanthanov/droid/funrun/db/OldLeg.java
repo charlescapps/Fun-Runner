@@ -28,7 +28,6 @@ public class OldLeg {
 //Run path and directions path (for drawing directions on map)
 private final List<LatLng> runPath; 
 private final List<LatLng> polylinePath; 
-private final String polyline; //String encoding directions path
 
 //Start and end times in ms since 1970
 private final long startTime;
@@ -51,10 +50,9 @@ private final String placeName;
 private final LatLng placeLatLng; 
 private final boolean gotToPlace; 
 
-public OldLeg(List<LatLng> runPath, String polyline, long startTime, long endTime, LatLng neBound, LatLng swBound, int legPoints, String placeName, LatLng placeLatLng, boolean gotToPlace) {
+public OldLeg(List<LatLng> runPath, List<LatLng> polylinePath, long startTime, long endTime, double distanceRan, LatLng neBound, LatLng swBound, int legPoints, String placeName, LatLng placeLatLng, boolean gotToPlace) {
 
 	this.runPath = runPath; 
-	this.polyline = polyline; 
 	this.startTime = startTime; 
 	this.endTime = endTime; 
 	this.neBound = neBound; 
@@ -64,13 +62,12 @@ public OldLeg(List<LatLng> runPath, String polyline, long startTime, long endTim
 	this.placeLatLng = placeLatLng; 
 	this.gotToPlace = gotToPlace; 
 
-	//Calculate distanceRan here
-	distanceRan = 0; 
-	//Calculate avgSpeed here
-	avgSpeed = 0; 
+	this.distanceRan = distanceRan; 
 
-	//Calculate polylinePath here
-	polylinePath = new ArrayList<LatLng>(); 
+	//Calculate avgSpeed here
+	avgSpeed = distanceRan / (endTime - startTime); 
+
+	this.polylinePath = polylinePath; 
 
 }
 
