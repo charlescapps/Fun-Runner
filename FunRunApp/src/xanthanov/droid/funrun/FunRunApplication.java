@@ -4,9 +4,9 @@
 package xanthanov.droid.funrun; 
 
 import xanthanov.droid.gplace.*;
-import xanthanov.droid.funrun.persist.*; 
 import xanthanov.droid.xantools.DroidLoc; 
 import xanthanov.droid.funrun.db.FunRunWriteOps; 
+import xanthanov.droid.funrun.db.OldRun; 
 
 import android.app.Application; 
 import android.os.Bundle; 
@@ -14,7 +14,7 @@ import android.content.Context;
 import com.google.android.maps.GeoPoint;
 
 import android.speech.tts.TextToSpeech;  
-import java.io.File; 
+import java.util.List; 
 
 /**
 * <h3>Application class to store global data.</h3> 
@@ -44,63 +44,19 @@ public class FunRunApplication extends Application {
 	//Stores the run currently in progress
 	private GoogleDirections runDirections; 
 	private GoogleStep currentStep; 
-	private FunRunData state; 
+	private List<OldRun> oldRuns; 
 	private FunRunWriteOps dbWriter; 
-
-	private boolean currentDirectionsAdded; 
 
 	//Shared TTS object
 	private TextToSpeech myTextToSpeech; 
 	private TextToSpeech.OnInitListener ttsListener; 
 	private boolean ttsReady; 
 
-	private File dataDir; 
-	private String fullPath; 
-
 	public static final long MIN_GPS_UPDATE_TIME_MS = 2000; //1 second update time
-	public static final String DATA_DIR = "funrun_data";
 
 	@Override
 	public void onCreate() {
 		super.onCreate(); 
-
-		currentDirectionsAdded = false; 
-
-		dataDir = getDir(DATA_DIR, Context.MODE_PRIVATE); 
-		RunDataSerializer.setDataDir(dataDir); 	
-
-		try {
-			state = RunDataSerializer.getFunRunData(); 
-		}
-		catch (Exception e) {
-			System.err.println("Failure reading in old runs."); 
-			e.printStackTrace(); 
-			state = new FunRunData(); 
-		}
-
-		//Call new method to get FunRunData from a collection of files here
-
-		/*
-		try {
-			state = RunDataSerializer.getFunRunData(fullPath); 
-		}
-		catch (Exception e) {
-			System.err.println("No FunRunData file found, creating new FunRunData"); 
-		}
-		if (state == null || state.size() <= 0) {
-			state = new FunRunData(); 
-			//**************Test persistent data saving*********************
-
-			addTestDirections(); 	
-		}*/
-	
-		System.out.println("NUMBER OF RUNS FOUND: " + state.size()); 
-
-		/*for (int i = 0; i < state.size(); i++) {
-			System.out.println(state.get(i).toString()); 
-		}*/
-
-		//***************END TEST**********************************
 
 		ttsReady = false; 
 		myTextToSpeech = null; 
@@ -124,47 +80,24 @@ public class FunRunApplication extends Application {
 
 	}
 
+	public void setOldRuns(List<OldRun> oldRuns) {
+		this.oldRuns = oldRuns; 
+	}
+
+	public List<OldRun> getOldRuns() {
+		return oldRuns; 
+	}
+
+	//Writer is created when a new run is started. The dbWriter stores the run id it's writing to
 	public void setDbWriter(FunRunWriteOps frwo) {
 		this.dbWriter = frwo; 
 	}
 
 	public FunRunWriteOps getDbWriter() {return dbWriter; }
 
-	public void setCurrentDirectionsAdded(boolean val) {
-		currentDirectionsAdded = val; 
-	}
-
-	public File getDataDir() {
-		return dataDir; 
-	}
-/*
-	private void addTestDirections() {
-
-		final int arbitraryRadius = 1000; 
-		final int numMockRuns = 2;
-
-		MockFactory mockery = new MockFactory(this); 
-		String[] placeSearches = new String[] {"Cafe", "Smoothie Joint", "Shopping Mall"  }; 
-		DroidLoc myDloc = new DroidLoc(this); 
-		GeoPoint locPt = myDloc.getMockLocation(); 
-
-		for (int i = 0; i < numMockRuns; i++) {
-			GoogleDirections testDirs = mockery.getMockDirections(placeSearches, locPt, arbitraryRadius); 
-
-			System.out.println("****************MOCK RUN BEFORE WRITING*******************"); 
-			System.out.println(testDirs.toString()); 
-
-			state.add(testDirs); 
-
-		}
-	}
-*/
-
 	public TextToSpeech getTextToSpeech() {return myTextToSpeech; }
 
 	public boolean isTtsReady() {return ttsReady; }
-
-	public FunRunData getState() {return state; }
 
 	public void setRunDirections(GoogleDirections d) {runDirections = d;}
 	
@@ -173,12 +106,6 @@ public class FunRunApplication extends Application {
 	public GoogleStep getCurrentStep() {return currentStep;} 
 
 	public void setCurrentStep(GoogleStep s) {currentStep=s;} 
-
-	public void addDirectionsToState() {
-		if (!currentDirectionsAdded) {
-			state.add(runDirections); 
-		}
-	}
 
 
 }

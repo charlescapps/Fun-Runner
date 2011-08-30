@@ -52,6 +52,26 @@ public class DroidDialogs {
 		return currentDialog; 
 	}
 
+	public static AlertDialog showPopup(Activity a, String title, String txt, DialogInterface.OnClickListener okListener) {
+		AlertDialog.Builder myBuilder = new AlertDialog.Builder(a); 
+		myBuilder.setMessage(txt); 
+		myBuilder.setTitle(title); 
+		myBuilder.setPositiveButton("Okay", okListener); 
+
+		final AlertDialog.Builder finalBuilder = myBuilder; 
+
+		a.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				currentDialog = finalBuilder.create(); 
+				currentDialog.show(); 
+			}
+		});
+
+		return currentDialog; 
+
+	}
+
 	public static AlertDialog showPopup(Activity a, String title, String txt, String posText, String negText, 
 											DialogInterface.OnClickListener posListen, DialogInterface.OnClickListener negListen) {
 		AlertDialog.Builder myBuilder = new AlertDialog.Builder(a); 

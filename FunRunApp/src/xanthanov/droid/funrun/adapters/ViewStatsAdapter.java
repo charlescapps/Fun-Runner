@@ -1,6 +1,7 @@
 package xanthanov.droid.funrun.adapters; 
 
-import xanthanov.droid.funrun.persist.FunRunData; 
+import xanthanov.droid.funrun.db.OldRun; 
+import xanthanov.droid.funrun.db.OldLeg; 
 import xanthanov.droid.funrun.R; 
 import xanthanov.droid.xantools.DroidUnits; 
 import xanthanov.droid.gplace.GooglePlace; 
@@ -27,7 +28,7 @@ import android.content.res.Resources;
 
 public class ViewStatsAdapter extends BaseAdapter {
 	
-	private FunRunData state; 
+	private List<OldRun> oldRuns; 
 	private Context context; 
 	private LayoutInflater inflater; 
 	private View[] galleryViews; 
@@ -39,12 +40,12 @@ public class ViewStatsAdapter extends BaseAdapter {
 
 	private final static int VIEW_TYPE = 0; 
 
-	public ViewStatsAdapter(Context c, FunRunData state, Gallery theGallery) {
-		this.state = state; 
+	public ViewStatsAdapter(Context c, List<OldRun> oldRuns, Gallery theGallery) {
+		this.oldRuns = oldRuns; 
 		this.context = c; 
 		//inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater = LayoutInflater.from(context); 
-		galleryViews = new View[state.size()]; 
+		galleryViews = new View[oldRuns.size()]; 
 		this.theGallery = theGallery; 
 
 		TypedArray a = context.obtainStyledAttributes(R.styleable.StatsGallery);
@@ -77,17 +78,17 @@ public class ViewStatsAdapter extends BaseAdapter {
 	}
 
 	public boolean isEmpty() {
-		return state.size() <= 0; 
+		return oldRuns.size() <= 0; 
 	}
 
 	@Override
 	public int getCount() {
-		return state.size() >= 1 ? state.size() : 1; 
+		return oldRuns.size() >= 1 ? oldRuns.size() : 1; 
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return (state.size() <= 0 ? null : state.get(position));
+		return (oldRuns.size() <= 0 ? null : oldRuns.get(position));
 	}
 
 	@Override
@@ -102,14 +103,10 @@ public class ViewStatsAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		if (state == null || state.size() <= 0) {
+		if (oldRuns == null || oldRuns.size() <= 0) {
 			return getEmptyView(); 
 		}
 
-		/*
-		if (galleryViews[position] != null) {
-			return galleryViews[position]; 
-		}*/
 		ViewGroup galleryView = (ViewGroup) inflater.inflate(R.layout.stats_one_view, null); 
 		TextView runDateText = (TextView) galleryView.findViewById(R.id.viewRunsDate); 
 		TextView totalDistance = (TextView) galleryView.findViewById(R.id.totalDistance); 
@@ -117,23 +114,24 @@ public class ViewStatsAdapter extends BaseAdapter {
 		TextView avgSpeed = (TextView) galleryView.findViewById(R.id.avgSpeed); 
 		TextView placesVisited = (TextView) galleryView.findViewById(R.id.placesVisited); 
 
-		Date runDate = state.get(position).getDate(); 
+		Date runDate = oldRuns.get(position).getRunDate(); 
 		Spanned dateSpanned = android.text.Html.fromHtml("<b>" + dateFormat.format(runDate)  + "</b>");
 
 		runDateText.setText(dateSpanned); 
-		double totalDistMeters = state.get(position).getDistanceSoFar(); 
+		double totalDistMeters = oldRuns.get(position).getTotalRunDistance(); 
+		long totalTimeMs = oldRuns.get(position).getTotalRunTime(); 
 		totalDistance.setText(DroidUnits.getDistanceStringV3(totalDistMeters));
-		totalTime.setText(DroidUnits.msToStrV2(state.get(position).totalTime())) ; 
-		avgSpeed.setText(DroidUnits.getSpeedStringV2(state.get(position).totalTime(), state.get(position).getDistanceSoFar())); 
+		totalTime.setText(DroidUnits.msToStrV2(totalTimeMs)); 
+		avgSpeed.setText(DroidUnits.getSpeedStringV2(totalTimeMs, totalDistMeters)); 
 
 		String placesStr = ""; 
 
-		List<GooglePlace> places = state.get(position).getPlacesVisited(); 
+		List<String> places = oldRuns.get(position).getPlacesVisited(); 
 
 		int numPlaces = places.size(); 
 		for (int i = 0; i < numPlaces; i++) {
-			GooglePlace p = places.get(i); 
-			placesStr += (p.getName() + "<br/><b>" + (state.get(position).get(i).gotToDestination() ? "(Got there)" : "(Attempted)" )  + "</b>" + (i < numPlaces - 1 ? "<br>" : "")); 
+			String p = places.get(i); 
+			placesStr += (p + "<br/><b>" + (oldRuns.get(position).get(i).gotToPlace() ? "(Got there)" : "(Attempted)" )  + "</b>" + (i < numPlaces - 1 ? "<br>" : "")); 
 		}
 
 		Spanned placesHtml = android.text.Html.fromHtml(placesStr); 

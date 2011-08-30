@@ -13,6 +13,26 @@
 		android:textColor="#ffa824"/>
 	<LinearLayout 
 		android:layout_width = "wrap_content"
+		android:layout_height="wrap_content"
+		android:gravity="left">
+		<TextView android:id="@+id/pointsTitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="left"
+			android:textSize="20dp"
+			android:textStyle="bold"
+			android:textColor="#ffa824"
+			android:text="Points earned:"/>
+		<TextView android:id="@+id/pointsTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="left"
+			android:textSize="20dp"
+			android:textStyle="bold"
+			android:textColor="#ffffff"/>
+	</LinearLayout>
+	<LinearLayout 
+		android:layout_width = "wrap_content"
 		android:layout_height = "wrap_content" 
 		android:gravity="center_horizontal">
 		<ImageButton android:id="@+id/leftArrow" 

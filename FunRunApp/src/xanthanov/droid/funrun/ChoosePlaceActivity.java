@@ -5,7 +5,6 @@ package xanthanov.droid.funrun;
 
 import xanthanov.droid.xantools.*; 
 import xanthanov.droid.gplace.*;
-import xanthanov.droid.funrun.persist.RunDataSerializer; 
 import xanthanov.droid.funrun.db.FunRunWriteOps; 
 
 import android.app.Activity;
@@ -99,6 +98,7 @@ public class ChoosePlaceActivity extends MapActivity
 	private GoogleLeg tempLeg; 
 	private FunRunApplication funRunApp; 
 	private FunRunWriteOps dbWriter; 
+	private boolean dbWriteSuccess; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -141,19 +141,17 @@ public class ChoosePlaceActivity extends MapActivity
 		funRunApp.setDbWriter(this.dbWriter); 
 
 		//Write new run to DB
-		boolean success = false; 
+		dbWriteSuccess = false; 
 
-		try {//Create directory to store these runs
-			success = dbWriter.insertNewRun(currentDirections); 
+		try {//Insert new run id for this run
+			dbWriteSuccess = dbWriter.insertNewRun(currentDirections); 
 		}
 		catch (java.sql.SQLException e) {
 			System.err.println("Error inserting new run into DB."); 
+			e.printStackTrace(); 
+			dbWriteSuccess = false; 
 		}
 
-		if (!success) {
-			showCriticalErrorPopup("Critical Error", "Failed to add new run to database.\nTry restarting the app."); 
-			this.finish(); 
-		} 
 
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
@@ -215,6 +213,17 @@ public class ChoosePlaceActivity extends MapActivity
 		super.onStart(); 
 
 		checkGps(); //Output error dialog if GPS is disabled 
+
+		if (!dbWriteSuccess) {
+			DroidDialogs.showPopup(this, "Critical Error", "Failed to add new run to database.\nTry restarting the app.", 
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface diag, int id) {
+											ChoosePlaceActivity.this.finish(); 
+										}
+									}); 
+		} 
+
 		myLocOverlay.enableCompass(); 	//Enable compass
 		setupLocListener(); //Instantiate new listeners for GPS and Network
 
@@ -469,6 +478,7 @@ public class ChoosePlaceActivity extends MapActivity
 		//WMLP.x = 100;   //x positionv
 		WMLP.gravity = android.view.Gravity.TOP; 
 		WMLP.verticalMargin = .02f;
+		WMLP.dimAmount = 0.0f; 
 
 		popup.getWindow().setAttributes(WMLP);
 

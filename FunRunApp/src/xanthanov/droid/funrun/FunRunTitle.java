@@ -4,10 +4,14 @@
 package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
+import xanthanov.droid.funrun.db.FunRunReadOps; 
+
+import java.sql.SQLException; 
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Button; 
+import android.widget.TextView; 
 import android.content.Intent; 
 import android.content.Context; 
 import android.view.View;
@@ -31,26 +35,38 @@ public class FunRunTitle extends Activity
 {
 	Button newRunButton; 
 	Button viewStatsButton; 
-//	Button aboutButton; 
+	long totalPoints; 
+
+	TextView pointsTextView; 
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.title);
+
+		totalPoints = 0; 
 		
 		//****************Get views by ID**********************
 		newRunButton= (Button) findViewById(R.id.newRunButton);
 		viewStatsButton = (Button) findViewById(R.id.viewStatsButton); 
-//		aboutButton = (Button) findViewById(R.id.aboutButton); 
+		pointsTextView = (TextView) findViewById(R.id.titlePoints); 
 		//****************End Get Views************************ 
 
 		setupButtons(); 
-/*
-		Intent testStepComplete = new Intent(this, StepCompleteActivity.class); 
-		startActivity(testStepComplete); 
-*/
 
+		FunRunReadOps dbReader = new FunRunReadOps(this); 
+
+		try {
+			totalPoints = dbReader.getTotalPoints(); 
+		}
+		catch (SQLException e) {
+			System.err.println("ERROR getting total points from database."); 
+			e.printStackTrace(); 
+		}
+
+		pointsTextView.setText(" " + totalPoints); 
     }
 
 	@Override

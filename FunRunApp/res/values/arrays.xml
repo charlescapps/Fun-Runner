@@ -26,4 +26,29 @@
 		<item>@string/amusement_park</item>
 		<item>@string/natural_feature</item>
     </string-array>
+
+	<integer-array name="accept_radius_array">
+		<item>10</item>
+		<item>15</item>
+		<item>20</item>
+		<item>25</item>
+		<item>30</item>
+		<item>35</item>
+		<item>40</item>
+		<item>45</item>
+		<item>50</item>
+	</integer-array>
+
+	<string-array name="accept_radius_strings">
+		<item>10 meters</item>
+		<item>15 meters</item>
+		<item>20 meters</item>
+		<item>25 meters</item>
+		<item>30 meters</item>
+		<item>35 meters</item>
+		<item>40 meters</item>
+		<item>45 meters</item>
+		<item>50 meters</item>
+	</string-array>
+
 </resources>

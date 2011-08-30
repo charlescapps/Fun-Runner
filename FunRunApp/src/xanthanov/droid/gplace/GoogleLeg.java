@@ -51,7 +51,8 @@ public class GoogleLeg implements java.io.Serializable {
 	private long endTime; 
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
-	private final static double POINT_FACTOR = 1000.0; 
+	private final static double POINT_FACTOR = 200.0; 
+	private final static int PLACE_BONUS = 10; 
 
 	//ACTUAL PATH RAN
 	List<LatLng> actualPath; 
@@ -81,7 +82,8 @@ public class GoogleLeg implements java.io.Serializable {
 			return 0; 
 		}
 		double speed = actualDistanceRan / (endTime - startTime); 
-		int points = (int) (speed*speed*actualDistanceRan/POINT_FACTOR); 
+		double speedFactor = Math.max(speed*speed, 1.0); 
+		int points = (int) (speedFactor*actualDistanceRan/POINT_FACTOR) + (gotToDestination() ? PLACE_BONUS : 0); 
 		return points; 
 	}
 

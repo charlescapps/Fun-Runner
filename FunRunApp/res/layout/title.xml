@@ -11,25 +11,36 @@
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
-		<!--
-			<TextView  
-				android:textSize="35dp"
-				android:textStyle="bold"
-				android:textColor="#6688ff"
-				android:shadowColor="#2222ff"
-				android:shadowRadius="1.5"
-				android:shadowDx="3.0"
-				android:shadowDy="3.0"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:layout_gravity="center_horizontal"
-				android:text="The Fun Run App"/>
-		-->
+			<LinearLayout
+				android:layout_marginTop= "240dp"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal|bottom">
+				<TextView  
+					android:textSize="20dp"
+					android:textStyle="bold"
+					android:textColor="#2244bb"
+					android:shadowColor="#2222ff"
+					android:shadowRadius="1.5"
+					android:shadowDx="3.0"
+					android:shadowDy="3.0"
+					android:layout_width="wrap_content" 
+					android:layout_height="fill_parent" 
+					android:layout_gravity="center_horizontal|bottom"
+					android:text="Total Points:"/>
+				<TextView android:id="@+id/titlePoints"
+					android:textSize = "22dp"
+					android:textStyle="bold"
+					android:textColor="#000000"
+					android:layout_width="wrap_content"
+					android:layout_height="fill_parent"
+					android:layout_gravity="center_horizontal|bottom" />
+			</LinearLayout>
 			<LinearLayout
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content" 
 				android:gravity="center_horizontal"
-				android:layout_marginTop = "400dp">
+				android:layout_marginTop = "150dp">
 				
 				<Button android:id="@+id/newRunButton"
 					android:layout_width = "wrap_content" 

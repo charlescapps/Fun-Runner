@@ -76,14 +76,26 @@ public OldLeg(List<LatLng> runPath, List<LatLng> polylinePath, long startTime, l
 
 	public long getStartTime() {return startTime; }
 	public long getEndTime() {return endTime; }
+	public long getDuration() {return endTime - startTime; }
 	public double getDistanceRan() {return distanceRan; }
 	public double getAvgSpeed() {return avgSpeed; }
 	
 	public int getLegPoints() {return legPoints; }
 
+	public LatLng getNeBound() {return neBound; }
+	public LatLng getSwBound() {return swBound; }
+
 	public String getPlaceName() {return placeName; }
 	public LatLng getPlaceLatLng() {return placeLatLng; }
 	public boolean gotToPlace() {return gotToPlace; }
 
-	
+	public LatLng getRunStart() {return runPath.get(0); }
+	public LatLng getRunEnd() {
+		int size = runPath.size(); 
+		if (size <= 0 ) {
+			return null; 
+		}
+		return runPath.get(size - 1); 
+	}
+
 }

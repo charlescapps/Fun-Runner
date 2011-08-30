@@ -6,8 +6,8 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_marginLeft">10dp</item>
 		<item name="android:layout_marginRight">10dp</item>
-		<item name="android:layout_marginBottom">10dp</item>
-		<item name="android:layout_marginTop">10dp</item>
+		<item name="android:layout_marginBottom">5dp</item>
+		<item name="android:layout_marginTop">5dp</item>
 		<item name="android:paddingTop">10dp</item>
 		<item name="android:paddingBottom">10dp</item>
 		<item name="android:textSize">20dp</item>
@@ -17,7 +17,7 @@
 	<style name="table_row"> 
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
-		<item name="android:padding">5dp</item>
+		<item name="android:padding">1dp</item>
 	</style>
 	<style name="row_title"> 
 		<item name="android:background">@drawable/table_cell</item>

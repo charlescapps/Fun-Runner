@@ -24,6 +24,12 @@ public class FunRunReadOps {
 		db = sqlHelper.getReadableDatabase(); 
 	}
 
+	public long getTotalPoints() throws SQLException {
+		SQLiteStatement pointsResult = db.compileStatement("SELECT SUM(" + DbInfo.LEG_POINTS + ") FROM " + DbInfo.LEG_TBL + ";"); 
+		long points = pointsResult.simpleQueryForLong(); 
+		return points; 
+	}
+
 	public List<OldRun> readOldRuns() throws SQLException {
 
 		Cursor legResult = db.rawQuery("SELECT * FROM " + DbInfo.LEG_TBL + " ORDER BY " + DbInfo.RUN_ID + ", " + DbInfo.LEG_ID + ";", null); 
@@ -98,7 +104,9 @@ public class FunRunReadOps {
 									new LatLng(neLat, neLng), new LatLng(swLat, swLng), legPoints, placeName, new LatLng(placeLat, placeLng), gotToDest));  	
 
 				legResult.moveToNext(); 
-				currentRunId = legResult.getLong(runIdCol); 
+				if (!legResult.isAfterLast()) {
+					currentRunId = legResult.getLong(runIdCol); 
+				}
 			} 
 
 			if (legs.size() > 0 ) {

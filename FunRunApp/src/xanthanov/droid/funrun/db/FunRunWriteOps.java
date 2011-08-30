@@ -48,8 +48,9 @@ public class FunRunWriteOps {
 	private final static String insertLegInfo = "INSERT INTO " + LEG_TBL + 
 													" (" + RUN_ID + ", " + START_TIME + ", " + END_TIME + ", " + POLYLINE + 
 													", " + NE_LAT + ", " + NE_LNG + ", " + SW_LAT + ", " + SW_LNG + 
-													", " + GOT_TO_DEST + ", " + PLACE_NAME + ", " + PLACE_LAT + ", " + PLACE_LNG + ", " + LEG_POINTS + ") " + 
-													"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
+													", " + GOT_TO_DEST + ", " + PLACE_NAME + ", " + PLACE_LAT + ", " + PLACE_LNG + 
+													", " + DISTANCE_RAN + ", " + LEG_POINTS + ") " + 
+													"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
 
 
 	public FunRunWriteOps(Context c) {
@@ -129,17 +130,17 @@ public class FunRunWriteOps {
 		//Insert the info for this leg, and get the new leg ID
 		long legRowId = legStmt.executeInsert(); 
 
+
 		//Get compiled statement for inserting a point of the user's path into DB
 		SQLiteStatement insertPathPt = db.compileStatement(insertPathPoint); 
 		insertPathPt.bindLong(1, this.runId); 
 		insertPathPt.bindLong(2, legRowId); 
 
+		List<LatLng> actualPath = leg.getActualPath(); 
+		LatLng pathCoords; 
+
 		//Start a transaction to insert the many points of the user's run path as pairs of latitude / longitude doubles
 		db.beginTransaction(); 
-
-		List<LatLng> actualPath = leg.getActualPath(); 
-		
-		LatLng pathCoords; 
 
 		for (int i = 0; i < actualPath.size(); i++) {
 			pathCoords = actualPath.get(i); 			
@@ -147,6 +148,8 @@ public class FunRunWriteOps {
 			insertPathPt.bindDouble(4, pathCoords.lng); 
 			insertPathPt.executeInsert(); 
 		}
+
+		db.setTransactionSuccessful(); 
 
 		db.endTransaction(); 
 		

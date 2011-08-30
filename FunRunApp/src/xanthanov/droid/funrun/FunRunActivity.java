@@ -5,7 +5,6 @@ package xanthanov.droid.funrun;
 
 import xanthanov.droid.gplace.*;
 import xanthanov.droid.xantools.*;
-import xanthanov.droid.funrun.persist.RunDataSerializer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -110,7 +109,7 @@ public class FunRunActivity extends MapActivity
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static float ACCEPT_RADIUS_METERS = 60.0f; 
+	public final static float ACCEPT_RADIUS_METERS = 25.0f; 
 	public final static float PATH_INCREMENT_METERS = 10.0f; 
 
 	private final static float MIN_DISTANCE_TO_SAVE = 200.0f; 
@@ -326,7 +325,6 @@ public class FunRunActivity extends MapActivity
 			catch (SQLException e) {
 				System.err.println("Error writing leg to SQLite DB: "); 
 				e.printStackTrace(); 
-				DroidDialogs.showPopup(this, "Error", "Error saving run data to SQLite Database."); 
 			}
 		}
 	}

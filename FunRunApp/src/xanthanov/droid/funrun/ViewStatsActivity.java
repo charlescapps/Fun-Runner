@@ -4,10 +4,15 @@
 package xanthanov.droid.funrun; 
 
 import xanthanov.droid.funrun.adapters.*; 
-import xanthanov.droid.funrun.persist.*; 
+import xanthanov.droid.funrun.db.*; 
 import xanthanov.droid.xantools.DroidLayout; 
+import xanthanov.droid.xantools.DroidDialogs; 
+
+import java.util.List; 
+import java.sql.SQLException; 
 
 import android.app.Activity; 
+import android.app.AlertDialog; 
 import android.os.Bundle; 
 import android.widget.Gallery; 
 import android.widget.AdapterView.OnItemClickListener; 
@@ -45,7 +50,8 @@ public class ViewStatsActivity extends Activity {
 
 	private Gallery statsGallery; 
 	private ViewStatsAdapter myAdapter; 
-	private FunRunData state; 
+	private List<OldRun> oldRuns; 
+	private FunRunReadOps dbReader; 
 	private DroidLayout droidLay; 
 	private Button returnButton; 
 	private Button loadOnMapButton; 
@@ -66,9 +72,23 @@ public class ViewStatsActivity extends Activity {
 
 		//Get the gallery from the layout 
 		statsGallery = (Gallery) findViewById(R.id.statsGallery);
-		state = ((FunRunApplication) getApplicationContext()).getState(); 
+		dbReader = new FunRunReadOps(this); 
+		try {
+			oldRuns = dbReader.readOldRuns(); 
+		}
+		catch (SQLException e) {
+			System.err.println("Error reading in old runs in ViewStatsActivity."); 
+			e.printStackTrace(); 
+			DroidDialogs.showPopup(this, "Error", "Error reading database of previous runs. Restart app and try again.", new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(android.content.DialogInterface dia, int id) {
+					ViewStatsActivity.this.finish(); 
+				}
+			}); 
+		}
+		((FunRunApplication)getApplicationContext()).setOldRuns(oldRuns); 
 
-		myAdapter = new ViewStatsAdapter(this, state, statsGallery); 
+		myAdapter = new ViewStatsAdapter(this, oldRuns, statsGallery); 
 
 		toastRunNumber = Toast.makeText(this, "Run " + (1)  + " of " + myAdapter.getCount(), Toast.LENGTH_SHORT); 
 
