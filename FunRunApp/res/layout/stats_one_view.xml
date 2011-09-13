@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/statsGalleryView"
     android:orientation="vertical"
+	android:gravity="center_horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
 	android:layout_marginLeft="12dp"
@@ -27,11 +28,22 @@
 	</LinearLayout>
 	<TableLayout
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+		android:gravity="center_horizontal">
 		<TableRow style="@style/table_row"> 
 			<TextView style="@style/row_title"
 				android:textColor="#010101"
-				android:text="Total distance" />
+				android:text="Points Earned" />
+			<TextView android:id="@+id/totalPoints" 
+				style="@style/row_data" 
+				android:textColor="#010101"/>
+		</TableRow>
+		<TableRow style="@style/table_row"> 
+			<TextView style="@style/row_title"
+				android:textColor="#010101"
+				android:text="Total Distance" />
 			<TextView android:id="@+id/totalDistance" 
 				style="@style/row_data" 
 				android:textColor="#010101"/>
@@ -63,15 +75,11 @@
 					android:textColor="#010101"
 					android:textStyle="bold"
 					android:gravity="center_horizontal"
-					android:layout_marginLeft="5dp"
-					android:layout_marginRight="5dp"
 					android:layout_marginBottom="0dp"
 					android:paddingTop="1dp"
 					android:paddingBottom="1dp"/>
 				<ScrollView android:layout_width="fill_parent"
-					android:layout_height="200dp"
-					android:layout_marginLeft="5dp"
-					android:layout_marginRight="5dp"
+					android:layout_height="150dp"
 					android:layout_marginTop="0dp">
 					<TextView android:id="@+id/placesVisited" 
 						style="@style/row_data" 

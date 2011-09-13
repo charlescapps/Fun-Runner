@@ -130,19 +130,6 @@ public class FunRunActivity extends MapActivity
 
 		//Get the Application object and its global data
 		funRunApp = (FunRunApplication) this.getApplicationContext(); 
-		//******************GET PREFERENCES*****************************
-		Resources res = getResources(); 
-
-		SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this); 
-
-		String default_accept_radius = res.getString(R.string.default_accept_radius); 
-		String default_min_run = res.getString(R.string.default_min_run); 
-
-		String accept_radius_key = res.getString(R.string.accept_radius_pref); 
-		String min_run_key = res.getString(R.string.min_run_pref); 
-
-		ACCEPT_RADIUS_METERS = Float.parseFloat(prefs.getString(accept_radius_key, default_accept_radius)); 
-		MIN_DISTANCE_TO_SAVE = Float.parseFloat(prefs.getString(min_run_key, default_min_run)); 
 
 		//Get audio manager
 		audioMan = (AudioManager)getSystemService(Context.AUDIO_SERVICE); 
@@ -201,6 +188,25 @@ public class FunRunActivity extends MapActivity
 			}
 		});
     }
+
+	private void grabPrefs() {
+		Resources res = getResources(); 
+
+		SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this); 
+
+		String default_accept_radius = res.getString(R.string.default_accept_radius); 
+		String default_min_run = res.getString(R.string.default_min_run); 
+		String default_path_segment = res.getString(R.string.default_path_segment); 
+
+		String accept_radius_key = res.getString(R.string.accept_radius_pref); 
+		String min_run_key = res.getString(R.string.min_run_pref); 
+		String path_segment_key = res.getString(R.string.path_segment_pref); 
+
+		ACCEPT_RADIUS_METERS = Float.parseFloat(prefs.getString(accept_radius_key, default_accept_radius)); 
+		MIN_DISTANCE_TO_SAVE = Float.parseFloat(prefs.getString(min_run_key, default_min_run)); 
+		PATH_INCREMENT_METERS = Float.parseFloat(prefs.getString(path_segment_key, default_path_segment)); 
+
+	}
 	
 	@Override
 	public boolean isRouteDisplayed() {
@@ -276,6 +282,9 @@ public class FunRunActivity extends MapActivity
 	protected void onStart() {
 		super.onStart();
 
+		//******************GET PREFERENCES*****************************
+		grabPrefs(); 
+
 		firstSpeechCompleted = false; 
 
 		//See if current step was updated by StepCompleteActivity
@@ -340,7 +349,7 @@ public class FunRunActivity extends MapActivity
 			
 		}
 		else {
-			(Toast.makeText(this, "Progress saved", 5)).show(); 
+			(Toast.makeText(this, currentLeg.getLegPoints() + " points earned!", 5)).show(); 
 			//Here: write directions to DB. If this is too slow, even with a transaction, then will change implementation to instead write as they run, 
 			//and delete if they don't run enough
 			try {

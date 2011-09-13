@@ -55,7 +55,11 @@ public class ViewStatsActivity extends Activity {
 	private DroidLayout droidLay; 
 	private Button returnButton; 
 	private Button loadOnMapButton; 
+	private ImageButton emailButton; 
+
 	private Toast toastRunNumber; 
+
+	private String DEFAULT_EMAIL; 
 
 	public static final String RUN_INDEX_EXTRA = "RUN_INDEX_EXTRA"; 
 
@@ -64,11 +68,13 @@ public class ViewStatsActivity extends Activity {
 		super.onCreate(b); 
 		setContentView(R.layout.view_stats); 
 
+		grabPrefs(); 
+
 		droidLay = new DroidLayout(this); 
 
 		returnButton = (Button)findViewById(R.id.backToTitle); 
 		loadOnMapButton = (Button)findViewById(R.id.loadRunOnMap); 
-
+		emailButton = (ImageButton)findViewById(R.id.emailButton); 
 
 		//Get the gallery from the layout 
 		statsGallery = (Gallery) findViewById(R.id.statsGallery);
@@ -113,6 +119,13 @@ public class ViewStatsActivity extends Activity {
 		else {		
 			loadOnMapButton.setOnClickListener(new ClickLoadOnMap()); 
 		}
+
+		emailButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					sendEmail(); 
+				}
+			}); 
 	}
 
 	//Nested classes for buttons
@@ -132,4 +145,21 @@ public class ViewStatsActivity extends Activity {
 
 		}
 	}
+
+	public void sendEmail() {
+
+	}
+
+  private void grabPrefs() {
+        Resources res = getResources(); 
+
+        SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this); 
+
+        String email_key = res.getString(R.string.email_pref); 
+        String default_email = res.getString(R.string.default_email); 
+
+        DEFAULT_EMAIL = prefs.getString(email_key, default_email); 
+
+    }   
+
 }

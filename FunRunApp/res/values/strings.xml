@@ -8,9 +8,13 @@
 	<!-- PREFERENCES constants -->
 	<string name="accept_radius_pref">accept_rad_pref</string>
 	<string name="min_run_pref">min_run_pref</string>
+	<string name="path_segment_pref">path_segment_pref</string>
+	<string name="email_pref">email_pref</string>
 
 	<string name="default_accept_radius">15</string>
 	<string name="default_min_run">100</string>
+	<string name="default_path_segment">10</string>
+	<string name="default_email">Enter an e-mail</string>
 
 	<!-- END PREFERENCES -->
 

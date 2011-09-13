@@ -34,6 +34,14 @@ public class OldRun  {
 	public OldLeg get(int i) {return oldLegs.get(i); }
 	public int size() {return oldLegs.size(); }
 
+	public long getTotalPoints() {
+		long pts = 0; 
+		for (int i =0; i < oldLegs.size(); i++) {
+			pts+=oldLegs.get(i).getLegPoints(); 
+		}
+		return pts; 
+	}
+
 	public long getTotalRunTime() {
 		long time = 0; 
 		for (int i = 0; i < oldLegs.size(); i++) {

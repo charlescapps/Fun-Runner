@@ -10,7 +10,7 @@
 		<item name="android:layout_marginTop">5dp</item>
 		<item name="android:paddingTop">10dp</item>
 		<item name="android:paddingBottom">10dp</item>
-		<item name="android:textSize">20dp</item>
+		<item name="android:textSize">20sp</item>
 		<item name="android:textColor">@color/button_text_color</item>
 		<item name="android:textStyle">bold|italic</item>
     </style>
@@ -18,6 +18,7 @@
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:padding">1dp</item>
+		<item name="android:gravity">center_horizontal</item>
 	</style>
 	<style name="row_title"> 
 		<item name="android:background">@drawable/table_cell</item>

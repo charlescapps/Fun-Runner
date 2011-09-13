@@ -109,6 +109,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 
 		ViewGroup galleryView = (ViewGroup) inflater.inflate(R.layout.stats_one_view, null); 
 		TextView runDateText = (TextView) galleryView.findViewById(R.id.viewRunsDate); 
+		TextView totalPoints = (TextView) galleryView.findViewById(R.id.totalPoints); 
 		TextView totalDistance = (TextView) galleryView.findViewById(R.id.totalDistance); 
 		TextView totalTime = (TextView) galleryView.findViewById(R.id.totalTime); 
 		TextView avgSpeed = (TextView) galleryView.findViewById(R.id.avgSpeed); 
@@ -118,8 +119,13 @@ public class ViewStatsAdapter extends BaseAdapter {
 		Spanned dateSpanned = android.text.Html.fromHtml("<b>" + dateFormat.format(runDate)  + "</b>");
 
 		runDateText.setText(dateSpanned); 
+		long totalPointsLong = oldRuns.get(position).getTotalPoints(); 
 		double totalDistMeters = oldRuns.get(position).getTotalRunDistance(); 
 		long totalTimeMs = oldRuns.get(position).getTotalRunTime(); 
+
+		java.text.NumberFormat nf = java.text.NumberFormat.getInstance(); 
+		totalPoints.setText(nf.format(totalPointsLong)); 
+
 		totalDistance.setText(DroidUnits.getDistanceStringV3(totalDistMeters));
 		totalTime.setText(DroidUnits.msToStrV2(totalTimeMs)); 
 		avgSpeed.setText(DroidUnits.getSpeedStringV2(totalTimeMs, totalDistMeters)); 

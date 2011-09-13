@@ -7,7 +7,8 @@
 	<Gallery 
 		android:id = "@+id/statsGallery"
 		android:layout_width = "fill_parent" 
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content" 
+		android:gravity="center_horizontal"/>
 	<LinearLayout
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content" 
@@ -16,6 +17,13 @@
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content" 
 			android:src="@drawable/left_small_style" 
+			android:background="#000000"/>	
+		<ImageButton android:id = "@+id/emailButton"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content" 
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="8dp"
+			android:src="@drawable/email_style" 
 			android:background="#000000"/>	
 		<ImageButton android:id = "@+id/rightArrow"
 			android:layout_width="wrap_content" 
@@ -31,13 +39,21 @@
 		<Button android:id = "@+id/loadRunOnMap"
 			style="@style/big_button"
 			android:layout_width="wrap_content"
-			android:text="Load on Map"
-			android:paddingRight="5dp"/>
+			android:text="Load on Map "
+			android:textSize="17sp"
+			android:layout_marginRight="3dp"	
+			android:layout_marginLeft="3dp"
+			android:paddingRight="5dp"
+			android:paddingLeft="5dp"/>
 
 		<Button android:id = "@+id/backToTitle"
 			style="@style/big_button"
 			android:layout_width="wrap_content"
-			android:text="Back to menu"
+			android:text="Back to menu "
+			android:textSize="17sp"
+			android:layout_marginRight="3dp"	
+			android:layout_marginLeft="3dp"
+			android:paddingLeft="5dp"
 			android:paddingRight="5dp"/>
 
 	</LinearLayout>

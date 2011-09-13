@@ -66,4 +66,19 @@
 		<item>200 meters</item>
 		<item>500 meters</item>
 	</string-array>
+
+	<string-array name="path_segment_array">
+		<item>5</item>
+		<item>10</item>
+		<item>20</item>
+		<item>50</item>
+	</string-array>
+
+	<string-array name="path_segment_strings">
+		<item>5 meters</item>
+		<item>10 meters</item>
+		<item>20 meters</item>
+		<item>50 meters</item>
+	</string-array>
+
 </resources>
