@@ -123,49 +123,40 @@ public class OldRunOverlay extends Overlay {
 		GeoPoint startPoint = null; 
 
 		if (runPath.size() > 0) {
+			drawAPath(runPath, canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
+
 			//Draw flag where runner ended up at the end of this leg
 			GeoPoint endPoint = DroidLoc.latLngToGeoPoint(leg.getRunEnd()); 
 			pro.toPixels(endPoint, endCoords); 
 
 			canvas.drawBitmap(FLAG, endCoords.x - FLAG_OFFSET.x , endCoords.y - FLAG_OFFSET.y, pathPaint);
 
-			drawAPath(runPath, canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
 		}
 
 		if (directionsPath.size() > 0) {
+			//Draw the directions for the appropriate leg in ROUTE_COLOR
+			drawAPath(directionsPath, canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
+
 			startPoint = DroidLoc.latLngToGeoPoint(directionsPath.get(0)); //First point of run
 			pro.toPixels(startPoint, startCoords); 
 			//Draw the little red circle at the start point
 			canvas.drawBitmap(START, startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2, pathPaint); 
 
-			//Draw the directions for the appropriate leg in ROUTE_COLOR
-			drawAPath(directionsPath, canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
-
 		}
 
-		//Draw all your previous actual path's other than the current one in COMPLETED_COLOR
-		for (int i = 0; i < run.size(); i++) {
-			if (i != legIndex) {
-				runPath = run.get(i).getRunPath(); 
-				if (runPath.size() > 0) {
-					drawAPath(runPath, canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro, ACTUAL_DASHES); 
-				}
-			}
+		GeoPoint placePoint = DroidLoc.latLngToGeoPoint(leg.getPlaceLatLng());  //Location of place
+		pro.toPixels(placePoint, placeCoords); 
 
-			GeoPoint placePoint = DroidLoc.latLngToGeoPoint(run.get(i).getPlaceLatLng());  //Location of place
-			pro.toPixels(placePoint, placeCoords); 
+		Bitmap bmp = null; 
 
-			Bitmap bmp = null; 
-
-			if (!run.get(i).gotToPlace()) { //If runner didn't get to the place, draw an 'X'
-				bmp = MAP_X; 
-			}
-			else { //Else draw a trophy, which one depends on whether it's the last leg of the journey
-				bmp = (i == run.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
-			}
-
-			canvas.drawBitmap(bmp, placeCoords.x - bmp.getWidth() / 2 , placeCoords.y - bmp.getHeight() / 2, pathPaint);
+		if (!leg.gotToPlace()) { //If runner didn't get to the place, draw an 'X'
+			bmp = MAP_X; 
 		}
+		else { //Else draw a trophy, which one depends on whether it's the last leg of the journey
+			bmp = (legIndex == run.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
+		}
+
+		canvas.drawBitmap(bmp, placeCoords.x - bmp.getWidth() / 2 , placeCoords.y - bmp.getHeight() / 2, pathPaint);
 
 	}
 

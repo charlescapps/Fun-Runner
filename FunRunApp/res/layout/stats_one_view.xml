@@ -52,26 +52,41 @@
 				style="@style/row_data" 
 				android:textColor="#010101"/>
 		</TableRow>
+		<TableRow style="@style/table_row">
+			<LinearLayout android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical" 
+				android:layout_span="2">
+				<TextView style="@style/row_title"
+					android:layout_width="fill_parent"
+					android:text="Places visited" 
+					android:textColor="#010101"
+					android:textStyle="bold"
+					android:gravity="center_horizontal"
+					android:layout_marginLeft="5dp"
+					android:layout_marginRight="5dp"
+					android:layout_marginBottom="0dp"
+					android:paddingTop="1dp"
+					android:paddingBottom="1dp"/>
+				<ScrollView android:layout_width="fill_parent"
+					android:layout_height="200dp"
+					android:layout_marginLeft="5dp"
+					android:layout_marginRight="5dp"
+					android:layout_marginTop="0dp">
+					<TextView android:id="@+id/placesVisited" 
+						style="@style/row_data" 
+						android:layout_width="fill_parent"
+						android:gravity="left"
+						android:textColor="#010101" />
+				</ScrollView>
+			</LinearLayout>
+		</TableRow>
 	</TableLayout>
-	<TextView style="@style/row_title"
-		android:layout_width="fill_parent"
-		android:text="Places visited" 
-		android:textColor="#010101"
-		android:textStyle="bold"
-		android:gravity="center_horizontal"
-		android:layout_marginLeft="5dp"
-		android:layout_marginRight="5dp"
-		android:layout_marginBottom="5dp"/>
-	<TextView android:id="@+id/placesVisited" 
-		style="@style/row_data" 
-		android:layout_width="fill_parent"
-		android:gravity="left"
-		android:textColor="#010101"
-		android:layout_marginLeft="5dp"
-		android:layout_marginRight="5dp"/>
+<!--
 	<LinearLayout
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
 		android:gravity="center_horizontal">
 	</LinearLayout>
+-->
 </LinearLayout>

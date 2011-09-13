@@ -53,6 +53,7 @@ public class FunRunApplication extends Application {
 	private boolean ttsReady; 
 
 	public static final long MIN_GPS_UPDATE_TIME_MS = 2000; //1 second update time
+	public static final String GLOBAL_PREFS = "funrun_prefs"; 
 
 	@Override
 	public void onCreate() {

@@ -27,7 +27,7 @@
 		<item>@string/natural_feature</item>
     </string-array>
 
-	<integer-array name="accept_radius_array">
+	<string-array name="accept_radius_array">
 		<item>10</item>
 		<item>15</item>
 		<item>20</item>
@@ -37,7 +37,7 @@
 		<item>40</item>
 		<item>45</item>
 		<item>50</item>
-	</integer-array>
+	</string-array>
 
 	<string-array name="accept_radius_strings">
 		<item>10 meters</item>
@@ -51,4 +51,19 @@
 		<item>50 meters</item>
 	</string-array>
 
+	<string-array name="min_run_array">
+		<item>0</item>
+		<item>50</item>
+		<item>100</item>
+		<item>200</item>
+		<item>500</item>
+	</string-array>
+
+	<string-array name="min_run_strings">
+		<item>0 meters</item>
+		<item>50 meters</item>
+		<item>100 meters</item>
+		<item>200 meters</item>
+		<item>500 meters</item>
+	</string-array>
 </resources>

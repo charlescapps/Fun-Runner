@@ -5,6 +5,15 @@
 	<string name="show_directions">Show directions</string>
 	<string name="hide_directions">Hide directions</string>
 
+	<!-- PREFERENCES constants -->
+	<string name="accept_radius_pref">accept_rad_pref</string>
+	<string name="min_run_pref">min_run_pref</string>
+
+	<string name="default_accept_radius">15</string>
+	<string name="default_min_run">100</string>
+
+	<!-- END PREFERENCES -->
+
 	<string name="park">Park</string>
 	<string name="cafe">Cafe</string>
 	<string name="pizza">Pizza</string>

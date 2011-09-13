@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="preference_screen">
+
+	<PreferenceCategory
+		android:title="Distances">
+		<ListPreference
+			android:key="@string/accept_radius_pref"
+			android:title="Arrival distance"
+			android:summary="How close you need to be to arrive at a place or complete a step"
+			android:entryValues="@array/accept_radius_array"
+			android:entries="@array/accept_radius_strings"
+			android:defaultValue="@string/default_accept_radius"/>
+		<ListPreference
+			android:key="@string/min_run_pref"
+			android:title="Minimum run distance"
+			android:summary="Min distance you need to run for run data to be saved"
+			android:entryValues="@array/min_run_array"
+			android:entries="@array/min_run_strings"
+			android:defaultValue="@string/default_min_run" />
+	</PreferenceCategory>
+
+</PreferenceScreen>

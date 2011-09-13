@@ -16,6 +16,9 @@ import android.content.Intent;
 import android.content.Context; 
 import android.view.View;
 import android.view.MotionEvent;
+import android.view.MenuInflater; 
+import android.view.Menu; 
+import android.view.MenuItem; 
 
 /**
 * <h3>Activity for Title Screen</h3>
@@ -66,7 +69,9 @@ public class FunRunTitle extends Activity
 			e.printStackTrace(); 
 		}
 
-		pointsTextView.setText(" " + totalPoints); 
+		java.text.NumberFormat nf = java.text.NumberFormat.getInstance(); 
+		//pointsTextView.setText(" " + totalPoints); 
+		pointsTextView.setText(" " + nf.format(totalPoints)); 
     }
 
 	@Override
@@ -102,4 +107,28 @@ public class FunRunTitle extends Activity
 		}); 
 
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.title_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			Intent i = new Intent(this, xanthanov.droid.funrun.pref.FunRunPref.class); 
+			startActivity(i); 
+			return true;
+		case R.id.menu_quit:
+			this.finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 }

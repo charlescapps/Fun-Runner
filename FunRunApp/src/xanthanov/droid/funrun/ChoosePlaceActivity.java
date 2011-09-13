@@ -17,6 +17,8 @@ import android.os.Handler;
 import android.os.AsyncTask; 
 import android.view.KeyEvent; 
 import android.view.View;
+import android.view.WindowManager; 
+import android.view.WindowManager.LayoutParams; 
 import android.view.Gravity;
 import android.view.animation.Animation; 
 import android.view.animation.AlphaAnimation;
@@ -33,6 +35,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.content.Intent;
 import android.text.Spanned;
+import android.view.MenuInflater; 
+import android.view.Menu; 
+import android.view.MenuItem; 
 
 import java.util.List;
 import java.util.ArrayList;
@@ -170,26 +175,31 @@ public class ChoosePlaceActivity extends MapActivity
 		//super.onKeyDown(keycode, e); 
 
 		if (keycode == KeyEvent.KEYCODE_BACK) {
-			DroidDialogs.showPopup(this, false, "Finished Running?", 
-				"Finished running for the day?\nYour run will be saved.", 
-				"Okay", "No way!", 
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.dismiss(); 
-						ChoosePlaceActivity.this.finish(); 
-					}
-				},	
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.dismiss(); 
-					}
-				}	
-				); 
+			endActivity(); 
 			return true;
 		}
 		return false; 
+
+	}
+
+	public void endActivity() {
+		DroidDialogs.showPopup(this, false, "Finished Running?", 
+			"Finished running for the day?\nYour run will be saved.", 
+			"Okay", "No way!", 
+			new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.dismiss(); 
+					ChoosePlaceActivity.this.finish(); 
+				}
+			},	
+			new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.dismiss(); 
+				}
+			}	
+			); 
 
 	}
 
@@ -473,14 +483,16 @@ public class ChoosePlaceActivity extends MapActivity
 			}
 		}); 
 
-		android.view.WindowManager.LayoutParams WMLP = popup.getWindow().getAttributes();
+		LayoutParams WMLP = popup.getWindow().getAttributes();
+		//LayoutParams WMLP = new LayoutParams(LayoutParams.TYPE_APPLICATION_PANEL, ;
 
-		//WMLP.x = 100;   //x positionv
+		System.out.println(WMLP.toString()); 
 		WMLP.gravity = android.view.Gravity.TOP; 
 		WMLP.verticalMargin = .02f;
 		WMLP.dimAmount = 0.0f; 
 
 		popup.getWindow().setAttributes(WMLP);
+		popup.getWindow().clearFlags(LayoutParams.FLAG_DIM_BEHIND); 
 
 		popup.show(); 
 	}
@@ -711,6 +723,29 @@ public class ChoosePlaceActivity extends MapActivity
 		@Override
 		public void onProviderDisabled(String provider) {}		
 
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.funrun_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			Intent i = new Intent(this, xanthanov.droid.funrun.pref.FunRunPref.class); 
+			startActivity(i); 
+			return true;
+		case R.id.menu_back:
+			this.endActivity();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	
 }

@@ -65,6 +65,9 @@ public class DroidTTS {
 
 
 	public static String expandDirectionsString(String dir) {
+	
+		//First replace slashes with blanks so tokenizing is successful
+		dir.replace('/', ' '); 
 		
 		String[] tokens = dir.split(" "); 
 

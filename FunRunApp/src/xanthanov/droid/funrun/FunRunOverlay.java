@@ -53,7 +53,7 @@ public class FunRunOverlay extends Overlay {
 	//********************CONSTANTS***************************
 	private final static int[] ROUTE_COLOR = new int[] {220, 240, 20, 20};
 	private final static int[] ACTUAL_COLOR = new int[] {200, 50, 50, 250};
-	private final static int[] COMPLETED_COLOR = new int[] {200, 50, 240, 50};
+	private final static int[] COMPLETED_COLOR = new int[] {200, 10, 240, 10};
 
 	private final static Style ROUTE_STYLE = Style.STROKE; 
 	private final static Style ACTUAL_STYLE = Style.STROKE; 
@@ -156,13 +156,9 @@ public class FunRunOverlay extends Overlay {
 		Point endCoords = new Point();
 		Point currentCoords = new Point();
 
+		Bitmap bmp = null; 
+
 		if (directions!= null && directions.size() > 0) { //Stuff you can only draw if you have some directions
-			GeoPoint startPoint = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); //First point of run
-			Point startCoords = new Point();
-			pro.toPixels(startPoint, startCoords); 
-			Bitmap bmp = START; 
-			//Draw the little red circle at the start point
-			canvas.drawBitmap(bmp, startCoords.x - bmp.getWidth() / 2, startCoords.y - bmp.getHeight() / 2, pathPaint); 
 
 			GoogleLeg legToDraw = null; //The "current" leg to draw your path in blue
 
@@ -173,7 +169,7 @@ public class FunRunOverlay extends Overlay {
 				legToDraw = directions.lastLeg(); 
 			}
 
-			int indexOfLeg = directions.getLegs().indexOf(specificLeg); //Get index of the currently selected leg
+			int indexOfLeg = directions.getLegs().indexOf(legToDraw); //Get index of the currently selected leg
 
 			//If directions isn't null, and directions are meant to be drawn, draw the directions in red
 			if (drawRoute || drawSpecificRoute) {
@@ -184,22 +180,21 @@ public class FunRunOverlay extends Overlay {
 			//Draw the current path you've ran for the leg in ACTUAL_COLOR
 			drawAPath(legToDraw.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
 
-			//Draw all your previous actual path's other than the current one in COMPLETED_COLOR
-			for (int i = 0; i < directions.size(); i++) {
-				if (i != indexOfLeg) {
-					drawAPath(directions.get(i).getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, COMPLETED_COLOR, pro, ACTUAL_DASHES); 
-				}
+			//Draw the little red circle at the start point on top of path
+			GeoPoint startPoint = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); //First point of run
+			Point startCoords = new Point();
+			pro.toPixels(startPoint, startCoords); 
+			canvas.drawBitmap(START, startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2, pathPaint); 
+			//Draw the trophy icon at the end of the directions on top of path
+			GeoPoint endPoint = DroidLoc.degreesToGeoPoint(legToDraw.getLastPoint());  //Last point of the leg
+			pro.toPixels(endPoint, endCoords); 
 
-				GeoPoint endPoint = DroidLoc.degreesToGeoPoint(directions.get(i).getLastPoint());  //Last point of the leg
-				pro.toPixels(endPoint, endCoords); 
-
-				bmp = (i == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
-				canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
-			}
+			bmp = (indexOfLeg == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
+			canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
 		}
 
 		if ( (directions == null || directions.size() <= 0) && drawSpecificRoute && specificLeg != null) { //For drawing a route when the leg isn't part of any directions object
-			System.out.println("*****************Drew specific leg**********************"); 
+			//System.out.println("*****************Drew specific leg**********************"); 
 			drawAPath(specificLeg.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
 			GeoPoint endOfRoute = DroidLoc.degreesToGeoPoint(specificLeg.getLastPoint()); 
 			pro.toPixels(endOfRoute, endCoords); 

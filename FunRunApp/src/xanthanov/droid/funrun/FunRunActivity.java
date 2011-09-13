@@ -26,10 +26,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.content.Intent;
+import android.content.SharedPreferences; 
+import android.content.res.Resources; 
 import android.app.PendingIntent;
 import android.text.Html; 
 import android.text.Spanned; 
 import android.media.AudioManager;
+import android.view.MenuInflater; 
+import android.view.Menu; 
+import android.view.MenuItem; 
 
 import android.speech.tts.TextToSpeech; 
 
@@ -109,10 +114,10 @@ public class FunRunActivity extends MapActivity
 	public final static int MAX_RADIUS_METERS = 4000; 
 	public final static int MIN_RADIUS_METERS = 50; 
 
-	public final static float ACCEPT_RADIUS_METERS = 25.0f; 
-	public final static float PATH_INCREMENT_METERS = 10.0f; 
+	private float ACCEPT_RADIUS_METERS; 
+	private float PATH_INCREMENT_METERS = 10.0f; 
 
-	private final static float MIN_DISTANCE_TO_SAVE = 200.0f; 
+	private float MIN_DISTANCE_TO_SAVE; 
 
 	public final static String STEP_EXTRA = "step_no";
 	//************************************************************
@@ -123,6 +128,23 @@ public class FunRunActivity extends MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.runlayout);
 
+		//Get the Application object and its global data
+		funRunApp = (FunRunApplication) this.getApplicationContext(); 
+		//******************GET PREFERENCES*****************************
+		Resources res = getResources(); 
+
+		SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this); 
+
+		String default_accept_radius = res.getString(R.string.default_accept_radius); 
+		String default_min_run = res.getString(R.string.default_min_run); 
+
+		String accept_radius_key = res.getString(R.string.accept_radius_pref); 
+		String min_run_key = res.getString(R.string.min_run_pref); 
+
+		ACCEPT_RADIUS_METERS = Float.parseFloat(prefs.getString(accept_radius_key, default_accept_radius)); 
+		MIN_DISTANCE_TO_SAVE = Float.parseFloat(prefs.getString(min_run_key, default_min_run)); 
+
+		//Get audio manager
 		audioMan = (AudioManager)getSystemService(Context.AUDIO_SERVICE); 
 		//***************GET VIEWS DEFINED IN XML***********************
 		myMap = (MapView) findViewById(R.id.run_myMap); 
@@ -138,8 +160,6 @@ public class FunRunActivity extends MapActivity
 		droidLoc = new DroidLoc(this); 
 		myLocOverlay = new MyLocationOverlay(this, myMap); 
 		myMapController = myMap.getController(); 
-		//Get the Application object and its global data
-		funRunApp = (FunRunApplication) this.getApplicationContext(); 
 		runDirections = funRunApp.getRunDirections(); 
 		//Initialize currentStep to the first step in the last leg of the GoogleDirections object
 		//As the runner arrives at destinations, new legs will be added
@@ -203,38 +223,42 @@ public class FunRunActivity extends MapActivity
 			return true; 
 		}
 		else if (keycode == KeyEvent.KEYCODE_BACK) {
-
-			String msg; 
-			double distanceRan = currentLeg.getActualDistanceRan(); 
-			
-			if (distanceRan < MIN_DISTANCE_TO_SAVE) {
-				msg = "Your progress won't be saved. You ran less than " + (int)MIN_DISTANCE_TO_SAVE + " meters.";
-			}
-			else {
-				msg = "Your progress will be saved, since you ran " + new java.text.DecimalFormat("#.##").format(distanceRan) + " meters.";  
-			}
-
-			DroidDialogs.showPopup(this, false, "Choose new place?", 
-									"Stop running to " + runPlace.getName() + "?\n\n" + msg, 
-									"Okay", "No way!", 
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int id) {
-											dialog.dismiss(); 
-											FunRunActivity.this.finish(); 
-										}
-									},	
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int id) {
-											dialog.dismiss(); 
-										}
-									}	
-									); 
+			endActivity(); 
 			return true; 
 		}
 
 		return false; 
+	}
+
+	public void endActivity() {
+		String msg; 
+		double distanceRan = currentLeg.getActualDistanceRan(); 
+		
+		if (distanceRan < MIN_DISTANCE_TO_SAVE) {
+			msg = "Your progress won't be saved. You ran less than " + (int)MIN_DISTANCE_TO_SAVE + " meters.";
+		}
+		else {
+			msg = "Your progress will be saved, since you ran " + new java.text.DecimalFormat("#.##").format(distanceRan) + " meters.";  
+		}
+
+		DroidDialogs.showPopup(this, false, "Choose new place?", 
+								"Stop running to " + runPlace.getName() + "?\n\n" + msg, 
+								"Okay", "No way!", 
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int id) {
+										dialog.dismiss(); 
+										FunRunActivity.this.finish(); 
+									}
+								},	
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int id) {
+										dialog.dismiss(); 
+									}
+								}	
+								); 
+
 	}
 
 
@@ -515,6 +539,29 @@ public class FunRunActivity extends MapActivity
 		@Override
 		public void onProviderDisabled(String provider) {}		
 
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.funrun_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			Intent i = new Intent(this, xanthanov.droid.funrun.pref.FunRunPref.class); 
+			startActivity(i); 
+			return true;
+		case R.id.menu_back:
+			endActivity();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 }

@@ -162,7 +162,7 @@ public class StepCompleteActivity extends Activity {
 				HashMap<String,String> params = new HashMap<String,String> (); 
 				params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FIRST_SPEECH"); 
 				myTts.playSilence(300, TextToSpeech.QUEUE_ADD, null); 
-				myTts.speak("View your stats, or press volume up to get the next directions.", TextToSpeech.QUEUE_ADD, params); 
+				myTts.speak("Press volume up to get the next directions.", TextToSpeech.QUEUE_ADD, params); 
 			}
 
 		}
