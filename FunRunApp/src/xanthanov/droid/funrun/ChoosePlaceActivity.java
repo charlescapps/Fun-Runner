@@ -157,6 +157,15 @@ public class ChoosePlaceActivity extends MapActivity
 			dbWriteSuccess = false; 
 		}
 
+		if (!dbWriteSuccess) {
+			DroidDialogs.showPopup(this, "Critical Error", "Failed to add new run to database.\nTry restarting the app.", 
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface diag, int id) {
+											ChoosePlaceActivity.this.finish(); 
+										}
+									}); 
+		} 
 
 		//******************CALL SETUP METHODS****************************
 		setupLocListener(); 
@@ -224,22 +233,12 @@ public class ChoosePlaceActivity extends MapActivity
 
 		checkGps(); //Output error dialog if GPS is disabled 
 
-		if (!dbWriteSuccess) {
-			DroidDialogs.showPopup(this, "Critical Error", "Failed to add new run to database.\nTry restarting the app.", 
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface diag, int id) {
-											ChoosePlaceActivity.this.finish(); 
-										}
-									}); 
-		} 
-
 		myLocOverlay.enableCompass(); 	//Enable compass
-		setupLocListener(); //Instantiate new listeners for GPS and Network
 
 		bestLocation = droidLoc.getBestLocation(bestLocation); //Get immediate location
 		lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); //Convert to GeoPoint immediately
 		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); //Update location in overlay
+		centerOnMe(); 
 		myMap.invalidate(); //Redraw
 
 		//Start GPS and Network updates

@@ -41,7 +41,7 @@ public class ViewStatsAdapter extends BaseAdapter {
 	private final static int VIEW_TYPE = 0; 
 
 	public ViewStatsAdapter(Context c, List<OldRun> oldRuns, Gallery theGallery) {
-		this.oldRuns = oldRuns; 
+		this.oldRuns = oldRuns;
 		this.context = c; 
 		//inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater = LayoutInflater.from(context); 

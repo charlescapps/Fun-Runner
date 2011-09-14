@@ -59,6 +59,12 @@ public class FunRunTitle extends Activity
 
 		setupButtons(); 
 
+    }
+
+	@Override 
+	public void onStart() {
+		super.onStart(); 
+
 		FunRunReadOps dbReader = new FunRunReadOps(this); 
 
 		try {
@@ -70,9 +76,9 @@ public class FunRunTitle extends Activity
 		}
 
 		java.text.NumberFormat nf = java.text.NumberFormat.getInstance(); 
-		//pointsTextView.setText(" " + totalPoints); 
-		pointsTextView.setText(" " + nf.format(totalPoints)); 
-    }
+		pointsTextView.setText(" " + nf.format(totalPoints) + " points!"); 
+		
+	}
 
 	@Override
 	public void onDestroy() {

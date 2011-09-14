@@ -153,55 +153,55 @@ public class FunRunOverlay extends Overlay {
 		//Get a Projection object to convert between lat/lng --> x/y
 		Projection pro = theMapView.getProjection(); 
 
-		Point endCoords = new Point();
-		Point currentCoords = new Point();
+		if (drawSpecificRoute) { //Case for ChoosePlaceActivity. Just drawing the directions with start dot at beginning, flag at end
+			if (specificLeg != null && specificLeg.size() > 0) {
+				List<LatLng> directionsPath = specificLeg.getPathPoints(); 
+				drawAPath(directionsPath, canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
 
-		Bitmap bmp = null; 
+				GeoPoint startPoint = DroidLoc.latLngToGeoPoint(directionsPath.get(0)); //First point of directions
+				GeoPoint endPoint = DroidLoc.latLngToGeoPoint(directionsPath.get(directionsPath.size() - 1)); //Last point of directions
+				Point startCoords = new Point(); 
+				Point endCoords = new Point();
 
-		if (directions!= null && directions.size() > 0) { //Stuff you can only draw if you have some directions
+				pro.toPixels(startPoint, startCoords); 
+				pro.toPixels(endPoint, endCoords); 
 
-			GoogleLeg legToDraw = null; //The "current" leg to draw your path in blue
-
-			if (drawSpecificRoute && (specificLeg != null )) { //Either draw a specific leg, or the last leg by default
-				legToDraw = specificLeg; 
+				//Draw start dot 
+				canvas.drawBitmap(START, startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2, pathPaint); 
+				//Draw flag at end of path
+				canvas.drawBitmap(FLAG, endCoords.x - FLAG_OFFSET.x, endCoords.y - FLAG_OFFSET.y, pathPaint); 
 			}
-			else { //default = last leg
-				legToDraw = directions.lastLeg(); 
-			}
+		
 
-			int indexOfLeg = directions.getLegs().indexOf(legToDraw); //Get index of the currently selected leg
-
-			//If directions isn't null, and directions are meant to be drawn, draw the directions in red
-			if (drawRoute || drawSpecificRoute) {
-				//Draw the directions for the appropriate leg in ROUTE_COLOR
-				drawAPath(legToDraw.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
-			}
-
-			//Draw the current path you've ran for the leg in ACTUAL_COLOR
-			drawAPath(legToDraw.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
-
-			//Draw the little red circle at the start point on top of path
-			GeoPoint startPoint = DroidLoc.degreesToGeoPoint(directions.getFirstPoint()); //First point of run
-			Point startCoords = new Point();
-			pro.toPixels(startPoint, startCoords); 
-			canvas.drawBitmap(START, startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2, pathPaint); 
-			//Draw the trophy icon at the end of the directions on top of path
-			GeoPoint endPoint = DroidLoc.degreesToGeoPoint(legToDraw.getLastPoint());  //Last point of the leg
-			pro.toPixels(endPoint, endCoords); 
-
-			bmp = (indexOfLeg == directions.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
-			canvas.drawBitmap(bmp, endCoords.x - bmp.getWidth() / 2 , endCoords.y - bmp.getHeight() / 2, pathPaint);
 		}
 
-		if ( (directions == null || directions.size() <= 0) && drawSpecificRoute && specificLeg != null) { //For drawing a route when the leg isn't part of any directions object
-			//System.out.println("*****************Drew specific leg**********************"); 
-			drawAPath(specificLeg.getPathPoints(), canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
-			GeoPoint endOfRoute = DroidLoc.degreesToGeoPoint(specificLeg.getLastPoint()); 
-			pro.toPixels(endOfRoute, endCoords); 
-			canvas.drawBitmap(FLAG, endCoords.x - FLAG_OFFSET.x, endCoords.y - FLAG_OFFSET.y, pathPaint); 
+		else { //Case for FunRunActivity. Draw the newest leg directions, and the corresponding actual path ran
+			if (directions!= null && directions.size() > 0) { //Stuff you can only draw if you have some directions
+
+				GoogleLeg legToDraw = directions.lastLeg(); 
+
+				//Draw the current path you've ran for the leg in ACTUAL_COLOR
+				drawAPath(legToDraw.getActualPath(), canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
+
+				List<LatLng> directionsPath = legToDraw.getPathPoints(); 
+
+				if (directionsPath != null && directionsPath.size() > 0) {
+					//Draw the directions for the appropriate leg in ROUTE_COLOR
+					drawAPath(directionsPath, canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
+					//Draw the little red circle at the start point on top of path
+					GeoPoint startPoint = DroidLoc.latLngToGeoPoint(directionsPath.get(0)); //First point of run
+					Point startCoords = new Point();
+					pro.toPixels(startPoint, startCoords); 
+					canvas.drawBitmap(START, startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2, pathPaint); 
+					//Draw the trophy icon at the end of the directions on top of path
+					GeoPoint endPoint = DroidLoc.latLngToGeoPoint(directionsPath.get(directionsPath.size() - 1));  //Last point of the leg
+					Point endCoords = new Point();
+					pro.toPixels(endPoint, endCoords); 
+
+					canvas.drawBitmap(DESTINATION2, endCoords.x - DESTINATION2.getWidth() / 2 , endCoords.y - DESTINATION2.getHeight() / 2, pathPaint);
+				}
+			}
 		}
-			//Draw destination image at end point
-			//Bitmap bmp = legToDraw.getLegDestination().getIconBmp(); 
 
 		//Draw stick guy at current location even if no directions exist
 		

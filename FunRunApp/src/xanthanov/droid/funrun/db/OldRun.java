@@ -3,6 +3,8 @@
 
 package xanthanov.droid.funrun.db; 
 
+import xanthanov.droid.xantools.DroidUnits; 
+
 import java.util.Date; 
 import java.util.List; 
 import java.util.ArrayList; 
@@ -65,6 +67,36 @@ public class OldRun  {
 		}
 	
 		return places; 
+	}
+
+	public String toHtml() {
+		StringBuffer html = new StringBuffer(); 
+		double totalDistMeters = this.getTotalRunDistance(); 
+		long totalTimeMs = this.getTotalRunTime(); 
+		String totalDistStr = DroidUnits.getDistanceStringV3(totalDistMeters).toString();
+		String totalTimeStr = DroidUnits.msToStrV2(totalTimeMs).toString(); 
+		String avgSpeedStr = DroidUnits.getSpeedStringV2(totalTimeMs, totalDistMeters).toString(); 
+			
+		java.text.NumberFormat nf = java.text.NumberFormat.getInstance(); 
+
+		html.append("<h1>Your stats!</h1>"); 
+		html.append("<b>Points Earned :</b>&nbsp;" + nf.format(this.getTotalPoints()) + "<br/>"); 
+		html.append("<b>Total Distance :</b>&nbsp;" + totalDistStr + "<br/>"); 
+		html.append("<b>Total Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</b>&nbsp;" + totalTimeStr + "<br/>"); 
+		html.append("<b>Avg. Speed&nbsp;&nbsp;&nbsp;&nbsp; :</b>&nbsp;" + avgSpeedStr + "<br/><br/>");
+
+		html.append("<h1>Places Visited</h1>"); 
+		
+		for (int i = 0; i < oldLegs.size(); i++) {
+			OldLeg leg = oldLegs.get(i); 
+			html.append("<u>" + leg.getPlaceName() + "<b>&nbsp;" + (leg.gotToPlace() ? "(Got there)" : "(Attempted)") + "</b></u><br/>"); 
+			html.append("<b>Distance&nbsp;&nbsp;:</b>&nbsp;" + DroidUnits.getDistanceStringV3(leg.getDistanceRan()).toString() + "<br/>"); 
+			html.append("<b>Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</b>&nbsp;" + DroidUnits.msToStrV2(leg.getDuration()).toString() + "<br/>"); 
+			html.append("<b>Avg speed :</b>&nbsp;" + DroidUnits.getSpeedStringV2(leg.getDuration(), leg.getDistanceRan()).toString() + "<br/><br/>"); 
+		} 
+
+		return html.toString(); 
+
 	}
 	
 }
