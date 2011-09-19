@@ -44,6 +44,8 @@ public class GoogleLeg implements java.io.Serializable {
 	private double[] swBound;
 	private double[] neBound;  
 	private String overviewPolyline; 
+	private String copyright;
+	private String warnings; 
 
 	//CUSTOM DATA
 	private double actualDistanceRan; //Calculated by summing path segments of the actualPath
@@ -74,6 +76,12 @@ public class GoogleLeg implements java.io.Serializable {
 		maxStepCompleted = -1; 
 		directionsPath = null; 
 	}
+
+	public String getCopyright() {return copyright;}
+	public void setCopyright(String s) {copyright = s;}
+
+	public String getWarnings() {return warnings; }
+	public void setWarnings(String s) {warnings = s;}
 
 	public String getOverviewPolyline() {return overviewPolyline; }
 	public void setOverviewPolyline(String line) {

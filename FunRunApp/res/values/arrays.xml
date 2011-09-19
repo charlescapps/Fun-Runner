@@ -30,6 +30,16 @@
 		<item>@string/point_of_interest</item>
     </string-array>
 
+	<string-array name="speak_directions_array">
+		<item>true</item>
+		<item>false</item>
+	</string-array>
+
+	<string-array name="speak_directions_strings">
+		<item>Yes</item>
+		<item>No</item>
+	</string-array>
+
 	<string-array name="accept_radius_array">
 		<item>10</item>
 		<item>15</item>
@@ -82,6 +92,22 @@
 		<item>10 meters</item>
 		<item>20 meters</item>
 		<item>50 meters</item>
+	</string-array>
+
+	<string-array name="search_radius_array">
+		<item>500</item>
+		<item>1000</item>
+		<item>2000</item>
+		<item>4000</item>
+		<item>8000</item>
+	</string-array>
+
+	<string-array name="search_radius_strings">
+		<item>500 meters</item>
+		<item>1 km</item>
+		<item>2 km</item>
+		<item>4 km</item>
+		<item>8 km</item>
 	</string-array>
 
 </resources>

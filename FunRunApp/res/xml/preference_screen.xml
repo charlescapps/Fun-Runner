@@ -3,6 +3,16 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:key="preference_screen">
 
+	<PreferenceCategory
+		android:title="Directions">
+		<ListPreference
+			android:key="@string/speak_directions_pref"
+			android:title="Speak directions"
+			android:summary="Use Text-to-speech to speak Google Walking directions"
+			android:defaultValue="@string/default_speak_directions"
+			android:entryValues="@array/speak_directions_array"
+			android:entries="@array/speak_directions_strings" />
+	</PreferenceCategory>
 	<PreferenceCategory android:title="Email">
 		<EditTextPreference
 			android:key="@string/email_pref" 
@@ -12,6 +22,13 @@
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:title="Distances">
+		<ListPreference
+			android:key="@string/search_radius_pref"
+			android:title="Search radius"
+			android:summary="Look for places within this radius (Default = 1 km)"
+			android:entryValues="@array/search_radius_array"
+			android:entries="@array/search_radius_strings"
+			android:defaultValue="@string/default_search_radius"/>
 		<ListPreference
 			android:key="@string/accept_radius_pref"
 			android:title="Arrival distance"

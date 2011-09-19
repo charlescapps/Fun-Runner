@@ -41,6 +41,8 @@ import android.text.Spanned;
 import android.view.MenuInflater; 
 import android.view.Menu; 
 import android.view.MenuItem; 
+import android.content.SharedPreferences; 
+import android.content.res.Resources; 
 
 import java.util.List;
 import java.util.ArrayList;
@@ -111,8 +113,7 @@ public class ChoosePlaceActivity extends MapActivity
 	private String CUSTOM_SEARCH_STRING = "Name of place"; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
-	private final static int DEFAULT_RADIUS_METERS = 4000;
-	public final static int MAX_RADIUS_METERS = 8000; 
+	private int SEARCH_RADIUS_METERS = 1000;
 	private final static int CUSTOM_SEARCH_POPUP_ID = 0; 
 	//************************************************************
     /** Called when the activity is first created. */
@@ -220,6 +221,17 @@ public class ChoosePlaceActivity extends MapActivity
 
 	}
 
+	private void grabPrefs() {
+		Resources res = getResources(); 
+
+		SharedPreferences prefs = android.preference.PreferenceManager.getDefaultSharedPreferences(this); 
+
+		String default_search_radius = res.getString(R.string.default_search_radius); 
+		String search_radius_key = res.getString(R.string.search_radius_pref); 
+		SEARCH_RADIUS_METERS = Integer.parseInt(prefs.getString(search_radius_key, default_search_radius)); 
+
+	}
+
 	@Override
 	public boolean isRouteDisplayed() {
 		return true;
@@ -238,6 +250,8 @@ public class ChoosePlaceActivity extends MapActivity
 	@Override
 	public void onStart() {
 		super.onStart(); 
+
+		grabPrefs(); //Get default search radius preference
 
 		checkGps(); //Output error dialog if GPS is disabled 
 
@@ -382,20 +396,8 @@ public class ChoosePlaceActivity extends MapActivity
 		ProgressRunnable pr = DroidDialogs.showProgressDialog(this, "", "Downloading Google places...");  
 		
 		try {
-			//Increase the radius until something is found (or the max radius is reached)
-			while ( currentRadiusMeters <= MAX_RADIUS_METERS ) {
-				//Create a new thread 
-				foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, currentRadiusMeters); 
-
-				//IF we didn't find nothin', 
-				//Increase search radius, though google says it is merely a "suggestion" so fuck if I know how much this matters
-				if (foundPlaces == null || foundPlaces.size() <= 0) {
-					currentRadiusMeters*=2; 
-				}
-				else {
-					break; //Done. We found at least one place 
-				}
-			}
+			//Just search with constant radius. Reduce number of queries
+			foundPlaces = myPlaceSearcher.getNearbyPlaces(search, lastLocation, SEARCH_RADIUS_METERS); 
 		}
 		catch (Exception e) {
 			nearbyPlaces = null; //An error occurred. Use null to indicate we didn't simply find zero places
@@ -569,7 +571,7 @@ public class ChoosePlaceActivity extends MapActivity
 			}
 
 			try {
-				result = performPlacesQuery(searchStr, lastKnownGeoPoint, DEFAULT_RADIUS_METERS ); 	
+				result = performPlacesQuery(searchStr, lastKnownGeoPoint, SEARCH_RADIUS_METERS ); 	
 			}
 			catch (Exception e) {
 				DroidDialogs.showPopup(a, "Error connecting to Google Maps", "Unable to connect to Google Maps.\nPlease check your internet connection and try again."); 
@@ -594,7 +596,7 @@ public class ChoosePlaceActivity extends MapActivity
 			}
 			else if (result.size() <= 0) {
 				//Output dialog indicating nothing was found...choose a new category
-				DroidDialogs.showPopup(a, "Choose a new category", "No '" + searchStr + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
+				DroidDialogs.showPopup(a, "Choose a new category", "No '" + searchStr + "'s found within " + SEARCH_RADIUS_METERS + " meters.\n\n" 
 						+ "Please choose a different category and try again."); 
 				//System.err.println("Places query: ZERO PLACES FOUND"); 
 				

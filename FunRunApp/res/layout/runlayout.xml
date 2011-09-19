@@ -16,6 +16,12 @@
 		android:layout_height="wrap_content"	
 		android:textSize="20dp"
 		android:textColor="#aaaaff"/>
+	<TextView android:id="@+id/copyrightTextView" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"	
+		android:text = ""
+		android:textSize="10dp"
+		android:textColor="#ffffff"/>
 	<RelativeLayout
 		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"

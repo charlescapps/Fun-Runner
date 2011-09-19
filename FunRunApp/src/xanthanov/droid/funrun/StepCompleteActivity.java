@@ -135,7 +135,7 @@ public class StepCompleteActivity extends Activity {
 		if ( currentLeg.gotToDestination()) {
 			//stepCompleteTitle.setText("Congratulations!"); 
 			rootLayout.setBackgroundResource(R.drawable.congratulations2); 
-			stepCompleteText.setTextSize(40.0f); //Make text bigger if we arrived at a place, since it just needs to display the name
+			stepCompleteText.setTextSize(25.0f); //Make text bigger if we arrived at a place, since it just needs to display the name
 		}
 		else {
 			rootLayout.setBackgroundResource(R.drawable.congratulations); 

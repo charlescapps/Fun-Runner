@@ -132,7 +132,8 @@ public class DirectionGetter {
 			JSONObject theRoute = routes.getJSONObject(0); 
 			JSONArray legs = theRoute.getJSONArray("legs");
 			JSONObject currentLeg = null;  
-			JSONArray currentStepsArray = null; 
+			JSONArray currentStepsArray = null;
+			JSONArray warningsArray = null;  
 			JSONObject currentStep = null; 
 			JSONObject legDistance = null; 
 			JSONObject stepDistance = null; 
@@ -144,6 +145,8 @@ public class DirectionGetter {
 			double startLng = 0.0;  
 			double endLat = 0.0; 
 			double endLng = 0.0;  
+			String copyright = "";
+			String warnings = ""; 
 
 			String overviewPolyline = theRoute.getJSONObject("overview_polyline").getString("points"); 
 
@@ -164,9 +167,18 @@ public class DirectionGetter {
 				legDistance = currentLeg.getJSONObject("distance"); 
 				legDistanceStr = legDistance.getString("text"); 
 				legDistanceMeters = legDistance.getInt("value"); 
+				copyright = theRoute.getString("copyrights"); 
+				warningsArray = theRoute.getJSONArray("warnings"); 
+		
+				for (int k = 0; k < warningsArray.length(); k++) {
+					warnings += warningsArray.getString(k) + "<br/>"; 
+				}
+				
 
 				directions = new GoogleLeg(legDistanceStr, legDistanceMeters);	//Add the leg to our List<GoogleLeg> of directions				
 				directions.setOverviewPolyline(overviewPolyline); //Should only have 1 entry--add the polyline info to the google leg
+				directions.setCopyright(copyright); 
+				directions.setWarnings(warnings); 
 
 				for (int j = 0; j < currentStepsArray.length(); j++) {
 					//Process each step in the leg

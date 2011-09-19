@@ -68,6 +68,7 @@ public class DroidTTS {
 	
 		//First replace slashes with blanks so tokenizing is successful
 		dir.replace('/', ' '); 
+		dir.replace('\n', ' '); 
 		
 		String[] tokens = dir.split(" "); 
 

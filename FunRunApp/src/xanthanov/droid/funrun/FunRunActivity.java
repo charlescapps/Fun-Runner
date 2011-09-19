@@ -83,6 +83,7 @@ public class FunRunActivity extends MapActivity
 	private Button zoomToRouteButton;
 	private TextView directionsTextView; 
 	private TextView chosenPlaceTextView; 
+	private TextView copyrightTextView; 
 	private RelativeLayout mapRelLayout; 
 	//*******************OTHER OBJECTS****************************
 	private FunRunApplication funRunApp; 
@@ -108,6 +109,7 @@ public class FunRunActivity extends MapActivity
 	private Spanned htmlInstructions;
 	private String speakingInstructions;  
 	private boolean firstSpeechCompleted; 
+	private boolean SPEAK_DIRECTIONS; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
 	private final static int DEFAULT_RADIUS_METERS = 1000;
@@ -141,6 +143,7 @@ public class FunRunActivity extends MapActivity
 		zoomOutButton = (Button) findViewById(R.id.run_buttonZoomOut); 
 		directionsTextView = (TextView) findViewById(R.id.directionsTextView); 
 		chosenPlaceTextView = (TextView) findViewById(R.id.chosenPlaceTextView); 
+		copyrightTextView = (TextView) findViewById(R.id.copyrightTextView); 
 		parentContainer = (LinearLayout) findViewById(R.id.run_parentContainer); 
 		mapRelLayout = (RelativeLayout) findViewById(R.id.run_relLayout); 
 		//******************DEFINE OTHER OBJECTS**************************
@@ -161,6 +164,10 @@ public class FunRunActivity extends MapActivity
 		Spanned txt = android.text.Html.fromHtml("Running to <b>" + runPlace.getName() + "</b>"); 		
 		chosenPlaceTextView.setText(txt); 
 		updateDirectionsTextView(); 
+
+		String copyrightPlusWarnings = currentLeg.getCopyright() + "<br/>" + currentLeg.getWarnings(); 
+		Spanned copyrightSpanned = android.text.Html.fromHtml(copyrightPlusWarnings); 
+		copyrightTextView.setText(copyrightSpanned); 
 
 		//******************CALL SETUP METHODS****************************
 		setupMap(); 
@@ -197,14 +204,17 @@ public class FunRunActivity extends MapActivity
 		String default_accept_radius = res.getString(R.string.default_accept_radius); 
 		String default_min_run = res.getString(R.string.default_min_run); 
 		String default_path_segment = res.getString(R.string.default_path_segment); 
+		String default_speak_directions = res.getString(R.string.default_speak_directions); 
 
 		String accept_radius_key = res.getString(R.string.accept_radius_pref); 
 		String min_run_key = res.getString(R.string.min_run_pref); 
 		String path_segment_key = res.getString(R.string.path_segment_pref); 
+		String speak_directions_key = res.getString(R.string.speak_directions_pref); 
 
 		ACCEPT_RADIUS_METERS = Float.parseFloat(prefs.getString(accept_radius_key, default_accept_radius)); 
 		MIN_DISTANCE_TO_SAVE = Float.parseFloat(prefs.getString(min_run_key, default_min_run)); 
 		PATH_INCREMENT_METERS = Float.parseFloat(prefs.getString(path_segment_key, default_path_segment)); 
+		SPEAK_DIRECTIONS = Boolean.parseBoolean(prefs.getString(speak_directions_key, default_speak_directions)); 
 
 	}
 	
@@ -218,7 +228,7 @@ public class FunRunActivity extends MapActivity
 	//	super.onKeyDown(keycode, e); 
 
 		if (keycode == KeyEvent.KEYCODE_VOLUME_UP) {
-			if (firstSpeechCompleted && funRunApp.isTtsReady() && (!myTts.isSpeaking())) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
+			if (firstSpeechCompleted && SPEAK_DIRECTIONS && funRunApp.isTtsReady() && (!myTts.isSpeaking())) { //If a TTS isn't already playing, say the directions again. This avoids the annoying-as-hell possibility of spamming the TTS
 				speakDirections(); 	
 			}
 			audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); 
@@ -294,15 +304,12 @@ public class FunRunActivity extends MapActivity
 			speakingInstructions = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
 			updateDirectionsTextView(); 
 
-			if (funRunApp.isTtsReady()) { //Expand abbreviations so it speaks properly and play it
+			if (SPEAK_DIRECTIONS && funRunApp.isTtsReady()) { //Expand abbreviations so it speaks properly and play it
 				HashMap<String,String> params = new HashMap<String,String> (); 
 				params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "FIRST_SPEECH"); 
 				myTts.speak(speakingInstructions, TextToSpeech.QUEUE_FLUSH, null); 
 				myTts.playSilence(300, TextToSpeech.QUEUE_ADD, null); 
 				myTts.speak("Press volume up to hear directions again.", TextToSpeech.QUEUE_ADD, params); 
-			}
-			else {
-				System.err.println("TTS NOT READY! OWNED!"); 
 			}
 
 			setupLocListener(); //Instantiate new location listeners 
