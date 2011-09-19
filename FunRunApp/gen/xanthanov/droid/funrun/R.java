@@ -79,38 +79,38 @@ public final class R {
     }
     public static final class id {
         public static final int avgSpeed=0x7f0a001c;
-        public static final int avgSpeedRunTextView=0x7f0a0027;
-        public static final int avgSpeedRunTitle=0x7f0a0026;
-        public static final int avgSpeedTextView=0x7f0a0025;
-        public static final int avgSpeedTitle=0x7f0a0024;
+        public static final int avgSpeedRunTextView=0x7f0a0029;
+        public static final int avgSpeedRunTitle=0x7f0a0028;
+        public static final int avgSpeedTextView=0x7f0a0027;
+        public static final int avgSpeedTitle=0x7f0a0026;
         public static final int backToTitle=0x7f0a003a;
         public static final int buttonZoomIn=0x7f0a0015;
         public static final int buttonZoomOut=0x7f0a0014;
         public static final int chosenPlaceTextView=0x7f0a0003;
         public static final int directionsTextView=0x7f0a0004;
-        public static final int elapsedTimeToPlaceTextView=0x7f0a0029;
-        public static final int elapsedTimeToPlaceTitle=0x7f0a0028;
+        public static final int elapsedTimeToPlaceTextView=0x7f0a002b;
+        public static final int elapsedTimeToPlaceTitle=0x7f0a002a;
         public static final int emailButton=0x7f0a0038;
         public static final int emptyStats=0x7f0a0000;
         public static final int emptyStatsMsg=0x7f0a0001;
         public static final int gpsButton=0x7f0a0016;
         public static final int leftArrow=0x7f0a0034;
-        public static final int legDistanceTextView=0x7f0a0021;
-        public static final int legDistanceTitle=0x7f0a0020;
+        public static final int legDistanceTextView=0x7f0a0023;
+        public static final int legDistanceTitle=0x7f0a0022;
         public static final int loadRunOnMap=0x7f0a0039;
         public static final int menu_back=0x7f0a003d;
         public static final int menu_preferences=0x7f0a003c;
         public static final int menu_quit=0x7f0a003e;
         public static final int myMap=0x7f0a0012;
-        public static final int newRunButton=0x7f0a002e;
+        public static final int newRunButton=0x7f0a0030;
         public static final int nextDestinationButton=0x7f0a0010;
-        public static final int nextDirectionsButton=0x7f0a002c;
+        public static final int nextDirectionsButton=0x7f0a002e;
         public static final int oldRunMap=0x7f0a0036;
         public static final int parentContainer=0x7f0a000d;
-        public static final int placeTextView=0x7f0a0031;
+        public static final int placeTextView=0x7f0a0033;
         public static final int placesVisited=0x7f0a001d;
-        public static final int pointsTextView=0x7f0a0033;
-        public static final int pointsTitle=0x7f0a0032;
+        public static final int pointsTextView=0x7f0a0021;
+        public static final int pointsTitle=0x7f0a0020;
         public static final int relLayout=0x7f0a0011;
         public static final int rightArrow=0x7f0a0035;
         public static final int runCategorySpinner=0x7f0a000f;
@@ -129,17 +129,17 @@ public final class R {
         public static final int statsGalleryView=0x7f0a0017;
         public static final int stepCompleteLayout=0x7f0a001e;
         public static final int stepCompleteTextView=0x7f0a001f;
-        public static final int titlePoints=0x7f0a002d;
-        public static final int toastView=0x7f0a0030;
+        public static final int titlePoints=0x7f0a002f;
+        public static final int toastView=0x7f0a0032;
         public static final int totalDistance=0x7f0a001a;
-        public static final int totalDistanceTextView=0x7f0a0023;
-        public static final int totalDistanceTitle=0x7f0a0022;
-        public static final int totalElapsedTimeTextView=0x7f0a002b;
-        public static final int totalElapsedTimeTitle=0x7f0a002a;
+        public static final int totalDistanceTextView=0x7f0a0025;
+        public static final int totalDistanceTitle=0x7f0a0024;
+        public static final int totalElapsedTimeTextView=0x7f0a002d;
+        public static final int totalElapsedTimeTitle=0x7f0a002c;
         public static final int totalPoints=0x7f0a0019;
         public static final int totalTime=0x7f0a001b;
         public static final int viewRunsDate=0x7f0a0018;
-        public static final int viewStatsButton=0x7f0a002f;
+        public static final int viewStatsButton=0x7f0a0031;
         public static final int zoomButtonsLayout=0x7f0a0013;
     }
     public static final class layout {
@@ -157,48 +157,52 @@ public final class R {
     }
     public static final class menu {
         public static final int funrun_menu=0x7f090000;
-        public static final int title_menu=0x7f090001;
+        public static final int simple_menu=0x7f090001;
+        public static final int title_menu=0x7f090002;
     }
     public static final class string {
         /**  PREFERENCES constants 
          */
         public static final int accept_radius_pref=0x7f070004;
-        public static final int amusement_park=0x7f070021;
+        public static final int amusement_park=0x7f070023;
         public static final int app_name=0x7f070000;
-        public static final int aquarium=0x7f070020;
-        public static final int art_gallery=0x7f07001c;
-        public static final int bar=0x7f07001e;
-        public static final int bicycle_store=0x7f070018;
-        public static final int book_store=0x7f070012;
-        public static final int bowling_alley=0x7f070016;
-        public static final int brew_pub=0x7f070014;
-        public static final int cafe=0x7f07000d;
-        public static final int clothing_store=0x7f070015;
+        public static final int aquarium=0x7f070022;
+        public static final int art_gallery=0x7f070015;
+        public static final int bar=0x7f070021;
+        public static final int bicycle_store=0x7f07001c;
+        public static final int book_store=0x7f070014;
+        public static final int bowling_alley=0x7f07001a;
+        public static final int brew_pub=0x7f070018;
+        public static final int cafe=0x7f07000e;
+        public static final int clothing_store=0x7f070019;
+        /**  END PREFERENCES 
+         */
+        public static final int custom_search=0x7f07000c;
         public static final int default_accept_radius=0x7f070008;
         public static final int default_email=0x7f07000b;
         public static final int default_min_run=0x7f070009;
         public static final int default_path_segment=0x7f07000a;
         public static final int email_pref=0x7f070007;
-        public static final int florist=0x7f070019;
-        public static final int food_cart=0x7f070011;
+        public static final int florist=0x7f07001d;
+        public static final int food_cart=0x7f070013;
         public static final int hide_directions=0x7f070003;
-        public static final int juice_bar=0x7f070010;
-        public static final int library=0x7f07001a;
+        public static final int juice_bar=0x7f070012;
+        public static final int library=0x7f07001e;
         public static final int min_run_pref=0x7f070005;
-        public static final int movie_theater=0x7f070017;
-        public static final int museum=0x7f07001b;
-        public static final int natural_feature=0x7f070022;
-        /**  END PREFERENCES 
-         */
-        public static final int park=0x7f07000c;
+        public static final int movie_theater=0x7f07001b;
+        public static final int museum=0x7f07001f;
+        public static final int natural_feature=0x7f070024;
+        public static final int park=0x7f07000d;
         public static final int path_segment_pref=0x7f070006;
-        public static final int pet_store=0x7f07001d;
-        public static final int pizza=0x7f07000e;
-        public static final int point_of_interest=0x7f07001f;
-        public static final int shopping_mall=0x7f070013;
+        public static final int pet_store=0x7f070020;
+        public static final int pizza=0x7f070010;
+        public static final int point_of_interest=0x7f070025;
+        public static final int school=0x7f07000f;
+        public static final int shopping_mall=0x7f070017;
         public static final int show_directions=0x7f070002;
-        public static final int smoothies=0x7f07000f;
+        public static final int smoothies=0x7f070011;
         public static final int spinner_prompt=0x7f070001;
+        public static final int zoo=0x7f070016;
     }
     public static final class style {
         public static final int big_button=0x7f060000;

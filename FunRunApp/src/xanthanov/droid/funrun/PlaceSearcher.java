@@ -57,10 +57,12 @@ public class PlaceSearcher {
 		//Define a map between category strings (res/strings/strings.xml)) --> google map API URI parameters
 		stringToQuery = new HashMap<CharSequence, CharSequence>();	
 		stringToQuery.put(res.getText(R.string.cafe), "types=cafe");   
+		stringToQuery.put(res.getText(R.string.school), "types=school|university");   
+		stringToQuery.put(res.getText(R.string.zoo), "types=zoo&name=zoo");   
 		stringToQuery.put(res.getText(R.string.point_of_interest), "types=point_of_interest"); 
-		stringToQuery.put(res.getText(R.string.smoothies),"types=food|restaurant|bar|meal_takeaway|meal_delivery|shopping_mall&name=smoothie"); 
-		stringToQuery.put(res.getText(R.string.juice_bar),"types=food|restaurant|bar|meal_takeaway|meal_delivery|shopping_mall&name=juice"); 
-		stringToQuery.put(res.getText(R.string.park), "types=park"); 
+		stringToQuery.put(res.getText(R.string.smoothies),"name=smoothie"); 
+		stringToQuery.put(res.getText(R.string.juice_bar),"name=juice"); 
+		stringToQuery.put(res.getText(R.string.park), "types=park&name=park"); 
 		stringToQuery.put(res.getText(R.string.book_store), "types=book_store"); 
 		stringToQuery.put(res.getText(R.string.clothing_store), "types=clothing_store"); 
 		stringToQuery.put(res.getText(R.string.bicycle_store), "types=bicycle_store"); 
@@ -79,18 +81,23 @@ public class PlaceSearcher {
 		stringToQuery.put(res.getText(R.string.shopping_mall), "types=shopping_mall"); 
 		stringToQuery.put(res.getText(R.string.natural_feature), "types=natural_feature"); 
 		stringToQuery.put(res.getText(R.string.pizza), "types=food|bar|restaurant|meal_takeaway|meal_delivery&name=pizza"); 
-		stringToQuery.put(res.getText(R.string.brew_pub), "types=bar|food|restaurant&name=brew%20pub"); 
+		stringToQuery.put(res.getText(R.string.brew_pub), "types=bar|food|restaurant&name=brew+pub"); 
 	}
 
-	public List<GooglePlace> getNearbyPlaces(String search, GeoPoint currentLocation, int radiusMeters) throws UnknownHostException, GmapException, JSONException, MalformedURLException {
+	public List<GooglePlace> getNearbyPlaces(String search, GeoPoint currentLocation, int radiusMeters) throws UnknownHostException, GmapException, JSONException, MalformedURLException, java.io.UnsupportedEncodingException {
 		URL url= null; 
 		HttpURLConnection conn= null; 
 		String urlString = null; 
+		CharSequence queryStr = stringToQuery.get(search); 
+		if (queryStr == null) {//If we didn't get a fixed category, must have been passed a custom search string, so search by name. 
+			queryStr = "name=" + java.net.URLEncoder.encode(search.toString(), "UTF-8"); 
+			System.out.println("Custom query string: " + queryStr); 
+		}
 
 		try {
 			urlString = mapsApiUrl + "?" + buildLocationString(currentLocation) 
 								+ "&radius=" + radiusMeters 
-								+ "&" + stringToQuery.get(search)
+								+ "&" + queryStr
 								+ "&sensor=true"
 								+ "&key=" + apiKey;
 

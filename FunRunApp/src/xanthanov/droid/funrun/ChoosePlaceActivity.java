@@ -9,6 +9,7 @@ import xanthanov.droid.funrun.db.FunRunWriteOps;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog; 
 import android.app.ProgressDialog; 
 import android.content.DialogInterface; 
 
@@ -23,11 +24,13 @@ import android.view.Gravity;
 import android.view.animation.Animation; 
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
+import android.widget.EditText; 
 import android.widget.Button; 
 import android.widget.ImageButton; 
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.ArrayAdapter;
+import android.widget.AdapterView; 
 import android.widget.LinearLayout;
 import android.content.Context; 
 import android.location.LocationManager;
@@ -104,10 +107,13 @@ public class ChoosePlaceActivity extends MapActivity
 	private FunRunApplication funRunApp; 
 	private FunRunWriteOps dbWriter; 
 	private boolean dbWriteSuccess; 
+	private EditText customSearchText; 
+	private String CUSTOM_SEARCH_STRING = "Name of place"; 
 	//*****************CONSTANTS**********************************
 	private final static int DEFAULT_ZOOM = 15; 
-	private final static int DEFAULT_RADIUS_METERS = 1000;
-	public final static int MAX_RADIUS_METERS = 4000; 
+	private final static int DEFAULT_RADIUS_METERS = 4000;
+	public final static int MAX_RADIUS_METERS = 8000; 
+	private final static int CUSTOM_SEARCH_POPUP_ID = 0; 
 	//************************************************************
     /** Called when the activity is first created. */
     @Override
@@ -115,6 +121,8 @@ public class ChoosePlaceActivity extends MapActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.selectlayout);
+
+		customSearchText = new EditText(this); 
 
 		//***************GET VIEWS DEFINED IN XML***********************
 		runCategorySpinner = (Spinner) findViewById(R.id.runCategorySpinner); 
@@ -135,7 +143,7 @@ public class ChoosePlaceActivity extends MapActivity
 			lastKnownGeoPoint = droidLoc.locationToGeoPoint(bestLocation);
 		}
 
-		System.out.println("Last location: " + lastKnownGeoPoint);
+		//System.out.println("Last location: " + lastKnownGeoPoint);
 		funRunApp = (FunRunApplication) getApplicationContext();
 
 		currentDirections = new GoogleDirections(); //Create new directions now, since they correspond to a run
@@ -152,8 +160,8 @@ public class ChoosePlaceActivity extends MapActivity
 			dbWriteSuccess = dbWriter.insertNewRun(currentDirections); 
 		}
 		catch (java.sql.SQLException e) {
-			System.err.println("Error inserting new run into DB."); 
-			e.printStackTrace(); 
+			//System.err.println("Error inserting new run into DB."); 
+			//e.printStackTrace(); 
 			dbWriteSuccess = false; 
 		}
 
@@ -262,10 +270,10 @@ public class ChoosePlaceActivity extends MapActivity
 		FunRunApplication funRunApp = (FunRunApplication) getApplicationContext(); 
 
 		if (currentDirections != null) {
-			System.out.println("Distance so far for current directions when leaving ChoosePlace: " + currentDirections.getDistanceSoFar()); 
+			//System.out.println("Distance so far for current directions when leaving ChoosePlace: " + currentDirections.getDistanceSoFar()); 
 		}
 		else {
-			System.out.println("Directions null upon leaving ChoosePlaceActivity."); 
+			//System.out.println("Directions null upon leaving ChoosePlaceActivity."); 
 		}
 
 		if (currentDirections.size() <= 0) { //If we didn't actually add any legs, delete residual crap from database
@@ -273,7 +281,7 @@ public class ChoosePlaceActivity extends MapActivity
 				dbWriter.deleteRun();
 			}
 			catch (SQLException e) {
-				System.err.println("Error deleting empty run in ChoosePlaceActivity.onDestroy() "); 
+				//System.err.println("Error deleting empty run in ChoosePlaceActivity.onDestroy() "); 
 			} 
 		}
 	}
@@ -325,7 +333,8 @@ public class ChoosePlaceActivity extends MapActivity
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_array, R.layout.normal_spinner);	
 		adapter.setDropDownViewResource(R.layout.spinner_dropdown);
 		runCategorySpinner.setAdapter(adapter); 
-		
+		runCategorySpinner.setSelection(0); 
+
 		//runCategorySpinner.setOnItemSelectedListener(new FunRunOnItemSelected());
 	}
 
@@ -404,14 +413,14 @@ public class ChoosePlaceActivity extends MapActivity
 
 		if (nearbyPlaces == null || nearbyPlaces.size() == 0 || remainingPlaces == null) {
 			//There *should* be a dialog alerting the user if no places were found!
-			System.out.println("No nearby places found in getNextPlace\n"); 
+			//System.out.println("No nearby places found in getNextPlace\n"); 
 			return; 
 		}
 		
 		//check if no places are remaining
 		if (remainingPlaces.size() == 0) {
 			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
-			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or click 'Next Place' to see your options again.");
+			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or touch 'Find Nearby Places' to see your options again.");
 			currentRunToPlace = null; 
 			myFunRunOverlay.setSpecificLeg(null); 
 			centerOnMe(); 
@@ -421,7 +430,7 @@ public class ChoosePlaceActivity extends MapActivity
 		//Choose a "random" place from list of remaining places, actually getting closest remaining place
 		currentRunToPlace = remainingPlaces.get(0);			
 		remainingPlaces.remove(currentRunToPlace); 
-		System.out.println("Chosen place:" + currentRunToPlace); 
+		//System.out.println("Chosen place:" + currentRunToPlace); 
 
 		//Make another HTTP request to get directions from current location to 'runToPlace'
 		bestLocation = droidLoc.getBestLocation(bestLocation); 
@@ -485,7 +494,7 @@ public class ChoosePlaceActivity extends MapActivity
 		LayoutParams WMLP = popup.getWindow().getAttributes();
 		//LayoutParams WMLP = new LayoutParams(LayoutParams.TYPE_APPLICATION_PANEL, ;
 
-		System.out.println(WMLP.toString()); 
+		//System.out.println(WMLP.toString()); 
 		WMLP.gravity = android.view.Gravity.TOP; 
 		WMLP.verticalMargin = .02f;
 		WMLP.dimAmount = 0.0f; 
@@ -574,6 +583,9 @@ public class ChoosePlaceActivity extends MapActivity
 		protected void onPostExecute(List<GooglePlace> result) {
 			//Done attempting to get places, so assign to field nearbyPlaces 
 			nearbyPlaces = result; 
+			if (nearbyPlaces != null) {
+				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownGeoPoint)); 
+			}
 			//Set remainingPlaces = shallow copy of nearbyPlaces  
 			remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); 
 
@@ -584,7 +596,7 @@ public class ChoosePlaceActivity extends MapActivity
 				//Output dialog indicating nothing was found...choose a new category
 				DroidDialogs.showPopup(a, "Choose a new category", "No '" + searchStr + "'s found within " + MAX_RADIUS_METERS/1000 + " km.\n\n" 
 						+ "Please choose a different category and try again."); 
-				System.err.println("Places query: ZERO PLACES FOUND"); 
+				//System.err.println("Places query: ZERO PLACES FOUND"); 
 				
 				return; 
 			}
@@ -593,7 +605,6 @@ public class ChoosePlaceActivity extends MapActivity
 			//AND sort them by which is closer...
 			//To avoid getting directions for all of them, do the crude thing of getting "as the bird flies" distance
 				//PlaceSearcher.printListOfPlaces(nearbyPlaces);  
-				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownGeoPoint)); 
 			}
 			//Call the dialog to cycle through places
 			getNextPlace();
@@ -669,7 +680,14 @@ public class ChoosePlaceActivity extends MapActivity
 													@Override
 													public void onClick(DialogInterface dialog, int id) {
 														dialog.dismiss(); 
-														startPlacesQuery(); 
+														String spinnerSelection = runCategorySpinner.getSelectedItem().toString(); 
+														if (spinnerSelection.equals(getString(R.string.custom_search))) {
+															customSearchText.selectAll(); 
+															showDialog(CUSTOM_SEARCH_POPUP_ID); 
+														}
+														else {
+															startPlacesQuery();
+														} 
 													}
 												}, 
 												new DialogInterface.OnClickListener() {
@@ -680,7 +698,14 @@ public class ChoosePlaceActivity extends MapActivity
 												});
 			}
 			else {
-				startPlacesQuery(); 
+				String spinnerSelection = runCategorySpinner.getSelectedItem().toString(); 
+				if (spinnerSelection.equals(getString(R.string.custom_search))) {
+					customSearchText.selectAll(); 
+					showDialog(CUSTOM_SEARCH_POPUP_ID); 
+				}
+				else {
+					startPlacesQuery();
+				} 
 			}
 
 		}
@@ -689,6 +714,9 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void startPlacesQuery() {
 		String search = (runCategorySpinner.getSelectedItem()).toString();
+		if (search.equals(getString(R.string.custom_search))) {
+			search = CUSTOM_SEARCH_STRING; 
+		}
 		new PlacesQueryTask(this).execute(search); 	
 	}
 
@@ -745,6 +773,48 @@ public class ChoosePlaceActivity extends MapActivity
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog;
+		AlertDialog.Builder builder = new AlertDialog.Builder(this); 
+		switch(id) {
+			case CUSTOM_SEARCH_POPUP_ID:
+				// do the work to define the email Dialog
+				customSearchText.setText(CUSTOM_SEARCH_STRING, TextView.BufferType.EDITABLE); 
+				customSearchText.selectAll(); 
+
+				builder.setTitle("Enter name to search for:"); 
+				builder.setView(customSearchText); 
+				builder.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String text = customSearchText.getText().toString(); 
+						CUSTOM_SEARCH_STRING = text; 
+						ChoosePlaceActivity.this.startPlacesQuery(); 
+
+					}
+				}); 
+
+				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss(); 
+					}
+
+				}); 
+
+				dialog= builder.create(); 
+
+				break;
+
+			default: 
+				dialog = null; 
+				break; 
+
+		} 
+		return dialog;
 	}
 	
 }

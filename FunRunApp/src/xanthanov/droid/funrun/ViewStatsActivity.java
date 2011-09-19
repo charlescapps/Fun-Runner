@@ -144,6 +144,7 @@ public class ViewStatsActivity extends Activity {
 		returnButton.setOnClickListener(new ClickReturn()); 
 		if (myAdapter.isEmpty()) {
 			loadOnMapButton.setEnabled(false); 
+			emailButton.setEnabled(false); 
 		}
 		else {		
 			loadOnMapButton.setOnClickListener(new ClickLoadOnMap()); 
@@ -156,6 +157,7 @@ public class ViewStatsActivity extends Activity {
 					emailText.selectAll(); 
 				}
 			}); 
+
 	}
 
 	//Nested classes for buttons

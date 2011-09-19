@@ -152,8 +152,8 @@ public class DirectionGetter {
 			neLat = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lat"); 
 			neLng = theRoute.getJSONObject("bounds").getJSONObject("northeast").getDouble("lng"); 
 
-			System.out.println("Southwest bound: " + swLat + "," + swLng); 	
-			System.out.println("Northeast bound: " + neLat + "," + neLng); 	
+			//System.out.println("Southwest bound: " + swLat + "," + swLng); 	
+			//System.out.println("Northeast bound: " + neLat + "," + neLng); 	
 		
 			
 

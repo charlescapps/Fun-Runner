@@ -31,6 +31,15 @@
 			android:layout_width = "wrap_content"
 			android:layout_height = "wrap_content">
 			<TableRow style="@style/table_row">
+				<TextView android:id="@+id/pointsTitle" 
+					style="@style/row_title"
+					android:textColor="#cd3700"
+					android:text="Points earned"/>
+				<TextView android:id="@+id/pointsTextView"	
+					android:textColor="#cd3700"
+					style="@style/row_title"/>
+			</TableRow>
+			<TableRow style="@style/table_row">
 				<TextView android:id="@+id/legDistanceTitle" 
 					style="@style/row_title"
 					android:textColor="#cd3700"

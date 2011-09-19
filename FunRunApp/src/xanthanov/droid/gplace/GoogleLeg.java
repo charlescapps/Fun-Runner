@@ -52,7 +52,7 @@ public class GoogleLeg implements java.io.Serializable {
 	private GooglePlace legDestination; 
 	private int maxStepCompleted; 
 	private final static double POINT_FACTOR = 50.0; 
-	private final static double MAX_SPEED = 20.0; //If speed is more than 20 m/s clearly something was wrong with GPS. 
+	private final static double MAX_SPEED = 30.0; //If speed is more than 30 m/s clearly something was wrong with GPS. 
 	private final static int PLACE_BONUS = 10; 
 
 	//ACTUAL PATH RAN

@@ -2,12 +2,16 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<string-array name="category_array">
+		<item>@string/custom_search</item>
         <item>@string/park</item>
         <item>@string/cafe</item>
+        <item>@string/school</item>
         <item>@string/smoothies</item>
         <item>@string/juice_bar</item>
         <item>@string/food_cart</item>
         <item>@string/book_store</item>
+		<item>@string/art_gallery</item>
+		<item>@string/zoo</item>
 		<item>@string/shopping_mall</item>
 		<item>@string/pizza</item>
 		<item>@string/brew_pub</item>
@@ -18,13 +22,12 @@
 		<item>@string/florist</item>
 		<item>@string/library</item>
 		<item>@string/museum</item>
-		<item>@string/art_gallery</item>
 		<item>@string/pet_store</item>
         <item>@string/bar</item>
-		<item>@string/point_of_interest</item>
         <item>@string/aquarium</item>
 		<item>@string/amusement_park</item>
 		<item>@string/natural_feature</item>
+		<item>@string/point_of_interest</item>
     </string-array>
 
 	<string-array name="accept_radius_array">

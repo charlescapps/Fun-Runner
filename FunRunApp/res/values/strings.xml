@@ -18,13 +18,17 @@
 
 	<!-- END PREFERENCES -->
 
+	<string name="custom_search">(Prompt for Name)</string>
 	<string name="park">Park</string>
 	<string name="cafe">Cafe</string>
+	<string name="school">School or University</string>
 	<string name="pizza">Pizza</string>
 	<string name="smoothies">Smoothie Joint</string>
 	<string name="juice_bar">Juice Bar</string>
 	<string name="food_cart">Food cart</string>
 	<string name="book_store">Bookstore</string>
+	<string name="art_gallery">Art Gallery</string>
+	<string name="zoo">Zoo</string>
 	<string name="shopping_mall">Shopping Mall</string>
 	<string name="brew_pub">Brew Pub</string>
 	<string name="clothing_store">Clothing Store</string>
@@ -34,11 +38,10 @@
 	<string name="florist">Florist</string>
 	<string name="library">Library</string>
 	<string name="museum">Museum</string>
-	<string name="art_gallery">Art Gallery</string>
 	<string name="pet_store">Pet Store</string>
 	<string name="bar">Bar</string>
-	<string name="point_of_interest">Point of Interest</string>
 	<string name="aquarium">Aquarium</string>
 	<string name="amusement_park">Amusement Park</string>
 	<string name="natural_feature">Natural Feature</string>
+	<string name="point_of_interest">Point of Interest</string>
 </resources>

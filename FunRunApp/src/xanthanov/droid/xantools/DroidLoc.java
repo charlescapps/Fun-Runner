@@ -52,23 +52,23 @@ public class DroidLoc {
 			l = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		}
 		catch (Exception e) {
-			System.out.println("Exception raised while getting last known location from GPS provider.");
+			//System.out.println("Exception raised while getting last known location from GPS provider.");
 			return null;
 		}
 
 		if (l == null) {
-			System.out.println("GPS provider returned null"); 
+			//System.out.println("GPS provider returned null"); 
 			try {
 				l = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			}
 			catch (Exception e) {
-				System.out.println("Exception raised while getting last known location from Network provider.");
+				//System.out.println("Exception raised while getting last known location from Network provider.");
 				return null;
 			}
 		}
 
 		if (l == null) {
-			System.out.println("Network provider also returned null"); 
+			//System.out.println("Network provider also returned null"); 
 		}
 		else {
 			g = degreesToGeoPoint(l.getLatitude(), l.getLongitude()); 
@@ -85,23 +85,23 @@ public class DroidLoc {
 			l = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		}
 		catch (Exception e) {
-			System.out.println("Exception raised while getting last known location from GPS provider.");
+			//System.out.println("Exception raised while getting last known location from GPS provider.");
 			return null;
 		}
 
 		if (l == null) {
-			System.out.println("GPS provider returned null"); 
+			//System.out.println("GPS provider returned null"); 
 			try {
 				l = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			}
 			catch (Exception e) {
-				System.out.println("Exception raised while getting last known location from Network provider.");
+				//System.out.println("Exception raised while getting last known location from Network provider.");
 				return null;
 			}
 		}
 
 		if (l == null) {
-			System.out.println("Network provider also returned null"); 
+			//System.out.println("Network provider also returned null"); 
 			return compareToLoc; 
 		}
 

@@ -61,6 +61,7 @@ public class StepCompleteActivity extends Activity {
 	private TextView elapsedTimeToPlaceTitle; 
 	private TextView totalElapsedTimeTitle; 
 
+	private TextView pointsText; 
 	private TextView legDistanceText; 
 	private TextView totalDistanceText; 
 	private TextView avgSpeedText; 
@@ -119,6 +120,7 @@ public class StepCompleteActivity extends Activity {
 		elapsedTimeToPlaceTitle = (TextView) findViewById(R.id.elapsedTimeToPlaceTitle); 
 		totalElapsedTimeTitle = (TextView) findViewById(R.id.totalElapsedTimeTitle); 
 
+		pointsText = (TextView) findViewById(R.id.pointsTextView); 
 		legDistanceText = (TextView) findViewById(R.id.legDistanceTextView); 
 		totalDistanceText = (TextView) findViewById(R.id.totalDistanceTextView); 
 		avgSpeedText = (TextView) findViewById(R.id.avgSpeedTextView); 
@@ -236,12 +238,16 @@ public class StepCompleteActivity extends Activity {
 		legElapsedTime = DroidUnits.msToStr(currentLeg.getEndTime() - currentLeg.getStartTime()); 
 		totalElapsedTime = DroidUnits.msToStr(currentLeg.getEndTime() - runDirections.get(0).getStartTime()); 	
 
+		//Points
+		int pts = currentLeg.getLegPoints(); 
+		java.text.NumberFormat nf = java.text.NumberFormat.getInstance(); 
 
 		//Avg. speed in m/s 
 		avgSpeed = DroidUnits.getSpeedStringV2(completedStep.getEndTime() - currentLeg.getStartTime(), legDistanceMeters); 
 		avgSpeedRun = DroidUnits.getSpeedStringV2(completedStep.getEndTime() - runDirections.get(0).getStartTime(), totalDistanceMeters); 
 
 		//Set text views.
+		pointsText.setText(nf.format(pts) + " points!"); 
 		stepCompleteText.setText(msg); 
 		legDistanceText.setText(legDistance); 
 		totalDistanceText.setText(totalDistance); 

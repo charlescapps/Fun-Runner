@@ -30,7 +30,7 @@
 			android:layout_height="wrap_content" 
 			android:enabled="true"
 			android:clickable="true"
-			android:apiKey="0qcLJ4NCw2oBuHqV1ULWIxkq043Y6fnxYPrXfjA"/>
+			android:apiKey="0qcLJ4NCw2oCTRAjAP9LZwwinYU1lhqCZCDduQQ"/>
 <!-- Makes more sense to define animation in code
 		<ImageView android:id="@+id/runner_anim"
 			android:layout_width="wrap_content"

@@ -58,7 +58,7 @@
 			android:layout_height="wrap_content" 
 			android:enabled="true"
 			android:clickable="true"
-			android:apiKey="0qcLJ4NCw2oBuHqV1ULWIxkq043Y6fnxYPrXfjA"/>
+			android:apiKey="0qcLJ4NCw2oCTRAjAP9LZwwinYU1lhqCZCDduQQ"/>
 		<LinearLayout android:id="@+id/run_zoomButtonsLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
