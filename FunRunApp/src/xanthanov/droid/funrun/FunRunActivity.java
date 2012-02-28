@@ -129,7 +129,7 @@ public class FunRunActivity extends MapActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.runlayout);
-
+		//System.
 		//Get the Application object and its global data
 		funRunApp = (FunRunApplication) this.getApplicationContext(); 
 
@@ -276,7 +276,6 @@ public class FunRunActivity extends MapActivity
 								); 
 
 	}
-
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
