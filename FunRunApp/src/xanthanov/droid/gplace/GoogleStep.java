@@ -1,12 +1,7 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.gplace; 
-
-import java.util.List;
-import java.util.ArrayList;
-
-import xanthanov.droid.xantools.*; 
+package xanthanov.droid.gplace;
 
 /**
 *

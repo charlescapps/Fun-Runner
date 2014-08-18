@@ -3,53 +3,43 @@
 
 package xanthanov.droid.funrun;
 
-import xanthanov.droid.gplace.*;
-import xanthanov.droid.xantools.*;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface; 
-import android.content.IntentFilter; 
-
-import android.os.Bundle;
-import android.view.View;
-import android.view.animation.Animation; 
-import android.view.animation.AlphaAnimation;
-import android.view.KeyEvent; 
-import android.widget.TextView;
-import android.widget.Button; 
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Toast; 
-import android.content.Context; 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.content.Intent;
-import android.content.SharedPreferences; 
-import android.content.res.Resources; 
-import android.app.PendingIntent;
-import android.text.Html; 
-import android.text.Spanned; 
 import android.media.AudioManager;
-import android.view.MenuInflater; 
-import android.view.Menu; 
-import android.view.MenuItem; 
+import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
+import android.view.*;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.*;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import xanthanov.droid.gplace.GoogleDirections;
+import xanthanov.droid.gplace.GoogleLeg;
+import xanthanov.droid.gplace.GooglePlace;
+import xanthanov.droid.gplace.GoogleStep;
+import xanthanov.droid.xantools.DroidDialogs;
+import xanthanov.droid.xantools.DroidLoc;
+import xanthanov.droid.xantools.DroidTTS;
 
-import android.speech.tts.TextToSpeech; 
-
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Random; 
-import java.util.HashMap; 
-import java.sql.SQLException; 
-
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapController;
-import com.google.android.maps.MyLocationOverlay; 
-import com.google.android.maps.Overlay; 
 
 /**
 * <h3>Activity for when user is actually running.</h3>
@@ -72,12 +62,13 @@ import com.google.android.maps.Overlay;
 *
 **/
 
-public class FunRunActivity extends MapActivity
+public class FunRunActivity extends Activity
 {
 	//***********VIEW OBJECTS DEFINED IN XML**********************
 	private LinearLayout parentContainer; 
 	private Button centerOnMeButton; 
 	private MapView myMap;
+    private GoogleMap googleMap;
 	private Button zoomInButton;
 	private Button zoomOutButton;
 	private Button zoomToRouteButton;
@@ -87,13 +78,11 @@ public class FunRunActivity extends MapActivity
 	private RelativeLayout mapRelLayout; 
 	//*******************OTHER OBJECTS****************************
 	private FunRunApplication funRunApp; 
-	private MyLocationOverlay myLocOverlay;
-	private MapController myMapController; 
-	private LocationListener myGpsListener; 
+	private LocationListener myGpsListener;
 	private LocationListener myNetworkListener; 
 	private FunRunOverlay myFunRunOverlay; 
 
-	private GeoPoint lastKnownGeoPoint; 
+	private LatLng lastKnownLatLng;
 	private Location bestLocation; 
 
 	private GoogleDirections runDirections; 
@@ -136,8 +125,9 @@ public class FunRunActivity extends MapActivity
 		//Get audio manager
 		audioMan = (AudioManager)getSystemService(Context.AUDIO_SERVICE); 
 		//***************GET VIEWS DEFINED IN XML***********************
-		myMap = (MapView) findViewById(R.id.run_myMap); 
-		centerOnMeButton = (Button) findViewById(R.id.run_buttonCenterOnMe); 
+		myMap = (MapView) findViewById(R.id.run_myMap);
+        myMap.onCreate(savedInstanceState);
+        centerOnMeButton = (Button) findViewById(R.id.run_buttonCenterOnMe);
 		zoomToRouteButton = (Button) findViewById(R.id.run_buttonZoomToRoute); 
 		zoomInButton = (Button) findViewById(R.id.run_buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.run_buttonZoomOut); 
@@ -147,10 +137,8 @@ public class FunRunActivity extends MapActivity
 		parentContainer = (LinearLayout) findViewById(R.id.run_parentContainer); 
 		mapRelLayout = (RelativeLayout) findViewById(R.id.run_relLayout); 
 		//******************DEFINE OTHER OBJECTS**************************
-		droidLoc = new DroidLoc(this); 
-		myLocOverlay = new MyLocationOverlay(this, myMap); 
-		myMapController = myMap.getController(); 
-		runDirections = funRunApp.getRunDirections(); 
+		droidLoc = new DroidLoc(this);
+		runDirections = funRunApp.getRunDirections();
 		//Initialize currentStep to the first step in the last leg of the GoogleDirections object
 		//As the runner arrives at destinations, new legs will be added
 		currentLeg = runDirections.lastLeg(); 
@@ -174,15 +162,12 @@ public class FunRunActivity extends MapActivity
 		setupCenterOnMeButton(); 
 		setupZoomToRouteButton(); 
 		setupZoomButtons(); 
-		myMap.preLoad(); 
 
 		long theTime = System.currentTimeMillis(); 
 
 		//onCreate() is called when a new leg starts, so set the start time for the leg and the first step
 		currentLeg.setStartTime(theTime); 
 		currentLeg.get(0).setStartTime(theTime); 
-
-		zoomToRoute(); 
 
 		myTts = funRunApp.getTextToSpeech(); 
 		ttsTools = new DroidTTS(); 
@@ -194,6 +179,29 @@ public class FunRunActivity extends MapActivity
 				firstSpeechCompleted = true; 
 			}
 		});
+    }
+
+    private GoogleMap getGoogleMap() {
+        if (googleMap != null) {
+            return googleMap;
+        }
+
+        googleMap = myMap.getMap();
+        return googleMap;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        myMap.onResume();
+        Log.i(getClass().getCanonicalName(), "Running onResume() in FunRunActivity");
+        zoomToRoute();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        myMap.onPause();
     }
 
 	private void grabPrefs() {
@@ -216,11 +224,6 @@ public class FunRunActivity extends MapActivity
 		PATH_INCREMENT_METERS = Float.parseFloat(prefs.getString(path_segment_key, default_path_segment)); 
 		SPEAK_DIRECTIONS = Boolean.parseBoolean(prefs.getString(speak_directions_key, default_speak_directions)); 
 
-	}
-	
-	@Override
-	public boolean isRouteDisplayed() {
-		return true;
 	}
 
 	@Override
@@ -313,17 +316,16 @@ public class FunRunActivity extends MapActivity
 
 			setupLocListener(); //Instantiate new location listeners 
 
-			//Start up compass and location updates
-			myLocOverlay.enableCompass(); 	
+			//Start up location updates
 			droidLoc.getLocManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myGpsListener);
 			droidLoc.getLocManager().requestLocationUpdates(LocationManager.NETWORK_PROVIDER, FunRunApplication.MIN_GPS_UPDATE_TIME_MS, 0, myNetworkListener);
 
-			//Force update of lastKnownGeoPoint
+			//Force update of lastKnownLatLng
 			bestLocation = droidLoc.getBestLocation(bestLocation); 
-			lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); 
+			lastKnownLatLng = DroidLoc.locationToLatLng(bestLocation);
 
 			//Update visuals so it doesn't show you in the wrong place
-			myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
+			myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
 			myMap.invalidate(); 
 		}
 		else { //current step was null, indicating the user finished running to a place.
@@ -341,21 +343,20 @@ public class FunRunActivity extends MapActivity
 		super.onStop(); 
 		droidLoc.getLocManager().removeUpdates(myGpsListener); 
 		droidLoc.getLocManager().removeUpdates(myNetworkListener); 
-		myLocOverlay.disableCompass();
 	}
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy(); 
+		super.onDestroy();
 
 		//Remove this leg if the runner didn't go any distance. 
 		if (currentLeg.getActualDistanceRan() < MIN_DISTANCE_TO_SAVE) {
 			runDirections.remove(currentLeg); 
-			(Toast.makeText(this, "You ran too little. Progress not saved.", 5)).show(); 
+			(Toast.makeText(this, "You ran too little. Progress not saved.", Toast.LENGTH_SHORT)).show();
 			
 		}
 		else {
-			(Toast.makeText(this, currentLeg.getLegPoints() + " points earned!", 5)).show(); 
+			(Toast.makeText(this, currentLeg.getLegPoints() + " points earned!", Toast.LENGTH_SHORT)).show();
 			//Here: write directions to DB. If this is too slow, even with a transaction, then will change implementation to instead write as they run, 
 			//and delete if they don't run enough
 			try {
@@ -366,9 +367,22 @@ public class FunRunActivity extends MapActivity
 				e.printStackTrace(); 
 			}
 		}
-	}
+        myMap.onDestroy();
+    }
 
-	private void updateDirectionsTextView() {
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        myMap.onSaveInstanceState(bundle);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        myMap.onLowMemory();
+    }
+
+    private void updateDirectionsTextView() {
 		directionsTextView.setText(htmlInstructions); 	
 	}
 
@@ -384,17 +398,17 @@ public class FunRunActivity extends MapActivity
 
 		bestLocation = droidLoc.compareLocations(bestLocation, l); //Compare new location to previous best, and return the best one
 
-		GeoPoint newGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); 
+		LatLng newLatLng = DroidLoc.locationToLatLng(bestLocation);
 
-		lastKnownGeoPoint = newGeoPoint; 
+		lastKnownLatLng = newLatLng;
 
 		//Update location and invalidate map to redraw
-		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
+		myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
 		myMap.invalidate(); 
 
-		double[] latLng = null; 
+		LatLng latLng = null;
 		if (bestLocation != null) {
-			latLng = new double[] {bestLocation.getLatitude(), bestLocation.getLongitude()}; 
+			latLng = new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude());
 		}
 
 		//Check if we've finished a step
@@ -413,8 +427,8 @@ public class FunRunActivity extends MapActivity
 
 	private void checkForCompleteSteps() {
 		float distance[] = new float[1]; 
-		GoogleStep step = null;
-		double latLng[] = DroidLoc.geoPointToDegrees(lastKnownGeoPoint); 
+		GoogleStep step;
+		double latLng[] = DroidLoc.latLngToArray(lastKnownLatLng);
 		for (int i = currentLeg.getMaxStepCompleted() + 1; i < currentLeg.size(); i++) {
 			step = currentLeg.get(i); 
 			Location.distanceBetween(step.getEndPoint()[0], step.getEndPoint()[1], latLng[0], latLng[1], distance); 
@@ -431,20 +445,20 @@ public class FunRunActivity extends MapActivity
 		}
 	} 
 
-	private void addToActualPath(double[] latLng) {
+	private void addToActualPath(LatLng latLng) {
 		List<LatLng> actualPath = currentLeg.getActualPath();
 		int size = actualPath.size(); 
 		if (size == 0) {
-			actualPath.add(new LatLng(latLng)); 
+			actualPath.add(latLng);
 			return; 
 		}
-		LatLng lastPathPoint = actualPath.get(size - 1); 
+		LatLng lastPathPoint = actualPath.get(size - 1);
 		float[] distance = new float[1]; 
 
-		android.location.Location.distanceBetween(lastPathPoint.lat, lastPathPoint.lng, latLng[0], latLng[1], distance);
+		android.location.Location.distanceBetween(lastPathPoint.latitude, lastPathPoint.longitude, latLng.latitude, latLng.longitude, distance);
 
 		if (distance[0] >= PATH_INCREMENT_METERS) {
-			currentLeg.addToActualPath(new LatLng(latLng)); 
+			currentLeg.addToActualPath(latLng);
 		}
 	}
 
@@ -460,16 +474,16 @@ public class FunRunActivity extends MapActivity
 
 	private void setupMap() {
 		myFunRunOverlay = new FunRunOverlay(myMap, null, true, false, true, mapRelLayout);
-		myFunRunOverlay.updateCurrentDirections(runDirections); 
-		myMap.getOverlays().add(myLocOverlay); 
-		myMap.getOverlays().add(myFunRunOverlay); 
+		myFunRunOverlay.updateCurrentDirections(runDirections);
+        GoogleMap googleMap = getGoogleMap();
+        if (googleMap != null) {
+            myFunRunOverlay.drawOverlays(googleMap);
+        }
 		
 		myMap.invalidate(); 
 	}
 
 	private void setupCenterOnMeButton() {
-		final MapController mc = myMapController; 
-		final GeoPoint loc = lastKnownGeoPoint; 
 
 		Animation animation = new AlphaAnimation(1.0f, 0.7f);
 		animation.setFillAfter(true);
@@ -484,11 +498,19 @@ public class FunRunActivity extends MapActivity
 	}
 
 	private void centerOnMe() {
-		if (lastKnownGeoPoint == null) {
+		if (lastKnownLatLng == null) {
 			return; 
 		}
 		else {
-			myMapController.animateTo(lastKnownGeoPoint); 
+            GoogleMap googleMap = getGoogleMap();
+            if (googleMap == null) {
+                return;
+            }
+            CameraPosition cameraPosition = CameraPosition.builder()
+                    .target(lastKnownLatLng)
+                    .build();
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            googleMap.animateCamera(cameraUpdate);
 		}
 		
 	}
@@ -502,13 +524,21 @@ public class FunRunActivity extends MapActivity
 		zoomInButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					myMapController.zoomIn(); 
+                    GoogleMap googleMap = getGoogleMap();
+                    if (googleMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomIn();
+                        googleMap.animateCamera(cameraUpdate);
+                    }
 				}
 			});	
 		zoomOutButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					myMapController.zoomOut(); 
+                    GoogleMap googleMap = getGoogleMap();
+                    if (googleMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomOut();
+                        googleMap.animateCamera(cameraUpdate);
+                    }
 				}
 			});	
 	}
@@ -528,14 +558,20 @@ public class FunRunActivity extends MapActivity
 	} 
 
 	private void zoomToRoute() {
-		final GeoPoint neBound = DroidLoc.degreesToGeoPoint(currentLeg.getNeBound()); 
-		final GeoPoint swBound = DroidLoc.degreesToGeoPoint(currentLeg.getSwBound()); 
-		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
-		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
-		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 
+		final LatLng neBound = DroidLoc.degreesToLatLng(currentLeg.getNeBound());
+		final LatLng swBound = DroidLoc.degreesToLatLng(currentLeg.getSwBound());
+		final LatLng midPoint = new LatLng( (neBound.latitude + swBound.latitude) / 2.0d, (neBound.longitude + swBound.longitude) / 2.0d );
 
-		myMapController.animateTo(midPoint); 
-		myMapController.zoomToSpan(latSpan, lngSpan); 
+        GoogleMap googleMap = getGoogleMap();
+        if (googleMap != null) {
+            CameraUpdate updatePosition = CameraUpdateFactory.newLatLng(midPoint);
+            googleMap.animateCamera(updatePosition);
+
+            LatLngBounds latLngBounds = new LatLngBounds(swBound, neBound);
+            CameraUpdate zoomToSpan = CameraUpdateFactory.newLatLngBounds(latLngBounds, 100);
+
+            googleMap.animateCamera(zoomToSpan);
+        }
 	}
 
 	class MyLocListener implements LocationListener {

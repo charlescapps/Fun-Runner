@@ -1,28 +1,27 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun; 
+package xanthanov.droid.funrun;
 
-import xanthanov.droid.gplace.*;
+import android.content.res.Resources;
+import com.google.android.gms.maps.model.LatLng;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import xanthanov.droid.funrun.exceptions.GmapException;
-
-import java.util.HashMap; 
-import java.util.List; 
-import java.util.ArrayList; 
+import xanthanov.droid.gplace.GooglePlace;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-
-import java.net.URL; 
-import java.net.HttpURLConnection; 
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
-
-import android.content.res.Resources; 
-
-import com.google.android.maps.GeoPoint; 
-import org.json.*; 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
 *<h3>Class to make HTTP request to Google Places API to get nearby places.</h3>
@@ -84,7 +83,7 @@ public class PlaceSearcher {
 		stringToQuery.put(res.getText(R.string.brew_pub), "types=bar|food|restaurant&name=brew+pub"); 
 	}
 
-	public List<GooglePlace> getNearbyPlaces(String search, GeoPoint currentLocation, int radiusMeters) throws UnknownHostException, GmapException, JSONException, MalformedURLException, java.io.UnsupportedEncodingException {
+	public List<GooglePlace> getNearbyPlaces(String search, LatLng currentLocation, int radiusMeters) throws UnknownHostException, GmapException, JSONException, MalformedURLException, java.io.UnsupportedEncodingException {
 		URL url= null; 
 		HttpURLConnection conn= null; 
 		String urlString = null; 
@@ -128,12 +127,12 @@ public class PlaceSearcher {
 
 	} 
 
-	private static String buildLocationString(GeoPoint pt) {
+	private static String buildLocationString(LatLng pt) {
 		String locStr = "location="; 
 		
-		locStr+=(pt.getLatitudeE6()*1E-6); 
+		locStr+=(pt.latitude);
 		locStr+=",";
-		locStr+=(pt.getLongitudeE6()*1E-6); 
+		locStr+=(pt.longitude);
 	
 		return locStr;
 	}

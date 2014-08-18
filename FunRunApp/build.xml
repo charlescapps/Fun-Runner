@@ -1,79 +1,281 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="FunRunApp" default="help">
-
-<!-- The local.properties file is created and updated by the 'android'
-     tool.
-     It contains the path to the SDK. It should *NOT* be checked into
-     Version Control Systems. -->
-    <property file="local.properties" />
-
-    <!-- The build.properties file can be created by you and is never touched
-         by the 'android' tool. This is the place to change some of the
-         default property values used by the Ant rules.
-         Here are some properties you may want to change/update:
-
-         source.dir
-             The name of the source directory. Default is 'src'.
-         out.dir
-             The name of the output directory. Default is 'bin'.
-
-         Properties related to the SDK location or the project target should
-         be updated using the 'android' tool with the 'update' action.
-
-         This file is an integral part of the build system for your
-         application and should be checked into Version Control Systems.
-
-         -->
-    <property file="build.properties" />
-
-    <!-- The default.properties file is created and updated by the 'android'
-         tool, as well as ADT.
-         This file is an integral part of the build system for your
-         application and should be checked into Version Control Systems. -->
-    <property file="default.properties" />
-
-
-    <!-- Required pre-setup import -->
-    <import file="${sdk.dir}/tools/ant/pre_setup.xml" />
-
-
-<!-- extension targets. Uncomment the ones where you want to do custom work
-     in between standard targets -->
-<!--
-    <target name="-pre-build">
-    </target>
-    <target name="-pre-compile">
-    </target>
-
-    [This is typically used for code obfuscation.
-     Compiled code location: ${out.classes.absolute.dir}
-     If this is not done in place, override ${out.dex.input.absolute.dir}]
-    <target name="-post-compile">
-    </target>
--->
-
-    <!-- Execute the Android Setup task that will setup some properties
-         specific to the target, and import the build rules files.
-
-         The rules file is imported from
-            <SDK>/tools/ant/
-         Depending on the project type it can be either:
-         - main_rules.xml
-         - lib_rules.xml
-         - test_rules.xml
-
-         To customize existing targets, there are two options:
-         - Customize only one target:
-             - copy/paste the target into this file, *before* the
-               <setup> task.
-             - customize it to your needs.
-         - Customize the whole script.
-             - copy/paste the content of the rules files (minus the top node)
-               into this file, *after* the <setup> task
-             - disable the import of the rules by changing the setup task
-               below to <setup import="false" />.
-             - customize to your needs.
-    -->
-    <setup />
-
+<project name="funrunapp" default="all">
+  
+  
+  <property file="funrunapp.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.ane"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.google_apis_(4.4.2)" value="${jdk.home.google_apis_(4.4.2)}/../../../../Library/Java/JavaVirtualMachines/jdk1.7.0_55.jdk/Contents/Home/bin"/>
+  <path id="jdk.classpath.google_apis_(4.4.2)">
+    <fileset dir="${jdk.home.google_apis_(4.4.2)}">
+      <include name="platforms/android-19/android.jar"/>
+      <include name="add-ons/addon-google_apis-google-19/libs/effects.jar"/>
+      <include name="add-ons/addon-google_apis-google-19/libs/usb.jar"/>
+      <include name="add-ons/addon-google_apis-google-19/libs/maps.jar"/>
+      <include name="platforms/android-19/data/res"/>
+      <include name="tools/support/annotations.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.google_apis_(4.4.2)}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.google_apis_(4.4.2)}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.google_apis_(4.4.2)"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  
+  <!-- Global Libraries -->
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <pathelement location="${javac2.home}/javac2.jar"/>
+    <pathelement location="${javac2.home}/jdom.jar"/>
+    <pathelement location="${javac2.home}/asm4-all.jar"/>
+    <pathelement location="${javac2.home}/jgoodies-forms.jar"/>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module google-play-services_lib -->
+  
+  <dirname property="module.google-play-services_lib.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.google-play-services_lib" value="${jdk.home.google_apis_(4.4.2)}"/>
+  <property name="module.jdk.bin.google-play-services_lib" value="${jdk.bin.google_apis_(4.4.2)}"/>
+  <property name="module.jdk.classpath.google-play-services_lib" value="jdk.classpath.google_apis_(4.4.2)"/>
+  
+  <property name="compiler.args.google-play-services_lib" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="google-play-services_lib.output.dir" value="${module.google-play-services_lib.basedir}/out/production/google-play-services_lib"/>
+  <property name="google-play-services_lib.testoutput.dir" value="${module.google-play-services_lib.basedir}/out/test/google-play-services_lib"/>
+  
+  <path id="google-play-services_lib.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="google-play-services_lib.module.production.classpath">
+    <path refid="${module.jdk.classpath.google-play-services_lib}"/>
+  </path>
+  
+  <path id="google-play-services_lib.runtime.production.module.classpath">
+    <pathelement location="${google-play-services_lib.output.dir}"/>
+  </path>
+  
+  <path id="google-play-services_lib.module.classpath">
+    <path refid="${module.jdk.classpath.google-play-services_lib}"/>
+    <pathelement location="${google-play-services_lib.output.dir}"/>
+  </path>
+  
+  <path id="google-play-services_lib.runtime.module.classpath">
+    <pathelement location="${google-play-services_lib.testoutput.dir}"/>
+    <pathelement location="${google-play-services_lib.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.google-play-services_lib">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.google-play-services_lib">
+    <patternset refid="excluded.from.module.google-play-services_lib"/>
+  </patternset>
+  
+  <path id="google-play-services_lib.module.sourcepath">
+    <dirset dir="${module.google-play-services_lib.basedir}/../../../sdk/android-sdk-macosx/extras/google/google_play_services/libproject/google-play-services_lib">
+      <include name="src"/>
+      <include name="gen"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.google-play-services_lib" depends="compile.module.google-play-services_lib.production,compile.module.google-play-services_lib.tests" description="Compile module google-play-services_lib"/>
+  
+  <target name="compile.module.google-play-services_lib.production" depends="register.custom.compilers" description="Compile module google-play-services_lib; production classes">
+    <mkdir dir="${google-play-services_lib.output.dir}"/>
+    <javac2 destdir="${google-play-services_lib.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.google-play-services_lib}/javac">
+      <compilerarg line="${compiler.args.google-play-services_lib}"/>
+      <bootclasspath refid="google-play-services_lib.module.bootclasspath"/>
+      <classpath refid="google-play-services_lib.module.production.classpath"/>
+      <src refid="google-play-services_lib.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.google-play-services_lib"/>
+    </javac2>
+    
+    <copy todir="${google-play-services_lib.output.dir}">
+      <fileset dir="${module.google-play-services_lib.basedir}/../../../sdk/android-sdk-macosx/extras/google/google_play_services/libproject/google-play-services_lib/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.google-play-services_lib.basedir}/../../../sdk/android-sdk-macosx/extras/google/google_play_services/libproject/google-play-services_lib/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.google-play-services_lib.tests" depends="register.custom.compilers,compile.module.google-play-services_lib.production" description="compile module google-play-services_lib; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.google-play-services_lib" description="cleanup module">
+    <delete dir="${google-play-services_lib.output.dir}"/>
+    <delete dir="${google-play-services_lib.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module FunRunApp -->
+  
+  <dirname property="module.funrunapp.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.funrunapp" value="${jdk.home.google_apis_(4.4.2)}"/>
+  <property name="module.jdk.bin.funrunapp" value="${jdk.bin.google_apis_(4.4.2)}"/>
+  <property name="module.jdk.classpath.funrunapp" value="jdk.classpath.google_apis_(4.4.2)"/>
+  
+  <property name="compiler.args.funrunapp" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="funrunapp.output.dir" value="${module.funrunapp.basedir}/out/production/FunRunApp"/>
+  <property name="funrunapp.testoutput.dir" value="${module.funrunapp.basedir}/out/test/FunRunApp"/>
+  
+  <path id="funrunapp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="funrunapp.module.production.classpath">
+    <path refid="${module.jdk.classpath.funrunapp}"/>
+    <pathelement location="${google-play-services_lib.output.dir}"/>
+  </path>
+  
+  <path id="funrunapp.runtime.production.module.classpath">
+    <pathelement location="${funrunapp.output.dir}"/>
+    <path refid="google-play-services_lib.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="funrunapp.module.classpath">
+    <path refid="${module.jdk.classpath.funrunapp}"/>
+    <pathelement location="${funrunapp.output.dir}"/>
+    <pathelement location="${google-play-services_lib.testoutput.dir}"/>
+    <pathelement location="${google-play-services_lib.output.dir}"/>
+  </path>
+  
+  <path id="funrunapp.runtime.module.classpath">
+    <pathelement location="${funrunapp.testoutput.dir}"/>
+    <pathelement location="${funrunapp.output.dir}"/>
+    <path refid="google-play-services_lib.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.funrunapp">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.funrunapp">
+    <patternset refid="excluded.from.module.funrunapp"/>
+  </patternset>
+  
+  <path id="funrunapp.module.sourcepath">
+    <dirset dir="${module.funrunapp.basedir}">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.funrunapp" depends="compile.module.funrunapp.production,compile.module.funrunapp.tests" description="Compile module FunRunApp"/>
+  
+  <target name="compile.module.funrunapp.production" depends="register.custom.compilers,compile.module.google-play-services_lib" description="Compile module FunRunApp; production classes">
+    <mkdir dir="${funrunapp.output.dir}"/>
+    <javac2 destdir="${funrunapp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.funrunapp}/javac">
+      <compilerarg line="${compiler.args.funrunapp}"/>
+      <bootclasspath refid="funrunapp.module.bootclasspath"/>
+      <classpath refid="funrunapp.module.production.classpath"/>
+      <src refid="funrunapp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.funrunapp"/>
+    </javac2>
+    
+    <copy todir="${funrunapp.output.dir}">
+      <fileset dir="${module.funrunapp.basedir}/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.funrunapp.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.funrunapp.tests" depends="register.custom.compilers,compile.module.funrunapp.production" description="compile module FunRunApp; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.funrunapp" description="cleanup module">
+    <delete dir="${funrunapp.output.dir}"/>
+    <delete dir="${funrunapp.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.google-play-services_lib, clean.module.funrunapp" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.google-play-services_lib, compile.module.funrunapp" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
 </project>

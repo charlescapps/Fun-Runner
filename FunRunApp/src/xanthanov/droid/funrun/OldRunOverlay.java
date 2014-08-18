@@ -3,32 +3,18 @@
 
 package xanthanov.droid.funrun;
 
-import xanthanov.droid.gplace.*;
-import xanthanov.droid.funrun.db.OldRun; 
-import xanthanov.droid.funrun.db.OldLeg; 
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Paint.Style;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.DashPathEffect; 
-
-import android.widget.ImageView; 
-import android.widget.RelativeLayout;  
-import android.view.animation.TranslateAnimation; 
-import android.graphics.drawable.AnimationDrawable; 
+import android.widget.RelativeLayout;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.Projection;
+import com.google.android.gms.maps.model.*;
+import xanthanov.droid.funrun.db.OldLeg;
+import xanthanov.droid.funrun.db.OldRun;
 
 import java.util.List;
-
-import com.google.android.maps.Overlay;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.Projection;
-import com.google.android.maps.MapView;
-
-import xanthanov.droid.xantools.DroidLoc; 
 
 /**
 *
@@ -50,7 +36,7 @@ import xanthanov.droid.xantools.DroidLoc;
 *@version 0.9b
 **/
 
-public class OldRunOverlay extends Overlay {
+public class OldRunOverlay {
 	
 	//********************CONSTANTS***************************
 	private final static int[] ROUTE_COLOR = new int[] {220, 240, 20, 20};
@@ -73,10 +59,15 @@ public class OldRunOverlay extends Overlay {
 	private int legIndex; 
 	
 	private Bitmap START;
-	private Bitmap DESTINATION1; 
-	private Bitmap DESTINATION2; 
-	private Bitmap FLAG; 
-	private Bitmap MAP_X; 
+    private BitmapDescriptor START_DESCRIPTOR;
+	private Bitmap DESTINATION1;
+    private BitmapDescriptor DESTINATION1_DESCRIPTOR;
+	private Bitmap DESTINATION2;
+    private BitmapDescriptor DESTINATION2_DESCRIPTOR;
+	private Bitmap FLAG;
+    private BitmapDescriptor FLAG_DESCRIPTOR;
+	private Bitmap MAP_X;
+    private BitmapDescriptor MAP_X_DESCRIPTOR;
 
 	private RelativeLayout mapRelLayout; 
 
@@ -95,7 +86,14 @@ public class OldRunOverlay extends Overlay {
 		DESTINATION2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.destination_icon2); 
 
 		FLAG = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.chequered_flag_icon); 
-		MAP_X = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.map_x); 
+		MAP_X = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.map_x);
+
+        MapsInitializer.initialize(map.getContext());
+        START_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(START);
+        DESTINATION1_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(DESTINATION1);
+        DESTINATION2_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(DESTINATION2);
+        FLAG_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(FLAG);
+        MAP_X_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(MAP_X);
 		
 	}
 
@@ -103,102 +101,100 @@ public class OldRunOverlay extends Overlay {
 		legIndex = index; 
 	}
 
-	@Override
-	public void draw(Canvas canvas, MapView map, boolean b) {
-		super.draw(canvas, map, b);
+	public void drawRoutes(GoogleMap googleMap, MapView map) {
 
 		//Get a Projection object to convert between lat/lng --> x/y
-		Projection pro = theMapView.getProjection(); 
+		Projection pro = googleMap.getProjection();
 
-		Point startCoords = new Point(); //Coords where runner started this leg
-		Point endCoords = new Point(); //Coords where runner ended this leg
+		OldLeg leg = run.get(legIndex);
 
-		Point placeCoords = new Point(); //Coords of place
-
-		OldLeg leg = run.get(legIndex); 
-
-		List<LatLng> runPath = leg.getRunPath(); 
-		List<LatLng> directionsPath = leg.getPolylinePath(); 
+		List<LatLng> runPath = leg.getRunPath();
+		List<LatLng> directionsPath = leg.getPolylinePath();
 		
-		GeoPoint startPoint = null; 
+		LatLng startPoint = null;
 
 		if (runPath.size() > 0) {
-			drawAPath(runPath, canvas, STROKE_WIDTH, ACTUAL_STYLE, ACTUAL_COLOR, pro, ACTUAL_DASHES); 
+			drawAPath(runPath, googleMap, STROKE_WIDTH, Color.BLACK);
 
 			//Draw flag where runner ended up at the end of this leg
-			GeoPoint endPoint = DroidLoc.latLngToGeoPoint(leg.getRunEnd()); 
-			pro.toPixels(endPoint, endCoords); 
+			LatLng endPoint = leg.getRunEnd();
+			Point endCoords = pro.toScreenLocation(endPoint);
+            LatLng endLatLng = pro.fromScreenLocation(new Point(endCoords.x - FLAG_OFFSET.x, endCoords.y - FLAG_OFFSET.y));
 
-			canvas.drawBitmap(FLAG, endCoords.x - FLAG_OFFSET.x , endCoords.y - FLAG_OFFSET.y, pathPaint);
+            MarkerOptions flagMarker = new MarkerOptions()
+                    .icon(FLAG_DESCRIPTOR)
+                    .position(endLatLng);
+
+			googleMap.addMarker(flagMarker);
 
 		}
 
 		if (directionsPath.size() > 0) {
 			//Draw the directions for the appropriate leg in ROUTE_COLOR
-			drawAPath(directionsPath, canvas, STROKE_WIDTH, ROUTE_STYLE, ROUTE_COLOR, pro, ROUTE_DASHES);
+			drawAPath(directionsPath, googleMap, STROKE_WIDTH, Color.RED);
 
-			startPoint = DroidLoc.latLngToGeoPoint(directionsPath.get(0)); //First point of run
-			pro.toPixels(startPoint, startCoords); 
+			startPoint = directionsPath.get(0); //First point of run
+			Point startCoords = pro.toScreenLocation(startPoint);
+
+            Point centerStartPoint = new Point(startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2);
+            LatLng startLatLng = pro.fromScreenLocation(centerStartPoint);
+
+            MarkerOptions drawCircleMarker = new MarkerOptions()
+                    .icon(START_DESCRIPTOR)
+                    .position(startLatLng);
+
 			//Draw the little red circle at the start point
-			canvas.drawBitmap(START, startCoords.x - START.getWidth() / 2, startCoords.y - START.getHeight() / 2, pathPaint); 
-
+			googleMap.addMarker(drawCircleMarker);
 		}
 
-		GeoPoint placePoint = DroidLoc.latLngToGeoPoint(leg.getPlaceLatLng());  //Location of place
-		pro.toPixels(placePoint, placeCoords); 
+		LatLng placePoint = leg.getPlaceLatitudeLng();  //Location of place
+		Point placeCoords = pro.toScreenLocation(placePoint);
 
-		Bitmap bmp = null; 
+		Bitmap bmp = null;
+        BitmapDescriptor bitmapDescriptor;
 
 		if (!leg.gotToPlace()) { //If runner didn't get to the place, draw an 'X'
-			bmp = MAP_X; 
+			bmp = MAP_X;
+            bitmapDescriptor = MAP_X_DESCRIPTOR;
 		}
 		else { //Else draw a trophy, which one depends on whether it's the last leg of the journey
-			bmp = (legIndex == run.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg 
+			bmp = (legIndex == run.size() - 1 ? DESTINATION1 : DESTINATION2); //Draw different icon for end of run vs. just end of one leg
+			bitmapDescriptor = (legIndex == run.size() - 1 ? DESTINATION1_DESCRIPTOR : DESTINATION2_DESCRIPTOR); //Draw different icon for end of run vs. just end of one leg
 		}
 
-		canvas.drawBitmap(bmp, placeCoords.x - bmp.getWidth() / 2 , placeCoords.y - bmp.getHeight() / 2, pathPaint);
+        LatLng placeLatLng = pro.fromScreenLocation(new Point(placeCoords.x - bmp.getWidth() / 2, placeCoords.y - bmp.getHeight() / 2));
 
+        MarkerOptions placeMarker = new MarkerOptions()
+                .icon(bitmapDescriptor)
+                .position(placeLatLng);
+
+		googleMap.addMarker(placeMarker);
 	}
 
-	private void drawAPath(List<LatLng> path, Canvas canvas, float strokeWidth, Style paintStyle, int[] color, Projection pro, float[] dashes) {
+	private void drawAPath(List<LatLng> path, GoogleMap googleMap, float strokeWidth, int color) {
 
-		if(path == null || path.size() == 0) {
-			return;
-		}
+        if(path == null || path.size() == 0) {
+            return;
+        }
 
-		//Add style and color to paint
-		this.pathPaint.setStrokeWidth(strokeWidth);
-		this.pathPaint.setARGB(color[0], color[1], color[2], color[3]);
-		//Use Stroke style
-		this.pathPaint.setStyle(paintStyle);
+        //**********************SET UP PATH***************************
+        LatLng startPoint = path.get(0);
 
-		//Generic Point used in this method
-		Point screenCoords = new Point();
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.add(startPoint);
 
-		//**********************SET UP PATH***************************
-		GeoPoint startPoint = DroidLoc.latLngToGeoPoint(path.get(0)); 
-		pro.toPixels(startPoint, screenCoords); 
+        polylineOptions.color(color);
+        polylineOptions.width(strokeWidth);
+        polylineOptions.visible(true);
 
-		//Create the path
-		Path thePath = new Path();
-
-		//Create PathDash effect
-		DashPathEffect pathDash = new DashPathEffect(dashes, 0); 
-		pathPaint.setPathEffect(pathDash); 
-
-		thePath.moveTo((float)screenCoords.x, (float)screenCoords.y);
-		
-		//Loop through all GeoPoints
-		for (LatLng current : path) {
-			//Convert GeoPoint to pixels and add to path
-			if(current != null){
-				pro.toPixels(DroidLoc.latLngToGeoPoint(current), screenCoords); 
-				thePath.lineTo((float)screenCoords.x, (float)screenCoords.y);
-			}
-		}
-
-		/* Draw the actual route to the canvas. */
-		canvas.drawPath(thePath, this.pathPaint);
+        //Loop through all GeoPoints
+        for (LatLng current : path) {
+            //Convert GeoPoint to pixels and add to path
+            if(current != null){
+                polylineOptions.add(current);
+            }
+        }
+        googleMap.addPolyline(polylineOptions);
 	}
 	
 }

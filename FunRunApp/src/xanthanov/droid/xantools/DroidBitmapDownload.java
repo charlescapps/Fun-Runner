@@ -1,14 +1,15 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.xantools; 
+package xanthanov.droid.xantools;
 
-import java.net.HttpURLConnection; 
-import java.net.URL; 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.IOException;
-import java.io.InputStream; 
-import android.graphics.Bitmap; 
-import android.graphics.BitmapFactory; 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
 * <h3>Class to download a bitmap from a URL and store in android.graphics.Bitmap object.</h3>

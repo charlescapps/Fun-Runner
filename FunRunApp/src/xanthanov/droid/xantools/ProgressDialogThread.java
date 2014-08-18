@@ -1,10 +1,10 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.xantools; 
+package xanthanov.droid.xantools;
 
-import android.app.ProgressDialog; 
-import android.content.Context; 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 

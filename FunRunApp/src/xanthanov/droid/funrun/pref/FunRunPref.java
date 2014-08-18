@@ -1,12 +1,11 @@
-package xanthanov.droid.funrun.pref; 
+package xanthanov.droid.funrun.pref;
 
-import android.preference.PreferenceActivity; 
-import android.os.Bundle; 
-import android.widget.Toast; 
-import android.view.MenuInflater; 
-import android.view.Menu; 
-import android.view.MenuItem; 
-
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 import xanthanov.droid.funrun.R; 
 
 public class FunRunPref extends PreferenceActivity {

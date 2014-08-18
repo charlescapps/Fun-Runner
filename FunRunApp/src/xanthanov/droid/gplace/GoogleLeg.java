@@ -1,13 +1,13 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.gplace; 
+package xanthanov.droid.gplace;
 
-import java.util.List;
+import com.google.android.gms.maps.model.LatLng;
+import xanthanov.droid.xantools.DroidLoc;
+
 import java.util.ArrayList;
-
-import xanthanov.droid.xantools.DroidLoc; 
-import android.content.Context; 
+import java.util.List;
 
 /**
 *<h3>Class for one &apos;leg&apos; of the user's run, running to one place.</h3>
@@ -58,10 +58,10 @@ public class GoogleLeg implements java.io.Serializable {
 	private final static int PLACE_BONUS = 10; 
 
 	//ACTUAL PATH RAN
-	List<LatLng> actualPath; 
+	List<LatLng> actualPath;
 
 	//Directions path
-	List<LatLng> directionsPath; 
+	List<LatLng> directionsPath;
 
 	public GoogleLeg(String distanceStr, int distMeters) {
 		steps = new ArrayList<GoogleStep>(); 
@@ -71,7 +71,7 @@ public class GoogleLeg implements java.io.Serializable {
 		actualDistanceRan = 0.0;  
 		swBound = neBound = null; 
 		overviewPolyline = null; 
-		actualPath = new ArrayList<LatLng>(); 
+		actualPath = new ArrayList<LatLng>();
 		legDestination = null; 
 		maxStepCompleted = -1; 
 		directionsPath = null; 
@@ -153,8 +153,8 @@ public class GoogleLeg implements java.io.Serializable {
 		//Add (distance between previous point -> new point) to the actualDistanceRan
 
 		int size  = actualPath.size(); 
-		double[] latLngStart = actualPath.get(size - 2).getArray(); 
-		double[] latLngEnd = actualPath.get(size - 1).getArray(); 
+		double[] latLngStart = new double[] { actualPath.get(size - 2).latitude, actualPath.get(size - 2).longitude };
+		double[] latLngEnd = new double[] { actualPath.get(size - 1).latitude, actualPath.get(size - 1).longitude };
 		float[] tmpDist = new float[1]; 
 		android.location.Location.distanceBetween(latLngStart[0], latLngStart[1], latLngEnd[0], latLngEnd[1], tmpDist); 
 		actualDistanceRan += tmpDist[0]; 
@@ -217,7 +217,7 @@ public class GoogleLeg implements java.io.Serializable {
 
 		  int latE6 = (int) (((double) lat / 1E5) * 1E6);
 		  int lngE6 = (int) (((double) lng / 1E5) * 1E6);
-		  poly.add(new LatLng(DroidLoc.latLngE6ToDegrees(latE6, lngE6)));
+		  poly.add(DroidLoc.degreesToLatLng(DroidLoc.latLngE6ToDegrees(latE6, lngE6)));
 	  }
 
 	  return poly;

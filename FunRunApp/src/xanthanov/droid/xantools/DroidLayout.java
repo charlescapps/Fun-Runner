@@ -1,11 +1,11 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.xantools; 
+package xanthanov.droid.xantools;
 
-import android.view.LayoutInflater; 
-import android.view.View; 
-import android.content.Context; 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 
 /**
 *<h3>Convenience class for inflating views</h3>

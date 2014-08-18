@@ -1,37 +1,29 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun; 
+package xanthanov.droid.funrun;
 
-import xanthanov.droid.funrun.adapters.*; 
-import xanthanov.droid.funrun.db.*; 
-import xanthanov.droid.xantools.DroidLayout; 
-import xanthanov.droid.xantools.DroidDialogs; 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import android.widget.AdapterView.OnItemClickListener;
+import xanthanov.droid.funrun.adapters.ViewStatsAdapter;
+import xanthanov.droid.funrun.db.FunRunReadOps;
+import xanthanov.droid.funrun.db.OldRun;
+import xanthanov.droid.xantools.DroidDialogs;
+import xanthanov.droid.xantools.DroidLayout;
 
-import java.util.List; 
-import java.sql.SQLException; 
-import java.text.DateFormat; 
-import java.text.SimpleDateFormat; 
-
-import android.app.Activity; 
-import android.app.Dialog; 
-import android.app.AlertDialog; 
-import android.os.Bundle; 
-import android.widget.Gallery; 
-import android.widget.AdapterView.OnItemClickListener; 
-import android.widget.AdapterView; 
-import android.widget.Toast; 
-import android.widget.TextView; 
-import android.widget.Button; 
-import android.widget.ImageButton; 
-import android.widget.LinearLayout; 
-import android.widget.EditText; 
-import android.view.View; 
-import android.content.Context; 
-import android.content.Intent; 
-import android.content.res.Resources; 
-import android.content.SharedPreferences; 
-import android.content.DialogInterface; 
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
 *<h3>Activity for viewing old runs in a gallery view. </h3>

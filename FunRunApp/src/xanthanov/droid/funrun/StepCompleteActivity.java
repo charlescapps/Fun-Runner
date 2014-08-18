@@ -1,29 +1,30 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun; 
+package xanthanov.droid.funrun;
 
-import xanthanov.droid.gplace.*;
-import xanthanov.droid.xantools.*; 
-
-import java.util.HashMap; 
-
-import android.app.Activity; 
-import android.os.Bundle;
-import android.os.Vibrator; 
-import android.content.Context; 
-import android.app.Application;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Button; 
-import android.widget.LinearLayout; 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
 import android.text.Spanned;
-import android.view.animation.Animation; 
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.view.KeyEvent; 
+import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import xanthanov.droid.gplace.GoogleDirections;
+import xanthanov.droid.gplace.GoogleLeg;
+import xanthanov.droid.gplace.GooglePlace;
+import xanthanov.droid.gplace.GoogleStep;
+import xanthanov.droid.xantools.DroidDialogs;
+import xanthanov.droid.xantools.DroidUnits;
 
-import android.speech.tts.TextToSpeech; 
+import java.util.HashMap;
 
 /**
 * <h3>Activity for when user completes a step in the directions, or arrives at a place.</h3>

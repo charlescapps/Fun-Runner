@@ -1,30 +1,20 @@
-package xanthanov.droid.funrun.adapters; 
+package xanthanov.droid.funrun.adapters;
 
-import xanthanov.droid.funrun.db.OldRun; 
-import xanthanov.droid.funrun.db.OldLeg; 
-import xanthanov.droid.funrun.R; 
-import xanthanov.droid.xantools.DroidUnits; 
-import xanthanov.droid.gplace.GooglePlace; 
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.text.Spanned;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
+import xanthanov.droid.funrun.R;
+import xanthanov.droid.funrun.db.OldRun;
+import xanthanov.droid.xantools.DroidUnits;
 
-import java.util.Date; 
-import java.text.SimpleDateFormat; 
-import java.text.DateFormat; 
-import java.util.List; 
-import java.util.ArrayList; 
-
-import android.widget.BaseAdapter; 
-import android.widget.TextView; 
-import android.widget.Button; 
-import android.widget.ImageButton; 
-import android.widget.AdapterView; 
-import android.view.View; 
-import android.view.ViewGroup; 
-import android.widget.Gallery;
-import android.view.LayoutInflater; 
-import android.content.Context; 
-import android.text.Spanned; 
-import android.content.res.TypedArray; 
-import android.content.res.Resources; 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class ViewStatsAdapter extends BaseAdapter {
 	

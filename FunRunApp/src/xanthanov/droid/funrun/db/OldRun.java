@@ -1,13 +1,13 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun.db; 
+package xanthanov.droid.funrun.db;
 
-import xanthanov.droid.xantools.DroidUnits; 
+import xanthanov.droid.xantools.DroidUnits;
 
-import java.util.Date; 
-import java.util.List; 
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
 *<h3>Contains exactly the data stored in the database for an old run.</h3>

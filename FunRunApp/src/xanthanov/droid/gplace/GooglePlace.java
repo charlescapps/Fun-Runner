@@ -1,12 +1,13 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.gplace; 
+package xanthanov.droid.gplace;
 
-import android.graphics.Bitmap; 
-import com.google.android.maps.GeoPoint; 
+import android.graphics.Bitmap;
+import com.google.android.gms.maps.model.LatLng;
+import xanthanov.droid.xantools.DroidBitmapDownload;
+
 import java.net.URL;
-import xanthanov.droid.xantools.*;  
 
 /**
 *
@@ -54,9 +55,9 @@ public class GooglePlace implements java.io.Serializable {
 		this.iconBmp = null; 
 	}
 
-	public float distanceTo(GeoPoint myLocation) {
-		double startLat = myLocation.getLatitudeE6()*1E-6; 
-		double startLng = myLocation.getLongitudeE6()*1E-6;
+	public float distanceTo(LatLng myLocation) {
+		double startLat = myLocation.latitude;
+		double startLng = myLocation.longitude;
  
 		float result[] = new float[1]; 
 
@@ -65,7 +66,7 @@ public class GooglePlace implements java.io.Serializable {
 		return result[0]; 
 	}
 
-	public double[] getLatLng() {return latLng; }
+	public double[] getLatLngArray() {return latLng; }
 
 	public float distanceTo(double[] myLocation) {
 		float result[] = new float[1]; 
@@ -83,8 +84,8 @@ public class GooglePlace implements java.io.Serializable {
 		return name; 
 	}
 
-	public GeoPoint getGeoPoint() {
-		return DroidLoc.degreesToGeoPoint(latLng[0], latLng[1]); 
+	public LatLng getLatLng() {
+		return new LatLng(latLng[0], latLng[1]);
 	}	
 
 	public URL getIconUrl() {

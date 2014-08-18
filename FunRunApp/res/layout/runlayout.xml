@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:map="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/run_parentContainer"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -26,13 +27,18 @@
 		android:id="@+id/run_relLayout"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
-		<view class="com.google.android.maps.MapView"
+		<view class="com.google.android.gms.maps.MapView"
+            map:mapType="normal"
+            map:uiCompass="true"
+            map:uiZoomControls="false"
 			android:id="@+id/run_myMap"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
+			android:layout_height="wrap_content"
 			android:enabled="true"
 			android:clickable="true"
-			android:apiKey="0qcLJ4NCw2oCTRAjAP9LZwwinYU1lhqCZCDduQQ"/>
+            android:apiKey="AIzaSyAHGC20rK1OM_in2a1dvS1WYb_ATqDndbU"/>
+        <!--
+			android:apiKey="AIzaSyBr-r0FMgWimZT7Os1_oJkmNsMsujT1h0w"-->
 <!-- Makes more sense to define animation in code
 		<ImageView android:id="@+id/runner_anim"
 			android:layout_width="wrap_content"

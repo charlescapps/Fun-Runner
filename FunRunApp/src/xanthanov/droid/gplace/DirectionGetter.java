@@ -1,26 +1,21 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.gplace; 
+package xanthanov.droid.gplace;
 
-import xanthanov.droid.gplace.*;
+import com.google.android.gms.maps.model.LatLng;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import xanthanov.droid.funrun.exceptions.GmapException;
 
-import java.util.HashMap; 
-import java.util.List; 
-import java.util.ArrayList; 
-
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
-
-import java.net.URL; 
-import java.net.HttpURLConnection; 
-import java.net.MalformedURLException;
-
-import com.google.android.maps.GeoPoint; 
-
-import org.json.*; 
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 
 /**
 * <h3>Class to get Google Walking Directions via HTTP request.</h3>
@@ -53,7 +48,7 @@ public class DirectionGetter {
 		//Meh?
 	}
 
-	public GoogleLeg getDirections(GeoPoint currentLocation, GeoPoint destination) {
+	public GoogleLeg getDirections(LatLng currentLocation, LatLng destination) {
 		URL url= null; 
 		HttpURLConnection conn= null; 
 
@@ -81,12 +76,12 @@ public class DirectionGetter {
 
 	} 
 
-	private static String buildLatlngString(GeoPoint pt) {
+	private static String buildLatlngString(LatLng pt) {
 		String locStr = ""; 
 		
-		locStr+=(pt.getLatitudeE6()*1E-6); 
+		locStr+=(pt.latitude);
 		locStr+=",";
-		locStr+=(pt.getLongitudeE6()*1E-6); 
+		locStr+=(pt.longitude);
 	
 		return locStr;
 	}
@@ -190,8 +185,8 @@ public class DirectionGetter {
 					startLng = currentStep.getJSONObject("start_location").getDouble("lng"); 
 					endLat = currentStep.getJSONObject("end_location").getDouble("lat"); 
 					endLng = currentStep.getJSONObject("end_location").getDouble("lng"); 
-					GeoPoint start = new GeoPoint((int) (startLat*1E6), (int) (startLng*1E6)); 
-					GeoPoint end = new GeoPoint((int) (endLat*1E6), (int) (endLng*1E6)); 
+					LatLng start = new LatLng(startLat, startLng);
+					LatLng end = new LatLng(endLat, endLng);
 					String htmlDirections = currentStep.getString("html_instructions");
 
 					directions.add(new GoogleStep(new double[] {startLat, startLng}, new double[] {endLat, endLng}, stepDistanceMeters, stepDistanceStr, htmlDirections ));

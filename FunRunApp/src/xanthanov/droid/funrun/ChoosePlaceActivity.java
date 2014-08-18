@@ -3,58 +3,41 @@
 
 package xanthanov.droid.funrun;
 
-import xanthanov.droid.xantools.*; 
-import xanthanov.droid.gplace.*;
-import xanthanov.droid.funrun.db.FunRunWriteOps; 
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog; 
-import android.app.ProgressDialog; 
-import android.content.DialogInterface; 
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.AsyncTask; 
-import android.view.KeyEvent; 
-import android.view.View;
-import android.view.WindowManager; 
-import android.view.WindowManager.LayoutParams; 
-import android.view.Gravity;
-import android.view.animation.Animation; 
-import android.view.animation.AlphaAnimation;
-import android.widget.TextView;
-import android.widget.EditText; 
-import android.widget.Button; 
-import android.widget.ImageButton; 
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-import android.widget.ArrayAdapter;
-import android.widget.AdapterView; 
-import android.widget.LinearLayout;
-import android.content.Context; 
-import android.location.LocationManager;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
-import android.content.Intent;
-import android.text.Spanned;
-import android.view.MenuInflater; 
-import android.view.Menu; 
-import android.view.MenuItem; 
-import android.content.SharedPreferences; 
-import android.content.res.Resources; 
+import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.transition.Visibility;
+import android.view.*;
+import android.view.WindowManager.LayoutParams;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.*;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import xanthanov.droid.funrun.db.FunRunWriteOps;
+import xanthanov.droid.funrun.mapsutils.ZoomHelper;
+import xanthanov.droid.gplace.*;
+import xanthanov.droid.xantools.DroidDialogs;
+import xanthanov.droid.xantools.DroidLoc;
+import xanthanov.droid.xantools.ProgressRunnable;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Random; 
 import java.sql.SQLException;
-
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapController;
-import com.google.android.maps.MyLocationOverlay; 
-import com.google.android.maps.Overlay; 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 * <h3>First activity when you start a new run. Runner chooses the next place to run to. </h3>
@@ -77,7 +60,7 @@ import com.google.android.maps.Overlay;
 * @version 0.9b
 **/
 
-public class ChoosePlaceActivity extends MapActivity
+public class ChoosePlaceActivity extends Activity
 {
 
 	//***********VIEW OBJECTS DEFINED IN XML**********************
@@ -85,21 +68,20 @@ public class ChoosePlaceActivity extends MapActivity
 	private Button whereAmIButton; 
 	private ImageButton nextDestinationButton;
 	private MapView myMap;
+    private GoogleMap googleMap;
 	private Button zoomInButton;
 	private Button zoomOutButton;
 	//*******************OTHER OBJECTS****************************
 	private DroidLoc droidLoc; 
-	private MyLocationOverlay myLocOverlay;
-	private MapController myMapController; 
-	private LocationListener myGpsListener; 
+	private LocationListener myGpsListener;
 	private LocationListener myNetworkListener; 
 	private PlaceSearcher myPlaceSearcher; //Class to do HTTP request to get place data from google maps API
 	private DirectionGetter myDirectionGetter; //Class to do an HTTP request to get walking directions
 	private FunRunOverlay myFunRunOverlay; 
 	private AlertDialog popup;
 	private Location bestLocation; 
-	private GeoPoint lastKnownGeoPoint; 
-	private GeoPoint firstGpsFix;
+	private LatLng lastKnownLatLng;
+	private LatLng firstGpsFix;
 	//Places found, directions found, etc.
 	private List<GooglePlace> nearbyPlaces;
 	private List<GooglePlace> remainingPlaces;
@@ -127,24 +109,25 @@ public class ChoosePlaceActivity extends MapActivity
 
 		//***************GET VIEWS DEFINED IN XML***********************
 		runCategorySpinner = (Spinner) findViewById(R.id.runCategorySpinner); 
-		myMap = (MapView) findViewById(R.id.myMap); 
+		myMap = (MapView) findViewById(R.id.myMap);
+        // Forward onCreate to the MapView
+        myMap.onCreate(savedInstanceState);
+        googleMap = getGoogleMap();
 		whereAmIButton = (Button) findViewById(R.id.gpsButton); 
 		nextDestinationButton = (ImageButton) findViewById(R.id.nextDestinationButton); 
 		zoomInButton = (Button) findViewById(R.id.buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.buttonZoomOut); 
 		//******************DEFINE OTHER OBJECTS**************************
 		droidLoc = new DroidLoc(this); 
-		myLocOverlay = new MyLocationOverlay(this, myMap); 
-		myMapController = myMap.getController(); 
-		myPlaceSearcher = new PlaceSearcher(this.getResources()); 
+		myPlaceSearcher = new PlaceSearcher(this.getResources());
 		myDirectionGetter = new DirectionGetter(); 
 
 		bestLocation = droidLoc.getBestLocation(null); 
 		if (bestLocation != null) {
-			lastKnownGeoPoint = droidLoc.locationToGeoPoint(bestLocation);
+			lastKnownLatLng = DroidLoc.locationToLatLng(bestLocation);
 		}
 
-		//System.out.println("Last location: " + lastKnownGeoPoint);
+		//System.out.println("Last location: " + lastKnownLatLng);
 		funRunApp = (FunRunApplication) getApplicationContext();
 
 		currentDirections = new GoogleDirections(); //Create new directions now, since they correspond to a run
@@ -184,8 +167,29 @@ public class ChoosePlaceActivity extends MapActivity
 		setupNextButton(); 
 		setupZoomButtons(); 
 		centerOnMe(); 
-		myMap.preLoad(); 
 
+    }
+
+    private GoogleMap getGoogleMap() {
+        if (googleMap != null) {
+            return googleMap;
+        }
+
+        googleMap = myMap.getMap();
+        return googleMap;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        myMap.onResume();
+        getGoogleMap();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        myMap.onPause();
     }
 
 	@Override	
@@ -233,11 +237,6 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	@Override
-	public boolean isRouteDisplayed() {
-		return true;
-	}
-
-	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus); 
 
@@ -255,11 +254,13 @@ public class ChoosePlaceActivity extends MapActivity
 
 		checkGps(); //Output error dialog if GPS is disabled 
 
-		myLocOverlay.enableCompass(); 	//Enable compass
-
 		bestLocation = droidLoc.getBestLocation(bestLocation); //Get immediate location
-		lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); //Convert to GeoPoint immediately
-		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); //Update location in overlay
+		lastKnownLatLng = DroidLoc.locationToLatLng(bestLocation); //Convert to GeoPoint immediately
+		myFunRunOverlay.updateCurrentLocation(lastKnownLatLng); //Update location in overlay
+        GoogleMap googleMap = getGoogleMap();
+        if (googleMap != null) {
+            myFunRunOverlay.drawOverlays(googleMap);
+        }
 		centerOnMe(); 
 		myMap.invalidate(); //Redraw
 
@@ -273,15 +274,12 @@ public class ChoosePlaceActivity extends MapActivity
 		super.onStop(); 
 		droidLoc.getLocManager().removeUpdates(myGpsListener); 
 		droidLoc.getLocManager().removeUpdates(myNetworkListener); 
-		myLocOverlay.disableCompass();
-		myFunRunOverlay.setSpecificLeg(null); 
+		myFunRunOverlay.setSpecificLeg(null);
 	}
 
 	@Override 
 	protected void onDestroy() {
 		super.onDestroy(); 
-
-		FunRunApplication funRunApp = (FunRunApplication) getApplicationContext(); 
 
 		if (currentDirections != null) {
 			//System.out.println("Distance so far for current directions when leaving ChoosePlace: " + currentDirections.getDistanceSoFar()); 
@@ -298,9 +296,22 @@ public class ChoosePlaceActivity extends MapActivity
 				//System.err.println("Error deleting empty run in ChoosePlaceActivity.onDestroy() "); 
 			} 
 		}
+        myMap.onDestroy();
 	}
 
-	private void checkGps() {
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        myMap.onSaveInstanceState(bundle);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        myMap.onLowMemory();
+    }
+
+    private void checkGps() {
 		LocationManager lm = droidLoc.getLocManager(); 
 		boolean isGpsEnabled = false; 
 		try {		
@@ -330,14 +341,20 @@ public class ChoosePlaceActivity extends MapActivity
 
 		bestLocation = droidLoc.compareLocations(bestLocation, l); //Compare new location to previous best, and return the best one
 
-		GeoPoint newGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); 
+		LatLng newLatLng = DroidLoc.locationToLatLng(bestLocation);
 
-		lastKnownGeoPoint = newGeoPoint; 
+		lastKnownLatLng = newLatLng;
 
-		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
+		myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
+
+        GoogleMap googleMap = getGoogleMap();
+
+        if (googleMap != null) {
+            myFunRunOverlay.drawOverlays(googleMap);
+        }
 
 		if (wasNull) {
-			firstGpsFix = newGeoPoint; 
+			firstGpsFix = newLatLng;
 			centerOnMe(); 
 		}
 	}
@@ -354,12 +371,9 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void setupMap() {
 		myFunRunOverlay = new FunRunOverlay(myMap, null, false, true, false, null);
-		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
+		myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
 		myFunRunOverlay.updateCurrentDirections(currentDirections); 
-		myMap.getOverlays().add(myLocOverlay); 
-		myMap.getOverlays().add(myFunRunOverlay); 
-		myMapController.setZoom(DEFAULT_ZOOM); 
-		myMap.invalidate(); 
+		myMap.invalidate();
 	}
 
 	private void setupWhereAmIButton() {
@@ -377,18 +391,33 @@ public class ChoosePlaceActivity extends MapActivity
 	}
 
 	private void centerOnMe() {
-		
-		if (lastKnownGeoPoint !=null) {
-			myMapController.animateTo(lastKnownGeoPoint); 
-			myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
-		}
+
+        if (lastKnownLatLng == null) {
+            return;
+        }
+        else {
+            GoogleMap googleMap = getGoogleMap();
+
+            if (googleMap == null) {
+                return;
+            }
+            final float zoomLevel = ZoomHelper.getZoomLevel(0.8f, googleMap);
+            CameraPosition cameraPosition = CameraPosition.builder()
+                    .target(lastKnownLatLng)
+                    .zoom(zoomLevel)
+                    .build();
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            googleMap.animateCamera(cameraUpdate);
+            myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
+            myFunRunOverlay.drawOverlays(googleMap);
+        }
 	}
 
 	private void setupNextButton() {
 		nextDestinationButton.setOnClickListener(new OnClickNext(this));
 	}
 
-	private List<GooglePlace> performPlacesQuery(String search, GeoPoint lastLocation, int currentRadiusMeters) throws Exception {
+	private List<GooglePlace> performPlacesQuery(String search, LatLng lastLocation, int currentRadiusMeters) throws Exception {
 
 		List<GooglePlace> foundPlaces = null; 
 
@@ -423,6 +452,7 @@ public class ChoosePlaceActivity extends MapActivity
 		if (remainingPlaces.size() == 0) {
 			remainingPlaces = new ArrayList<GooglePlace>(nearbyPlaces); 
 			DroidDialogs.showPopup(this, "All places rejected :-(", "You rejected all nearby places of this type!\nChoose a new category, or touch 'Find Nearby Places' to see your options again.");
+            showButtons();
 			currentRunToPlace = null; 
 			myFunRunOverlay.setSpecificLeg(null); 
 			centerOnMe(); 
@@ -436,10 +466,14 @@ public class ChoosePlaceActivity extends MapActivity
 
 		//Make another HTTP request to get directions from current location to 'runToPlace'
 		bestLocation = droidLoc.getBestLocation(bestLocation); 
-		lastKnownGeoPoint = DroidLoc.locationToGeoPoint(bestLocation); //Get most recent location before getting directions
-		myFunRunOverlay.updateCurrentLocation(lastKnownGeoPoint); 
+		lastKnownLatLng = new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()); //Get most recent location before getting directions
+		myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
+        GoogleMap googleMap = getGoogleMap();
+        if (googleMap != null) {
+            myFunRunOverlay.drawOverlays(googleMap);
+        }
 
-		new DirectionsQueryTask(this).execute(lastKnownGeoPoint, currentRunToPlace.getGeoPoint()); 
+		new DirectionsQueryTask(this).execute(lastKnownLatLng, currentRunToPlace.getLatLng());
 
 	}
 
@@ -452,18 +486,66 @@ public class ChoosePlaceActivity extends MapActivity
 		zoomInButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					myMapController.zoomIn(); 
+                    GoogleMap googleMap = getGoogleMap();
+                    if (googleMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomIn();
+                        googleMap.animateCamera(cameraUpdate);
+                    }
 				}
 			});	
 		zoomOutButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					myMapController.zoomOut(); 
+                    GoogleMap googleMap = getGoogleMap();
+                    if (googleMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomOut();
+                        googleMap.animateCamera(cameraUpdate);
+                    }
 				}
 			});	
 	}
 
+    private void hideButtons() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Animation animation = new AlphaAnimation(0.7f, 0.0f);
+                animation.setFillAfter(true);
+                if (zoomInButton != null) {
+                    zoomInButton.startAnimation(animation);
+                }
+                if (zoomOutButton != null) {
+                    zoomOutButton.startAnimation(animation);
+                }
+                if (whereAmIButton != null) {
+                    whereAmIButton.startAnimation(animation);
+                }
+            }
+        });
+    }
+
+    private void showButtons() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Animation animation = new AlphaAnimation(0.0f, 0.7f);
+                animation.setFillAfter(true);
+                if (zoomInButton != null) {
+                    zoomInButton.startAnimation(animation);
+                }
+                if (zoomOutButton != null) {
+                    zoomOutButton.startAnimation(animation);
+                }
+                if (whereAmIButton != null) {
+                    whereAmIButton.startAnimation(animation);
+                }
+            }
+        });
+
+    }
+
 	private void showAcceptRejectPopup(String title, String txt) {
+        hideButtons();
 		AlertDialog.Builder myBuilder = new AlertDialog.Builder(this); 
 		myBuilder.setMessage(txt); 
 		myBuilder.setTitle(title); 
@@ -471,14 +553,15 @@ public class ChoosePlaceActivity extends MapActivity
 		myBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				startRunning(); 
+                showButtons();
+				startRunning();
            }
        }); 
 
 		myBuilder.setNegativeButton("Next Place!", new DialogInterface.OnClickListener() {
            public void onClick(DialogInterface dialog, int id) {
 				dialog.dismiss();
-				getNextPlace(); 
+				getNextPlace();
            }
        }); 
 
@@ -488,7 +571,8 @@ public class ChoosePlaceActivity extends MapActivity
 		popup.setOnCancelListener(new AlertDialog.OnCancelListener() {  //Clear the route being drawn when you cancel the dialogue
 			@Override
 			public void onCancel(DialogInterface d) {
-				myFunRunOverlay.setSpecificLeg(null); 
+				myFunRunOverlay.setSpecificLeg(null);
+                showButtons();
 				centerOnMe(); 
 			}
 		}); 
@@ -526,7 +610,8 @@ public class ChoosePlaceActivity extends MapActivity
 
 	private void startRunning() {
 		final Intent i = new Intent(this, FunRunActivity.class); 
-		final Activity a = this; 
+		final Activity a = this;
+        showButtons();
 
 		if (tempLeg == null || currentDirections == null || currentRunToPlace == null) {
 			DroidDialogs.showPopup(a, "No Place Selected", "You must choose a place before running.\nChoose a category, then click 'Find a Place'. "); 
@@ -565,13 +650,13 @@ public class ChoosePlaceActivity extends MapActivity
 			searchStr = searchParams[0]; 
 			List<GooglePlace> result = null; 
 
-			if (lastKnownGeoPoint == null) {
+			if (lastKnownLatLng == null) {
 				DroidDialogs.showPopup(a, "No location found.", "No location found. Turn on GPS and go outside, then try again."); 
 				return null; 
 			}
 
 			try {
-				result = performPlacesQuery(searchStr, lastKnownGeoPoint, SEARCH_RADIUS_METERS ); 	
+				result = performPlacesQuery(searchStr, lastKnownLatLng, SEARCH_RADIUS_METERS );
 			}
 			catch (Exception e) {
 				DroidDialogs.showPopup(a, "Error connecting to Google Maps", "Unable to connect to Google Maps.\nPlease check your internet connection and try again."); 
@@ -586,7 +671,7 @@ public class ChoosePlaceActivity extends MapActivity
 			//Done attempting to get places, so assign to field nearbyPlaces 
 			nearbyPlaces = result; 
 			if (nearbyPlaces != null) {
-				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownGeoPoint)); 
+				java.util.Collections.sort(nearbyPlaces, new PlaceComparator(lastKnownLatLng));
 			}
 			//Set remainingPlaces = shallow copy of nearbyPlaces  
 			remainingPlaces = (nearbyPlaces == null ? null : new ArrayList(nearbyPlaces)); 
@@ -613,7 +698,7 @@ public class ChoosePlaceActivity extends MapActivity
 		}
 	}
 
-	private class DirectionsQueryTask extends AsyncTask<GeoPoint, Integer, GoogleLeg> {
+	private class DirectionsQueryTask extends AsyncTask<LatLng, Integer, GoogleLeg> {
 		private Activity a = null;
 
 		public DirectionsQueryTask(Activity a) {
@@ -621,7 +706,7 @@ public class ChoosePlaceActivity extends MapActivity
 			this.a = a; 
 		}
 
-		protected GoogleLeg doInBackground(GeoPoint... directionPoints) {
+		protected GoogleLeg doInBackground(LatLng... directionPoints) {
 			if (directionPoints.length != 2) {
 				return null; 
 			}
@@ -631,7 +716,7 @@ public class ChoosePlaceActivity extends MapActivity
 			GoogleLeg result = null; 
 
 			try {
-				result = myDirectionGetter.getDirections(lastKnownGeoPoint, currentRunToPlace.getGeoPoint());
+				result = myDirectionGetter.getDirections(lastKnownLatLng, currentRunToPlace.getLatLng());
 			}
 			catch (Exception e) { //Dialog will popup due to null result. No need to deal with exception here
 				e.printStackTrace();
@@ -649,7 +734,11 @@ public class ChoosePlaceActivity extends MapActivity
 			if (tempLeg != null) {
 
 				tempLeg.setLegDestination(currentRunToPlace); 
-				myFunRunOverlay.setSpecificLeg(tempLeg); 
+				myFunRunOverlay.setSpecificLeg(tempLeg);
+                GoogleMap googleMap = getGoogleMap();
+                if (googleMap != null) {
+                    myFunRunOverlay.drawOverlays(googleMap);
+                }
 				zoomToTempRoute(); 
 				myMap.invalidate(); 
 				
@@ -659,7 +748,8 @@ public class ChoosePlaceActivity extends MapActivity
 			}
 			else {
 				DroidDialogs.showPopup(a, "Error connecting to \nGoogle Maps", "An error occurred while connecting to Google Maps. Make sure you have an internet connection and try again."); 
-				myFunRunOverlay.setSpecificLeg(null); 
+				myFunRunOverlay.setSpecificLeg(null);
+                showButtons();
 				centerOnMe(); 
 			}
 		}
@@ -726,14 +816,20 @@ public class ChoosePlaceActivity extends MapActivity
 		if (tempLeg == null) {
 			return; 
 		}
-		final GeoPoint neBound = DroidLoc.degreesToGeoPoint(tempLeg.getNeBound()); 
-		final GeoPoint swBound = DroidLoc.degreesToGeoPoint(tempLeg.getSwBound()); 
-		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
-		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
-		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 
+		final LatLng neBound = DroidLoc.degreesToLatLng(tempLeg.getNeBound());
+		final LatLng swBound = DroidLoc.degreesToLatLng(tempLeg.getSwBound());
+		final LatLng midPoint = new LatLng( (neBound.latitude + swBound.latitude) / 2.0d, (neBound.longitude + swBound.longitude) / 2.0d);
 
-		myMapController.animateTo(midPoint); 
-		myMapController.zoomToSpan(latSpan, lngSpan); 
+        GoogleMap googleMap = getGoogleMap();
+        if (googleMap != null) {
+            CameraUpdate updatePosition = CameraUpdateFactory.newLatLng(midPoint);
+            googleMap.animateCamera(updatePosition);
+
+            LatLngBounds latLngBounds = new LatLngBounds(swBound, neBound);
+            CameraUpdate zoomToSpan = CameraUpdateFactory.newLatLngBounds(latLngBounds, 100);
+
+            googleMap.animateCamera(zoomToSpan);
+        }
 	}
 
 	class MyLocListener implements LocationListener {

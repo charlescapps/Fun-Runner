@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-	android:id="@+id/parentContainer"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:map="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/parentContainer"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
@@ -24,20 +25,16 @@
 		android:id="@+id/relLayout"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
-		<view class="com.google.android.maps.MapView"
+		<view class="com.google.android.gms.maps.MapView"
 			android:id="@+id/myMap"
+            map:mapType="normal"
+            map:uiCompass="true"
+            map:uiZoomControls="false"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
 			android:enabled="true"
 			android:clickable="true"
-			android:apiKey="0qcLJ4NCw2oCTRAjAP9LZwwinYU1lhqCZCDduQQ"/>
-<!-- Makes more sense to define animation in code
-		<ImageView android:id="@+id/runner_anim"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="@drawable/runner_anim"
-			/>
--->
+			android:apiKey="AIzaSyAHGC20rK1OM_in2a1dvS1WYb_ATqDndbU"/>
 		<LinearLayout android:id="@+id/zoomButtonsLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

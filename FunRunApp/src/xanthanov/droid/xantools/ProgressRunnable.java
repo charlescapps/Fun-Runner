@@ -4,10 +4,7 @@
 package xanthanov.droid.xantools;
 
 import android.app.Activity;
-import android.content.Context; 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface; 
 
 /**
 *

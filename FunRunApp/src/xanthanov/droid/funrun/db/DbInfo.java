@@ -1,10 +1,9 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun.db; 
+package xanthanov.droid.funrun.db;
 
-import java.text.SimpleDateFormat; 
-import android.content.Context; 
+import java.text.SimpleDateFormat;
 
 /**
 *

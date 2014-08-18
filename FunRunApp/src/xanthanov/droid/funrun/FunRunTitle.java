@@ -3,22 +3,18 @@
 
 package xanthanov.droid.funrun;
 
-import xanthanov.droid.gplace.*;
-import xanthanov.droid.funrun.db.FunRunReadOps; 
-
-import java.sql.SQLException; 
-
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button; 
-import android.widget.TextView; 
-import android.content.Intent; 
-import android.content.Context; 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.MotionEvent;
-import android.view.MenuInflater; 
-import android.view.Menu; 
-import android.view.MenuItem; 
+import android.widget.Button;
+import android.widget.TextView;
+import xanthanov.droid.funrun.db.FunRunReadOps;
+
+import java.sql.SQLException;
 
 /**
 * <h3>Activity for Title Screen</h3>
@@ -90,7 +86,6 @@ public class FunRunTitle extends Activity
 	@Override 
 	public void onStop() {
 		super.onStop(); 
-		
 	}
 
 	private void setupButtons() {

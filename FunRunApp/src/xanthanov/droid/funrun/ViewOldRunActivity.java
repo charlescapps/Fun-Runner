@@ -1,33 +1,29 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun; 
+package xanthanov.droid.funrun;
 
-import xanthanov.droid.funrun.db.OldRun; 
-import xanthanov.droid.funrun.db.OldLeg; 
-import xanthanov.droid.gplace.*; 
-import xanthanov.droid.xantools.DroidLoc; 
-
-import android.view.animation.Animation; 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Spanned;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import xanthanov.droid.funrun.db.OldLeg;
+import xanthanov.droid.funrun.db.OldRun;
 
-import com.google.android.maps.MapView; 
-import com.google.android.maps.MapActivity; 
-import com.google.android.maps.GeoPoint; 
-import com.google.android.maps.MapController; 
-
-import android.app.Activity; 
-import android.os.Bundle; 
-
-import android.content.Intent; 
-import android.widget.Button; 
-import android.widget.ImageButton; 
-import android.widget.TextView; 
-import android.view.View; 
-import android.text.Spanned; 
-
-import java.text.SimpleDateFormat; 
-import java.text.DateFormat; 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List; 
 
 /**
@@ -44,7 +40,7 @@ import java.util.List;
 *@version 0.9b
 **/
 
-public class ViewOldRunActivity extends MapActivity {
+public class ViewOldRunActivity extends Activity {
 
 	private ImageButton prevLegButton; 
 	private ImageButton nextLegButton;
@@ -58,8 +54,7 @@ public class ViewOldRunActivity extends MapActivity {
 	private int legIndex; 
 	private List<OldRun> oldRuns; 
 	private OldRun run; 
-	private MapController myMapController; 
-	private OldRunOverlay myOldRunOverlay; 
+	private OldRunOverlay myOldRunOverlay;
 	private FunRunApplication myFunRunApp; 
 	private MapView myMap; 
 
@@ -95,11 +90,6 @@ public class ViewOldRunActivity extends MapActivity {
 		super.onStop();
 	
 	}
-	
-	@Override
-	public boolean isRouteDisplayed() {
-		return true;
-	}
 
 	private void getViews() {
 		placeTextView = (TextView) findViewById(R.id.placeTextView); 
@@ -110,7 +100,6 @@ public class ViewOldRunActivity extends MapActivity {
 		zoomInButton = (Button) findViewById(R.id.run_buttonZoomIn); 
 		zoomOutButton = (Button) findViewById(R.id.run_buttonZoomOut); 
 		myMap = (MapView) findViewById(R.id.oldRunMap); 
-		myMapController = myMap.getController(); 
 	}
 
 	private void setupText() {
@@ -174,21 +163,29 @@ public class ViewOldRunActivity extends MapActivity {
 	}
 
 	private void zoomToRoute(OldLeg currentLeg) {
-		final GeoPoint neBound = DroidLoc.latLngToGeoPoint(currentLeg.getNeBound()); 
-		final GeoPoint swBound = DroidLoc.latLngToGeoPoint(currentLeg.getSwBound()); 
-		final GeoPoint midPoint = new GeoPoint( (neBound.getLatitudeE6() + swBound.getLatitudeE6())/2, (neBound.getLongitudeE6() + swBound.getLongitudeE6())/2);
-		final int latSpan = Math.abs(neBound.getLatitudeE6() - swBound.getLatitudeE6()); 
-		final int lngSpan = Math.abs(neBound.getLongitudeE6() - swBound.getLongitudeE6()); 
+		final LatLng neBound = currentLeg.getNeBound();
+		final LatLng swBound = currentLeg.getSwBound();
+		final LatLng midPoint = new LatLng( (neBound.latitude + swBound.latitude ) / 2.0d, (neBound.longitude + swBound.longitude ) / 2.0d);
 
-		myMapController.animateTo(midPoint); 
-		myMapController.zoomToSpan(latSpan, lngSpan); 
+        GoogleMap googleMap = myMap.getMap();
+        if (googleMap != null) {
+            CameraUpdate updatePosition = CameraUpdateFactory.newLatLng(midPoint);
+            googleMap.animateCamera(updatePosition);
+
+            LatLngBounds latLngBounds = new LatLngBounds(swBound, neBound);
+            CameraUpdate zoomToSpan = CameraUpdateFactory.newLatLngBounds(latLngBounds, 0);
+
+            googleMap.animateCamera(zoomToSpan);
+        }
 	}
 
 	private void setupMap() {
 		myOldRunOverlay = new OldRunOverlay(myMap, run, null);
-		myMap.getOverlays().add(myOldRunOverlay); 
-		myMap.preLoad(); 
-		myMap.postInvalidate(); 
+        GoogleMap googleMap = myMap.getMap();
+        if (googleMap != null) {
+            myOldRunOverlay.drawRoutes(googleMap, myMap);
+        }
+		myMap.postInvalidate();
 	}
 
 	private void setupZoomButtons() {
@@ -200,13 +197,21 @@ public class ViewOldRunActivity extends MapActivity {
 		zoomInButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					myMapController.zoomIn(); 
+                    GoogleMap googleMap = myMap.getMap();
+                    if (googleMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomIn();
+                        googleMap.animateCamera(cameraUpdate);
+                    }
 				}
 			});	
 		zoomOutButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					myMapController.zoomOut(); 
+                    GoogleMap googleMap = myMap.getMap();
+                    if (googleMap != null) {
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomOut();
+                        googleMap.animateCamera(cameraUpdate);
+                    }
 				}
 			});	
 	}

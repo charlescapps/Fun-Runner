@@ -1,19 +1,15 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun; 
+package xanthanov.droid.funrun;
 
-import xanthanov.droid.gplace.*;
-import xanthanov.droid.xantools.DroidLoc; 
-import xanthanov.droid.funrun.db.FunRunWriteOps; 
-import xanthanov.droid.funrun.db.OldRun; 
+import android.app.Application;
+import android.speech.tts.TextToSpeech;
+import xanthanov.droid.funrun.db.FunRunWriteOps;
+import xanthanov.droid.funrun.db.OldRun;
+import xanthanov.droid.gplace.GoogleDirections;
+import xanthanov.droid.gplace.GoogleStep;
 
-import android.app.Application; 
-import android.os.Bundle; 
-import android.content.Context;
-import com.google.android.maps.GeoPoint;
-
-import android.speech.tts.TextToSpeech;  
 import java.util.List; 
 
 /**

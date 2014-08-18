@@ -1,18 +1,18 @@
 
-package xanthanov.droid.funrun.db; 
+package xanthanov.droid.funrun.db;
 
-import android.content.Context; 
-import android.database.sqlite.SQLiteDatabase; 
-import android.database.sqlite.SQLiteStatement; 
+import android.content.Context;
 import android.database.Cursor;
-import java.util.List;
-import java.util.ArrayList; 
-import java.util.Date; 
-import java.sql.SQLException; 
-import java.text.ParseException; 
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import com.google.android.gms.maps.model.LatLng;
+import xanthanov.droid.gplace.GoogleLeg;
 
-import xanthanov.droid.gplace.LatLng;
-import xanthanov.droid.gplace.GoogleLeg;  
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class FunRunReadOps {
 
@@ -85,7 +85,7 @@ public class FunRunReadOps {
 				//select path points for this leg
 				Cursor pathPointsResult = db.rawQuery("SELECT * FROM " + DbInfo.RUN_PATH_TBL + " WHERE " + DbInfo.LEG_ID + " = " + legId + " ORDER BY " + DbInfo.PATH_ID + ";", null); 
 
-				List<LatLng> pathPoints = new ArrayList<LatLng>(); 
+				List<LatLng> pathPoints = new ArrayList<LatLng>();
 
 				pathPointsResult.moveToNext(); 
 				while (!pathPointsResult.isAfterLast()) {
@@ -101,7 +101,7 @@ public class FunRunReadOps {
 				pathPointsResult.close(); 
 
 				legs.add(new OldLeg(pathPoints, GoogleLeg.getPathPoints(polyline), startTime, endTime, actualDist, 
-									new LatLng(neLat, neLng), new LatLng(swLat, swLng), legPoints, placeName, new LatLng(placeLat, placeLng), gotToDest));  	
+									new LatLng(neLat, neLng), new LatLng(swLat, swLng), legPoints, placeName, new LatLng(placeLat, placeLng), gotToDest));
 
 				legResult.moveToNext(); 
 				if (!legResult.isAfterLast()) {

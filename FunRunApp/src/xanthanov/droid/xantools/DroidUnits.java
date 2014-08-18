@@ -1,9 +1,10 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.xantools; 
+package xanthanov.droid.xantools;
 
-import android.text.Spanned; 
+import android.text.Spanned;
+
 import java.text.DecimalFormat; 
 
 /**

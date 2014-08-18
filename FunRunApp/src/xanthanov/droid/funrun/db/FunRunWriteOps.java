@@ -1,22 +1,20 @@
 //Copyright (c) 2011 Charles L. Capps
 //Released under MIT License
 
-package xanthanov.droid.funrun.db; 
+package xanthanov.droid.funrun.db;
 
-import xanthanov.droid.gplace.GooglePlace; 
-import xanthanov.droid.gplace.GoogleDirections; 
-import xanthanov.droid.gplace.GoogleLeg; 
-import xanthanov.droid.gplace.LatLng; 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
+import com.google.android.gms.maps.model.LatLng;
+import xanthanov.droid.gplace.GoogleDirections;
+import xanthanov.droid.gplace.GoogleLeg;
+import xanthanov.droid.gplace.GooglePlace;
 
-import android.database.sqlite.SQLiteOpenHelper; 
-import android.database.sqlite.SQLiteDatabase; 
-import android.database.sqlite.SQLiteStatement; 
-import android.content.Context; 
-
-import java.util.Date; 
-import java.util.List; 
-import java.text.SimpleDateFormat; 
-import java.sql.SQLException; 
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import static xanthanov.droid.funrun.db.DbInfo.*; 
 
@@ -118,7 +116,7 @@ public class FunRunWriteOps {
 
 		legStmt.bindString(10, dest.getName()); 
 
-		double[] placeCoords = dest.getLatLng(); 
+		double[] placeCoords = dest.getLatLngArray();
 
 		legStmt.bindDouble(11, placeCoords[0]); 
 		legStmt.bindDouble(12, placeCoords[1]); 
@@ -136,16 +134,16 @@ public class FunRunWriteOps {
 		insertPathPt.bindLong(1, this.runId); 
 		insertPathPt.bindLong(2, legRowId); 
 
-		List<LatLng> actualPath = leg.getActualPath(); 
-		LatLng pathCoords; 
+		List<LatLng> actualPath = leg.getActualPath();
+		LatLng pathCoords;
 
 		//Start a transaction to insert the many points of the user's run path as pairs of latitude / longitude doubles
 		db.beginTransaction(); 
 
 		for (int i = 0; i < actualPath.size(); i++) {
 			pathCoords = actualPath.get(i); 			
-			insertPathPt.bindDouble(3, pathCoords.lat); 
-			insertPathPt.bindDouble(4, pathCoords.lng); 
+			insertPathPt.bindDouble(3, pathCoords.latitude);
+			insertPathPt.bindDouble(4, pathCoords.longitude);
 			insertPathPt.executeInsert(); 
 		}
 

@@ -3,12 +3,10 @@
 
 package xanthanov.droid.gplace;
 
-import com.google.android.maps.GeoPoint; 
-
-import java.util.List; 
-import java.util.ArrayList; 
-import java.util.Date; 
-import java.text.DateFormat; 
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
 *
