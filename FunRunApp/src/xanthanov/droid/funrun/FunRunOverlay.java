@@ -3,19 +3,19 @@
 
 package xanthanov.droid.funrun;
 
+import android.app.Activity;
 import android.graphics.*;
-import android.graphics.drawable.AnimationDrawable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.*;
 import xanthanov.droid.gplace.GoogleDirections;
 import xanthanov.droid.gplace.GoogleLeg;
 import xanthanov.droid.xantools.DroidLoc;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,13 +49,15 @@ public class FunRunOverlay {
     private Marker routeFinishMarker;
     private Marker runnerMarker;
     private Polyline routeLine;
+    private Marker runnerAnimation;
 
 	private MapView theMapView = null;
 	private Paint pathPaint = null;
 	private GoogleDirections directions = null;
 	private GoogleLeg specificLeg = null; 
 	private boolean drawRoute = false; 
-	private boolean drawSpecificRoute = false; 
+	private boolean drawSpecificRoute = false;
+    private final Activity sourceActivity;
 	
 	private Bitmap START;
     private BitmapDescriptor START_DESCRIPTOR;
@@ -67,34 +69,45 @@ public class FunRunOverlay {
     private BitmapDescriptor FLAG_DESCRIPTOR;
 
     private Bitmap RUNNER1;
+    private Bitmap RUNNER2;
+    private Bitmap RUNNER3;
+    private Bitmap RUNNER4;
+    private Bitmap RUNNER5;
+    private Bitmap RUNNER6;
     private BitmapDescriptor RUNNER1_DESCRIPTOR;
+    private BitmapDescriptor RUNNER2_DESCRIPTOR;
+    private BitmapDescriptor RUNNER3_DESCRIPTOR;
+    private BitmapDescriptor RUNNER4_DESCRIPTOR;
+    private BitmapDescriptor RUNNER5_DESCRIPTOR;
+    private BitmapDescriptor RUNNER6_DESCRIPTOR;
+
+    private List<BitmapDescriptor> runnerBitmapDescriptors;
+
+    private AnimateMarkerThread animateRunnerThread;
 
 	private boolean animateRunner; 
 	private ImageView runnerImageView; 
 	private LatLng prevRunnerPoint;
 	private LatLng curRunnerLatLng;
-	private RelativeLayout mapRelLayout; 
+	private RelativeLayout mapRelLayout;
 
-	public FunRunOverlay(MapView map, GoogleDirections directions, boolean drawRoute, boolean drawSpecificRoute, boolean animateRunner, RelativeLayout mapRelLayout) {
+    public FunRunOverlay(final MapView map, GoogleDirections directions, boolean drawRoute, boolean drawSpecificRoute, boolean animateRunner, RelativeLayout mapRelLayout) {
+        this(map, directions, drawRoute, drawSpecificRoute, animateRunner, mapRelLayout, null);
+    }
+
+    public FunRunOverlay(final MapView map, GoogleDirections directions, boolean drawRoute, boolean drawSpecificRoute,
+                         boolean animateRunner, RelativeLayout mapRelLayout, Activity activity) {
 		this.theMapView = map;
 		this.directions = directions;
 		this.drawRoute = drawRoute; 
 		this.drawSpecificRoute = drawSpecificRoute; 
 		this.pathPaint = new Paint();
-		this.animateRunner = animateRunner; 
+		this.animateRunner = animateRunner;
+        this.sourceActivity = activity;
 
 		prevRunnerPoint = curRunnerLatLng = null;
 
-		this.mapRelLayout = mapRelLayout; 
-
-		if (animateRunner && mapRelLayout != null) {
-
-			runnerImageView = new ImageView(map.getContext()); 
-			runnerImageView.setBackgroundResource(R.drawable.runner_anim);
-			runnerImageView.setAdjustViewBounds(true); 
-			mapRelLayout.addView(runnerImageView); 
-
-		}
+		this.mapRelLayout = mapRelLayout;
 
 		if (directions != null) {
 			this.curRunnerLatLng = DroidLoc.degreesToLatLng(directions.getFirstPoint());
@@ -109,6 +122,11 @@ public class FunRunOverlay {
 		DESTINATION2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.destination_icon2); 
 
 		RUNNER1 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner1); 
+		RUNNER2 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner2);
+		RUNNER3 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner3);
+		RUNNER4 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner4);
+		RUNNER5 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner5);
+		RUNNER6 = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.runner6);
 
 		FLAG = BitmapFactory.decodeResource(this.theMapView.getContext().getResources(), R.drawable.chequered_flag_icon);
 
@@ -119,18 +137,21 @@ public class FunRunOverlay {
         DESTINATION2_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(DESTINATION2);
 
         RUNNER1_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(RUNNER1);
+        RUNNER2_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(RUNNER2);
+        RUNNER3_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(RUNNER3);
+        RUNNER4_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(RUNNER4);
+        RUNNER5_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(RUNNER5);
+        RUNNER6_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(RUNNER6);
+
+        runnerBitmapDescriptors = Arrays.asList(RUNNER1_DESCRIPTOR, RUNNER2_DESCRIPTOR, RUNNER3_DESCRIPTOR,
+                RUNNER4_DESCRIPTOR, RUNNER5_DESCRIPTOR, RUNNER6_DESCRIPTOR);
+
         FLAG_DESCRIPTOR = BitmapDescriptorFactory.fromBitmap(FLAG);
 
 	}
 
 	public void startRunAnimation() {
-		AnimationDrawable runnerAnim = (AnimationDrawable)runnerImageView.getBackground(); 
-		runnerAnim.start(); 
-	}
-
-	public void stopRunAnimation() {
-		AnimationDrawable runnerAnim = (AnimationDrawable)runnerImageView.getBackground(); 
-		runnerAnim.stop(); 
+		drawAnimatedRunnerAtCurrentLocation(theMapView.getMap());
 	}
 
 	public void setSpecificLeg(GoogleLeg l) {this.specificLeg = l; }
@@ -138,14 +159,28 @@ public class FunRunOverlay {
 	public void updateCurrentLocation(LatLng loc) {
 		prevRunnerPoint = curRunnerLatLng;
 		curRunnerLatLng = loc;
+	}
 
-		theMapView.postInvalidate(); 
-	}	
+    public void updateAnimatedRunner(LatLng loc, GoogleMap googleMap) {
+        updateCurrentLocation(loc);
+        drawAnimatedRunnerAtCurrentLocation(googleMap);
+    }
+
+    public void stopAnimation() {
+        if (animateRunnerThread != null) {
+            animateRunnerThread.interruptMe();
+            try {
+                animateRunnerThread.join();
+            } catch (Exception e) {
+                // ...
+            }
+            animateRunnerThread = null;
+        }
+    }
 
 	public void updateCurrentDirections(GoogleDirections directions) { this.directions = directions;}
 
 	public void drawOverlays(GoogleMap googleMap) {
-        //googleMap.clear();
 
 		if (drawSpecificRoute) { //Case for ChoosePlaceActivity. Just drawing the directions with start dot at beginning, flag at end
 			if (specificLeg != null && specificLeg.size() > 0) {
@@ -187,19 +222,40 @@ public class FunRunOverlay {
 		}
 
 		//Draw stick guy at current location even if no directions exist
-		
 		if (curRunnerLatLng != null) {
-
-	/*		if (animateRunner) {
-				TranslateAnimation ta = new TranslateAnimation((int)runnerPoint.x - RUNNER_OFFSET.x, (int)runnerPoint.x - RUNNER_OFFSET.x, (int)runnerPoint.y - RUNNER_OFFSET.y, (int)runnerPoint.y - RUNNER_OFFSET.y); 
-				runnerImageView.startAnimation(ta); 
+			if (animateRunner) {
+				drawAnimatedRunnerAtCurrentLocation(googleMap);
 			}
-			else {*/
-
+			else {
                 runnerMarker = drawRunner(curRunnerLatLng, googleMap);
-		//	}
+			}
 		}
 	}
+
+    private void drawAnimatedRunnerAtCurrentLocation(GoogleMap googleMap) {
+        if (curRunnerLatLng != null && googleMap != null) {
+            if (runnerAnimation != null) {
+                runnerAnimation.setPosition(curRunnerLatLng);
+            } else {
+                MarkerOptions runnerAnimationMarkerOpts = new MarkerOptions()
+                        .anchor(0.5f, 0.5f)
+                        .icon(RUNNER2_DESCRIPTOR)
+                        .position(curRunnerLatLng);
+            /*Projection projection = googleMap.getProjection();
+            Point runnerPoint = projection.toScreenLocation(curRunnerLatLng);
+
+            float startX = runnerImageView.getLeft();
+            float startY = runnerImageView.getTop();
+            runnerImageView.setTranslationX(runnerPoint.x - startX);
+            runnerImageView.setTranslationY(runnerPoint.y - startY);*/
+                runnerAnimation = googleMap.addMarker(runnerAnimationMarkerOpts);
+            }
+            if (animateRunnerThread == null) {
+                animateRunnerThread = new AnimateMarkerThread(runnerAnimation, runnerBitmapDescriptors, 150, sourceActivity);
+                animateRunnerThread.start();
+            }
+        }
+    }
 
     private Marker drawStartMarker(LatLng startLatLng, GoogleMap googleMap) {
         if (routeStartMarker == null) {

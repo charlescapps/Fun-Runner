@@ -179,6 +179,15 @@ public class FunRunActivity extends Activity
 				firstSpeechCompleted = true; 
 			}
 		});
+
+        // Zoom to the route whenever the layout changes
+        myMap.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                zoomToRoute();
+            }
+        });
+
     }
 
     private GoogleMap getGoogleMap() {
@@ -187,6 +196,7 @@ public class FunRunActivity extends Activity
         }
 
         googleMap = myMap.getMap();
+
         return googleMap;
     }
 
@@ -195,13 +205,14 @@ public class FunRunActivity extends Activity
         super.onResume();
         myMap.onResume();
         Log.i(getClass().getCanonicalName(), "Running onResume() in FunRunActivity");
-        zoomToRoute();
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
         myMap.onPause();
+        myFunRunOverlay.stopAnimation();
     }
 
 	private void grabPrefs() {
@@ -303,7 +314,7 @@ public class FunRunActivity extends Activity
 		currentStep = ((FunRunApplication)getApplication()).getCurrentStep(); 
 		if (currentStep != null) {
 			htmlInstructions = Html.fromHtml(currentStep.getHtmlInstructions().trim());		
-			speakingInstructions = ttsTools.expandDirectionsString(htmlInstructions.toString()); 
+			speakingInstructions = DroidTTS.expandDirectionsString(htmlInstructions.toString());
 			updateDirectionsTextView(); 
 
 			if (SPEAK_DIRECTIONS && funRunApp.isTtsReady()) { //Expand abbreviations so it speaks properly and play it
@@ -325,8 +336,8 @@ public class FunRunActivity extends Activity
 			lastKnownLatLng = DroidLoc.locationToLatLng(bestLocation);
 
 			//Update visuals so it doesn't show you in the wrong place
-			myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
-			myMap.invalidate(); 
+            GoogleMap googleMap = getGoogleMap();
+			myFunRunOverlay.updateAnimatedRunner(lastKnownLatLng, googleMap);
 		}
 		else { //current step was null, indicating the user finished running to a place.
 			//Go choose another place	
@@ -403,8 +414,8 @@ public class FunRunActivity extends Activity
 		lastKnownLatLng = newLatLng;
 
 		//Update location and invalidate map to redraw
-		myFunRunOverlay.updateCurrentLocation(lastKnownLatLng);
-		myMap.invalidate(); 
+        GoogleMap googleMap = getGoogleMap();
+		myFunRunOverlay.updateAnimatedRunner(lastKnownLatLng, googleMap);
 
 		LatLng latLng = null;
 		if (bestLocation != null) {
@@ -473,14 +484,12 @@ public class FunRunActivity extends Activity
 	}
 
 	private void setupMap() {
-		myFunRunOverlay = new FunRunOverlay(myMap, null, true, false, true, mapRelLayout);
+		myFunRunOverlay = new FunRunOverlay(myMap, null, true, false, true, mapRelLayout, this);
 		myFunRunOverlay.updateCurrentDirections(runDirections);
         GoogleMap googleMap = getGoogleMap();
         if (googleMap != null) {
             myFunRunOverlay.drawOverlays(googleMap);
         }
-		
-		myMap.invalidate(); 
 	}
 
 	private void setupCenterOnMeButton() {
@@ -506,8 +515,10 @@ public class FunRunActivity extends Activity
             if (googleMap == null) {
                 return;
             }
+            float currentZoom = googleMap.getCameraPosition().zoom;
             CameraPosition cameraPosition = CameraPosition.builder()
                     .target(lastKnownLatLng)
+                    .zoom(currentZoom)
                     .build();
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
             googleMap.animateCamera(cameraUpdate);

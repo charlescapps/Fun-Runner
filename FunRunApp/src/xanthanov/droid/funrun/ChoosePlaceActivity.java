@@ -355,9 +355,10 @@ public class ChoosePlaceActivity extends Activity
 
 		if (wasNull) {
 			firstGpsFix = newLatLng;
-			centerOnMe(); 
-		}
-	}
+            centerOnMe();
+        }
+
+    }
 
 	private void setupSpinner() {
 

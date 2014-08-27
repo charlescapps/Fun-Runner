@@ -1,9 +1,9 @@
+*.DS_Store
+bin/
 *.class
-*.dex
-*.jpg
-*.png
+out/
+*.iml
+.idea/
 *.apk
-*.ap_
-*.swp
-*.properties
-
+google_play_services/
+support/
